@@ -922,12 +922,7 @@
         </div>
         <div class="site-footer-col">
           <h2 class="site-footer-h" data-i18n="footer-privacy-h">Din integritet</h2>
-          <p class="site-footer-text" data-i18n="footer-privacy-intro">Den här sidan är byggd helt som en frontend-sida. Vi samlar inte in, lagrar eller säljer några personuppgifter om dig. Det finns inga konton, ingen inloggning och inga spårningskakor.</p>
-          <ul class="site-footer-list">
-            <li data-i18n="footer-privacy-1">Vissa av dina inställningar (språk, valuta, ljust/mörkt läge) sparas lokalt i din egen webbläsare, bara för din bekvämlighet — de skickas aldrig till oss.</li>
-            <li data-i18n="footer-privacy-2">Sidan använder en värdtjänst (webbhotell) för att finnas tillgänglig online, och som alla webbplatser kan värdtjänsten se viss teknisk trafikdata (t.ex. IP-adress) på sin servernivå. Det är inget vi samlar in eller använder.</li>
-            <li data-i18n="footer-privacy-3">Vi visar inga annonser och delar ingen data med annonsörer.</li>
-          </ul>
+          <p class="site-footer-text" data-i18n="footer-privacy-intro">Vi använder cookie-fri, anonym besöksstatistik (via vår värdtjänst Vercel) för att se hur många som besöker sidan. Den kan inte identifiera dig personligen, använder inga cookies och kräver därför ingen cookie-banner. Vi samlar inte in, lagrar eller säljer några personuppgifter, och visar inga annonser. Dina inställningar (språk, valuta, ljust/mörkt läge) sparas lokalt i din webbläsare för din bekvämlighet.</p>
         </div>
       </div>
       <div class="site-footer-bottom">
@@ -979,10 +974,7 @@
       'footer-about-h':      'Om Decenniet',
       'footer-about':        'Decenniet är en oberoende sida som vill göra privatekonomi begriplig — hur sparande växer, vad avgifter kostar och hur räntor och skulder påverkar vanliga hushåll. Alla siffror är ungefärliga och för illustration, inte investeringsrådgivning.',
       'footer-privacy-h':    'Din integritet',
-      'footer-privacy-intro':'Den här sidan är byggd helt som en frontend-sida. Vi samlar inte in, lagrar eller säljer några personuppgifter om dig. Det finns inga konton, ingen inloggning och inga spårningskakor.',
-      'footer-privacy-1':    'Vissa av dina inställningar (språk, valuta, ljust/mörkt läge) sparas lokalt i din egen webbläsare, bara för din bekvämlighet — de skickas aldrig till oss.',
-      'footer-privacy-2':    'Sidan använder en värdtjänst (webbhotell) för att finnas tillgänglig online, och som alla webbplatser kan värdtjänsten se viss teknisk trafikdata (t.ex. IP-adress) på sin servernivå. Det är inget vi samlar in eller använder.',
-      'footer-privacy-3':    'Vi visar inga annonser och delar ingen data med annonsörer.',
+      'footer-privacy-intro':'Vi använder cookie-fri, anonym besöksstatistik (via vår värdtjänst Vercel) för att se hur många som besöker sidan. Den kan inte identifiera dig personligen, använder inga cookies och kräver därför ingen cookie-banner. Vi samlar inte in, lagrar eller säljer några personuppgifter, och visar inga annonser. Dina inställningar (språk, valuta, ljust/mörkt läge) sparas lokalt i din webbläsare för din bekvämlighet.',
       'footer-disclaimer':   'Decenniet ger allmän information, inte personlig rådgivning. Kontakta en licensierad rådgivare för beslut om din ekonomi.',
     },
     en: {
@@ -1024,10 +1016,7 @@
       'footer-about-h':      'About Decenniet',
       'footer-about':        'Decenniet is an independent site that aims to make personal finance easy to understand — how savings grow, what fees cost, and how interest rates and debt affect ordinary households. All figures are approximate and for illustration, not investment advice.',
       'footer-privacy-h':    'Your privacy',
-      'footer-privacy-intro':'This site is built entirely as a frontend site. We do not collect, store or sell any personal data about you. There are no accounts, no login and no tracking cookies.',
-      'footer-privacy-1':    'Some of your settings (language, currency, light/dark mode) are saved locally in your own browser, purely for your convenience — they are never sent to us.',
-      'footer-privacy-2':    'The site uses a hosting provider so it can be available online, and like every website the host can see some technical traffic data (e.g. your IP address) at its server level. That is nothing we collect or use.',
-      'footer-privacy-3':    'We show no ads and share no data with advertisers.',
+      'footer-privacy-intro':'We use cookie-free, anonymous visitor analytics (via our hosting provider Vercel) to see how many people visit the site. It cannot identify you personally, uses no cookies, and therefore requires no cookie banner. We do not collect, store or sell any personal data, and we show no ads. Your settings (language, currency, light/dark mode) are saved locally in your browser for your convenience.',
       'footer-disclaimer':   'Decenniet provides general information, not personal advice. Consult a licensed advisor for decisions about your finances.',
     }
   };
@@ -1450,5 +1439,9 @@
   window.addEventListener('load', () => document.body.classList.add('page-loaded'));
   applyLang();
   </script>
+<script>
+  window.va = window.va || function () { (window.vai = window.vai || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
