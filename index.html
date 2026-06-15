@@ -1,0 +1,3773 @@
+﻿<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decenniet – Avkastning över tid</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* ── Variables ──────────────────────────────────── */
+    :root {
+      --rt-text-color:    #1a2e2e;
+      --rt-blue:          #0d3b38;
+      --rt-blue-mid:      #1a5c58;
+      --rt-pink:          #e8f2f1;
+      --rt-white:         #ffffff;
+      --rt-red:           #5a3d7a;
+      --rt-beige-main:    #f9f9f7;
+      --rt-beige-contrast:#dde8e7;
+      --rt-muted:         #7a8b8b;
+      --rt-gold:          #b89a3c;
+      --rt-sapphire:      #2d5fa0;
+      --rt-section-div:   #e0e8e7;
+    }
+
+    *, ::before, ::after { box-sizing: border-box; }
+
+    html { background: var(--rt-white); }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "DM Sans", "Nunito", sans-serif;
+      font-size: clamp(0.9rem, 0.85rem + 0.25vw, 1.1rem);
+      color: var(--rt-text-color);
+      background: var(--rt-white);
+      line-height: 1.6;
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+    }
+    body.page-loaded {
+      opacity: 1;
+      transition: opacity 0.38s ease;
+    }
+
+    /* ── Animated gradient background ───────────────── */
+    .gradient-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: var(--rt-beige-main);
+      overflow: hidden;
+    }
+    .gradient-blur {
+      position: absolute;
+      inset: -20%;
+      filter: blur(90px);
+      overflow: hidden;
+    }
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.45;
+      animation: blobDrift linear infinite;
+      will-change: transform;
+    }
+    @keyframes blobDrift {
+      0%,100% { transform: translate(0, 0); }
+      20%  { transform: translate(calc(var(--tx1,0.3) * 220px), calc(var(--ty1,0.2) * 220px)); }
+      40%  { transform: translate(calc(var(--tx2,-0.4) * 220px), calc(var(--ty2,0.5) * 220px)); }
+      60%  { transform: translate(calc(var(--tx3,0.2) * 220px), calc(var(--ty3,-0.3) * 220px)); }
+      80%  { transform: translate(calc(var(--tx4,-0.2) * 220px), calc(var(--ty4,-0.4) * 220px)); }
+    }
+
+    /* ── Wrapper ─────────────────────────────────────── */
+    .wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      padding: 2rem 1.5rem 0;
+    }
+
+    /* ── Page header ─────────────────────────────────── */
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 0 1.5rem;
+      border-bottom: 1.5px solid var(--rt-section-div);
+      margin-bottom: 3rem;
+    }
+    .site-brand {
+      font-family: "DM Serif Display", serif;
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: var(--rt-blue);
+      text-transform: none;
+      letter-spacing: 0.02em;
+      opacity: 1;
+    }
+    .currency-select {
+      font-family: "Nunito", sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--rt-blue);
+      background: var(--rt-white);
+      border: 2px solid var(--rt-beige-contrast);
+      border-radius: 8px;
+      padding: 0.25rem 0.6rem;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23164563'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.5rem center;
+      padding-right: 1.6rem;
+    }
+    .currency-select:focus { outline: none; border-color: var(--rt-blue); }
+
+    /* ── Language toggle ──────────────────────────────── */
+    .lang-toggle {
+      font-family: "Nunito", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--rt-blue);
+      background: transparent;
+      border: 2px solid var(--rt-blue);
+      border-radius: 7px;
+      padding: 0.22rem 0.65rem;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      opacity: 0.7;
+      transition: opacity 0.15s, background 0.15s, color 0.15s;
+    }
+    .lang-toggle:hover { opacity: 1; background: var(--rt-blue); color: var(--rt-white); }
+
+    /* ── Calculator card ─────────────────────────────── */
+    .calculator {
+      background: var(--rt-white);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 28px rgba(22,69,99,0.1), 0 1px 6px rgba(22,69,99,0.06);
+      border-top: 4px solid var(--rt-blue);
+      display: grid;
+      grid-template-columns: 310px 1fr;
+      grid-template-rows: 1fr auto;
+    }
+
+    /* ── Chart column (LEFT) ─────────────────────────── */
+    .chart-col {
+      grid-column: 2;
+      grid-row: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1.75rem 1.75rem 1.25rem;
+    }
+    .chart-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+    .chart-title {
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: var(--rt-blue);
+      margin: 0 0 0.1rem;
+      line-height: 1.15;
+    }
+    .chart-subtitle {
+      font-size: 0.79rem;
+      color: var(--rt-muted);
+      margin: 0;
+      font-weight: 500;
+    }
+    .chart-legend {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-shrink: 0;
+      padding-top: 0.15rem;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.77rem;
+      font-weight: 600;
+      color: #666;
+    }
+    .legend-swatch {
+      width: 24px;
+      height: 9px;
+      border-radius: 3px;
+    }
+    .chart-wrap {
+      flex: 1;
+      position: relative;
+      min-height: 280px;
+    }
+    .chart-wrap canvas {
+      position: absolute;
+      inset: 0;
+    }
+
+    /* ── Controls column (RIGHT) ─────────────────────── */
+    .controls-col {
+      grid-column: 1;
+      grid-row: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      padding: 1.75rem 1.5rem 1.5rem;
+      overflow-y: auto;
+      border-right: 1px solid var(--rt-beige-contrast);
+    }
+
+    /* ── Input groups ────────────────────────────────── */
+    .input-group { display: flex; flex-direction: column; gap: 0.3rem; }
+
+    .input-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .input-label {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--rt-text-color);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .input-value-tag {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--rt-blue);
+      background: rgba(22,69,99,0.07);
+      padding: 0.08rem 0.5rem;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    /* ── Range slider — styled with fill ────────────────── */
+    input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 20px;          /* tall enough for the 20px thumb to center */
+      background: transparent;
+      outline: none;
+      cursor: pointer;
+    }
+    /* Track — fill via --pct custom property updated by JS */
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(
+        to right,
+        var(--sl-fill, var(--rt-blue)) var(--pct, 0%),
+        var(--sl-track, var(--rt-beige-contrast)) var(--pct, 0%)
+      );
+    }
+    input[type="range"]::-moz-range-track {
+      height: 4px; border-radius: 999px;
+      background: var(--sl-track, var(--rt-beige-contrast));
+      border: none;
+    }
+    input[type="range"]::-moz-range-progress {
+      height: 4px; border-radius: 999px;
+      background: var(--sl-fill, var(--rt-blue));
+    }
+    /* Thumb — white bg, accent border, centered on track */
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--rt-white);
+      border: 2px solid var(--rt-blue);
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+      transition: transform 0.12s, box-shadow 0.12s;
+      margin-top: -8px;    /* (4px track − 20px thumb) / 2 = −8px */
+    }
+    input[type="range"]:hover::-webkit-slider-thumb,
+    input[type="range"]:focus-visible::-webkit-slider-thumb {
+      box-shadow: 0 0 0 5px rgba(13,59,56,0.13);
+    }
+    input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.12); }
+    input[type="range"]::-moz-range-thumb {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid var(--rt-blue);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+      cursor: pointer;
+    }
+
+    /* Number input */
+    input[type="number"] {
+      width: 100px;
+      padding: 0.28rem 0.45rem;
+      border: 2px solid var(--rt-beige-contrast);
+      border-radius: 7px;
+      font-family: "DM Sans", "Nunito", sans-serif;
+      font-size: 0.83rem;
+      font-weight: 700;
+      color: var(--rt-text-color);
+      text-align: right;
+      background: var(--rt-white);
+      transition: border-color 0.15s;
+      -moz-appearance: textfield;
+    }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { opacity: 0.5; }
+    input[type="number"]:focus { outline: none; border-color: var(--rt-blue); }
+
+    /* ── Section label ───────────────────────────────── */
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--rt-text-color);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.15rem;
+      margin-top: 0.4rem;
+    }
+
+    /* ── Diagram mode toggle ─────────────────────────── */
+    .mode-toggle {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+    .mode-btn {
+      font-family: "Nunito", sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--rt-blue);
+      background: rgba(22,69,99,0.06);
+      border: 1.5px solid transparent;
+      border-radius: 20px;
+      padding: 0.22rem 0.65rem;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .mode-btn:hover { background: rgba(22,69,99,0.12); }
+    .mode-btn.active {
+      background: var(--rt-blue);
+      color: var(--rt-white);
+      border-color: var(--rt-blue);
+    }
+
+    /* ── Result line ─────────────────────────────────── */
+    .result-line {
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1.5px solid var(--rt-beige-contrast);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--rt-text-color);
+      line-height: 1.5;
+    }
+    .result-line strong {
+      font-weight: 900;
+      color: var(--rt-blue);
+    }
+    .result-line .avk-val {
+      font-weight: 900;
+      color: var(--rt-red);
+    }
+    .rl-label { display: block; }
+    .rl-amount {
+      display: block;
+      margin-top: 0.4rem;
+      font-family: "DM Sans", "Nunito", sans-serif;
+      font-size: clamp(1.35rem, 1.1rem + 0.9vw, 1.75rem);
+      font-weight: 400;
+      color: var(--rt-blue);
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    /* ── Results bar ─────────────────────────────────── */
+    .results-bar {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: var(--rt-blue);
+      color: var(--rt-white);
+    }
+    .result-item { padding: 1.1rem 1.75rem; }
+    .result-item + .result-item { border-left: 1px solid rgba(255,255,255,0.12); }
+    .result-label {
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.6;
+      margin-bottom: 0.15rem;
+    }
+    .result-value {
+      font-size: 1.1rem;
+      font-weight: 900;
+      word-break: break-word;
+      line-height: 1.3;
+    }
+    .result-value.accent { color: var(--rt-pink); }
+
+    /* ── Responsive ──────────────────────────────────── */
+    /* ── End-of-line callout ─────────────────────────── */
+    .end-label {
+      position: absolute;
+      background: var(--rt-blue);
+      color: var(--rt-white);
+      border-radius: 8px;
+      padding: 0.32rem 0.65rem 0.38rem;
+      pointer-events: none;
+      white-space: nowrap;
+      max-width: 240px;
+      transform: translate(-50%, calc(-100% - 10px));
+      font-size: 0.73rem;
+      font-weight: 600;
+      line-height: 1.35;
+      box-shadow: 0 2px 10px rgba(22,69,99,0.3);
+      display: none;
+      z-index: 10;
+    }
+    .end-label::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: var(--tri-offset, 50%);
+      transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid var(--rt-blue);
+    }
+    .end-label .end-year {
+      display: block;
+      opacity: 0.75;
+      font-size: 0.68rem;
+      font-weight: 600;
+    }
+    .end-label .end-amt {
+      display: block;
+      font-weight: 900;
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 720px) {
+      .calculator {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+      }
+      .controls-col {
+        grid-column: 1; grid-row: 1;
+        border-right: none;
+        border-bottom: 1px solid var(--rt-beige-contrast);
+        padding: 1.25rem;
+      }
+      .chart-col {
+        grid-column: 1; grid-row: 2;
+        padding: 1.25rem 1.25rem 1rem;
+      }
+      .results-bar {
+        grid-column: 1; grid-row: 3;
+        grid-template-columns: 1fr 1fr;
+      }
+      .result-item:last-child {
+        grid-column: 1 / -1;
+        border-left: none;
+        border-top: 1px solid rgba(255,255,255,0.12);
+      }
+    }
+
+    /* ─── History section ────────────────────────── */
+    .history-section { margin-top: 1.75rem; }
+    .history-card {
+      background: var(--rt-white);
+      border-radius: 14px;
+      overflow: visible;
+      box-shadow: 0 2px 28px rgba(22,69,99,0.1), 0 1px 6px rgba(22,69,99,0.06);
+      border-top: 4px solid var(--rt-blue);
+      padding: 1.75rem 1.75rem 1.5rem;
+    }
+    .history-title {
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: var(--rt-blue);
+      margin: 0 0 0.15rem;
+      line-height: 1.15;
+    }
+    .history-subtitle {
+      font-size: 0.79rem;
+      color: var(--rt-muted);
+      margin: 0;
+      font-weight: 500;
+    }
+    .history-header { margin-bottom: 1.5rem; }
+    .history-body {
+      display: grid;
+      grid-template-columns: 310px 1fr;
+      gap: 0;
+    }
+    .history-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding-right: 1.75rem;
+      border-right: 1px solid var(--rt-beige-contrast);
+    }
+        /* Asset toggle chips */
+    .h-asset-chips {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .h-asset-toggles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .h-chip-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .h-chip-group-label {
+      font-family: "Nunito", sans-serif;
+      font-size: 0.62rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--rt-muted);
+      opacity: 0.65;
+    }
+    .h-chips-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.3rem;
+    }
+    .h-asset-btn {
+      font-family: "Nunito", sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--rt-muted);
+      background: transparent;
+      border: 1.5px solid var(--rt-beige-contrast);
+      border-radius: 999px;
+      padding: 0.22rem 0.5rem;
+      cursor: pointer;
+      transition: background 0.14s, color 0.14s, border-color 0.14s;
+      line-height: 1.35;
+      min-height: 1.85rem;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .h-asset-btn:hover { border-color: var(--rt-blue); color: var(--rt-blue); }
+    #hModeToggle .h-asset-btn.active {
+      background: var(--rt-blue);
+      border-color: var(--rt-blue);
+      color: var(--rt-white);
+    }
+    .h-asset-btn[data-asset="guld"].active      { background: #d4a017; border-color: #d4a017; color: #fff; }
+    .h-asset-btn[data-asset="silver"].active    { background: #7a8fa0; border-color: #7a8fa0; color: #fff; }
+    .h-asset-btn[data-asset="sp500"].active     { background: #164563; border-color: #164563; color: #fff; }
+    .h-asset-btn[data-asset="nasdaq100"].active { background: #7c3aed; border-color: #7c3aed; color: #fff; }
+    .h-asset-btn[data-asset="msciworld"].active { background: #0891b2; border-color: #0891b2; color: #fff; }
+    .h-asset-btn[data-asset="dax"].active       { background: #c0392b; border-color: #c0392b; color: #fff; }
+    .h-asset-btn[data-asset="ftse100"].active   { background: #1a7a4a; border-color: #1a7a4a; color: #fff; }
+    .h-asset-btn[data-asset="omxs30"].active    { background: #2e7d32; border-color: #2e7d32; color: #fff; }
+    .h-asset-btn[data-asset="bitcoin"].active   { background: #f7931a; border-color: #f7931a; color: #fff; }
+    .h-asset-btn[data-asset="koppar"].active    { background: #b87333; border-color: #b87333; color: #fff; }
+    .h-asset-btn[data-asset="olja"].active      { background: #475569; border-color: #475569; color: #fff; }
+    /* Currency row */
+    .h-currency-row {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+    .h-currency-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--rt-muted);
+      white-space: nowrap;
+    }
+    .h-currency-select {
+      font-family: "Nunito", sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--rt-blue);
+      background: var(--rt-white);
+      border: 2px solid var(--rt-beige-contrast);
+      border-radius: 8px;
+      padding: 0.25rem 1.8rem 0.25rem 0.55rem;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23164563'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.4rem center;
+      transition: border-color 0.15s;
+    }
+    .h-currency-select:focus { outline: none; border-color: var(--rt-blue); }
+    .h-select {
+      font-family: "Nunito", sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--rt-blue);
+      background: var(--rt-white);
+      border: 2px solid var(--rt-beige-contrast);
+      border-radius: 8px;
+      padding: 0.38rem 2rem 0.38rem 0.65rem;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23164563'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.5rem center;
+      width: 100%;
+      transition: border-color 0.15s;
+    }
+    .h-select:focus { outline: none; border-color: var(--rt-blue); }
+    .h-sentence {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--rt-text-color);
+      line-height: 1.65;
+      margin: 0;
+      padding-top: 0.85rem;
+      border-top: 1.5px solid var(--rt-beige-contrast);
+    }
+    .h-sentence strong { font-weight: 900; color: var(--rt-blue); }
+    .history-result {
+      display: flex;
+      flex-direction: column;
+      padding-left: 1.75rem;
+      min-width: 0;
+    }
+    /* Comparison rows */
+    .h-comp-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      margin-bottom: 1rem;
+    }
+    .h-comp-row {
+      display: grid;
+      grid-template-columns: 10px 1fr auto auto;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .h-comp-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .h-comp-name {
+      font-size: 0.83rem;
+      font-weight: 700;
+      color: var(--rt-text-color);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .h-comp-value {
+      font-size: 0.88rem;
+      font-weight: 900;
+      color: var(--rt-blue);
+      white-space: nowrap;
+      text-align: right;
+    }
+    .h-comp-badge {
+      font-size: 0.72rem;
+      font-weight: 900;
+      color: var(--rt-white);
+      background: var(--rt-red);
+      border-radius: 20px;
+      padding: 0.08rem 0.5rem;
+      white-space: nowrap;
+    }
+    .h-comp-late {
+      font-size: 0.72rem;
+      color: var(--rt-muted);
+      font-weight: 500;
+    }
+    .h-comp-nodata {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--rt-muted);
+      font-style: italic;
+      grid-column: 3 / -1;
+      text-align: right;
+    }
+    .h-comp-empty {
+      font-size: 0.82rem;
+      color: var(--rt-muted);
+      font-style: italic;
+      padding: 0.5rem 0;
+    }
+    /* Legend */
+    .h-legend-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+    .h-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--rt-text-color);
+    }
+    .h-legend-swatch {
+      width: 18px; height: 3px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    /* Chart */
+    .h-chart-outer {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .h-chart-inner {
+      position: relative;
+      min-height: 170px;
+      flex: 1;
+    }
+    .h-chart-inner canvas { position: absolute; inset: 0; }
+    .h-disclaimer {
+      margin: 1.5rem 0 0;
+      font-size: 0.71rem;
+      color: var(--rt-muted);
+      line-height: 1.55;
+      border-top: 1.5px solid var(--rt-beige-contrast);
+      padding-top: 0.85rem;
+    }
+    @media (max-width: 720px) {
+      .history-body { grid-template-columns: 1fr; }
+      .history-inputs {
+        border-right: none;
+        padding-right: 0;
+        border-bottom: 1px solid var(--rt-beige-contrast);
+        padding-bottom: 1rem;
+        margin-bottom: 1.25rem;
+      }
+      .history-result { padding-left: 0; }
+    }
+
+    /* ─── Miljardärssektion ───────────────────────────────── */
+    /* ── Vad har svenskarna sparat? — stat cards + punch line ── */
+    .sav-punch { font-size:1.02rem; font-weight:600; color:var(--rt-text-color); line-height:1.6; max-width:660px; margin:0 0 1.5rem; }
+    .savstat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:0.85rem; margin-bottom:1.7rem; }
+    @media (max-width:760px){ .savstat-grid{ grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:430px){ .savstat-grid{ grid-template-columns:1fr; } }
+    .savstat-card { background:var(--rt-beige-main); border:1.5px solid var(--rt-beige-contrast); border-radius:14px; padding:1.35rem 1.2rem 1.25rem; display:flex; flex-direction:column; gap:0.55rem; }
+    [data-theme="dark"] .savstat-card { background:#3d4147; border-color:#474c53; }
+    .savstat-num { font-family:"DM Sans","Nunito",sans-serif; font-weight:400; font-size:clamp(1.75rem,1.25rem + 1.6vw,2.4rem); line-height:1.02; letter-spacing:-0.01em; color:var(--rt-text-color); }
+    .savstat-lbl { font-size:0.78rem; font-weight:600; color:var(--rt-muted); line-height:1.45; }
+    .savstat-card--accent { background:rgba(22,69,99,0.06); border-color:rgba(22,69,99,0.22); border-top:3px solid var(--rt-blue); }
+    .savstat-card--accent .savstat-num { color:var(--rt-blue); }
+    [data-theme="dark"] .savstat-card--accent { background:rgba(92,200,192,0.10); border-color:rgba(92,200,192,0.30); border-top-color:#5cc8c0; }
+    [data-theme="dark"] .savstat-card--accent .savstat-num { color:#5cc8c0; }
+    .savstat-note { font-size:0.72rem; color:var(--rt-muted); line-height:1.5; margin-top:0.6rem; margin-bottom:0.4rem; }
+    .avanza-chart-box { margin-top:1.6rem; }
+    .avanza-metric-toggle { display:inline-flex; gap:0; margin-bottom:1rem; background:var(--rt-beige-contrast); border-radius:8px; padding:3px; }
+    [data-theme="dark"] .avanza-metric-toggle { background:#404449; }
+    .avanza-metric-btn { padding:0.32rem 1rem; border:none; border-radius:6px; background:transparent; color:var(--rt-muted); font-family:inherit; font-size:0.81rem; font-weight:600; cursor:pointer; transition:background 0.2s,color 0.2s; white-space:nowrap; }
+    .avanza-metric-btn--active { background:var(--rt-white); color:var(--rt-blue); box-shadow:0 1px 3px rgba(0,0,0,0.1); }
+    [data-theme="dark"] .avanza-metric-btn--active { background:#3d4147; color:#5cc8c0; }
+    .avanza-chart-wrap { position:relative; height:280px; }
+    @media (max-width:480px) { .avanza-chart-wrap { height:220px; } }
+    .avanza-chart-caption { margin-top:0.9rem; font-size:0.83rem; color:var(--rt-text-color); font-style:italic; line-height:1.55; }
+    .avanza-chart-summary { margin-top:0.4rem; font-size:0.78rem; color:var(--rt-muted); line-height:1.5; }
+    .sarb-avanza-caveat { font-size:0.72rem; color:var(--rt-muted); line-height:1.5; margin-top:0.4rem; }
+    .sav-disclaimer { font-size:0.71rem; color:var(--rt-muted); line-height:1.55; border-top:1.5px solid var(--rt-beige-contrast); padding-top:0.85rem; margin:1.25rem 0 0; }
+    [data-theme="dark"] .sav-disclaimer { border-top-color:#474c53; }
+    /* Monthly-saving table card */
+    .savtbl-card { background:var(--rt-white); border:1.5px solid var(--rt-beige-contrast); border-radius:14px; padding:1.4rem 1.5rem 1.2rem; margin-top:1.6rem; box-shadow:0 2px 16px rgba(22,69,99,0.06); }
+    [data-theme="dark"] .savtbl-card { background:#3d4147; border-color:#474c53; box-shadow:0 2px 16px rgba(0,0,0,0.25); }
+    .savtbl-title { font-size:1rem; font-weight:900; color:var(--rt-blue); margin-bottom:0.95rem; }
+    .savtbl-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    .savtbl { width:100%; border-collapse:collapse; font-size:0.86rem; min-width:300px; }
+    .savtbl-th { text-align:left; font-size:0.67rem; font-weight:800; text-transform:uppercase; letter-spacing:0.07em; color:var(--rt-muted); padding:0 0.55rem 0.65rem; border-bottom:1.5px solid var(--rt-beige-contrast); white-space:nowrap; }
+    [data-theme="dark"] .savtbl-th { border-bottom-color:#474c53; }
+    .savtbl-th--num { text-align:right; }
+    .savtbl td { padding:0.62rem 0.55rem; border-bottom:1px dashed var(--rt-beige-contrast); }
+    [data-theme="dark"] .savtbl td { border-bottom-color:#525861; }
+    .savtbl tbody tr:last-child td { border-bottom:none; }
+    .savtbl-num { text-align:right; font-weight:700; color:var(--rt-text-color); font-variant-numeric:tabular-nums; white-space:nowrap; }
+    .savtbl-pill { display:inline-block; font-size:0.8rem; font-weight:800; padding:0.18rem 0.7rem; border-radius:999px; white-space:nowrap; letter-spacing:0.01em; }
+    .savtbl-pill--c0 { background:#fde2e4; color:#9d2235; }
+    .savtbl-pill--c1 { background:#fdecc9; color:#8a5600; }
+    .savtbl-pill--c2 { background:#dcf3e3; color:#1f7a44; }
+    .savtbl-pill--c3 { background:#d3eef0; color:#0f6d6d; }
+    .savtbl-pill--c4 { background:#dce6fb; color:#234fb0; }
+    .savtbl-pill--c5 { background:#e8e0fb; color:#5b3bb5; }
+    .savtbl-pill--c6 { background:#fbe0f0; color:#a3266f; }
+    [data-theme="dark"] .savtbl-pill--c0 { background:rgba(229,115,115,0.22); color:#f4b8be; }
+    [data-theme="dark"] .savtbl-pill--c1 { background:rgba(212,170,80,0.22); color:#ecca84; }
+    [data-theme="dark"] .savtbl-pill--c2 { background:rgba(92,200,140,0.20); color:#9fe0b9; }
+    [data-theme="dark"] .savtbl-pill--c3 { background:rgba(92,200,192,0.20); color:#8fe0da; }
+    [data-theme="dark"] .savtbl-pill--c4 { background:rgba(108,159,212,0.22); color:#aecbf2; }
+    [data-theme="dark"] .savtbl-pill--c5 { background:rgba(150,120,224,0.22); color:#c7b6f0; }
+    [data-theme="dark"] .savtbl-pill--c6 { background:rgba(214,120,180,0.22); color:#eeb4d8; }
+    .savtbl-caption { margin-top:0.9rem; font-size:0.72rem; color:var(--rt-muted); line-height:1.5; }
+    .bilj-section { margin-top: 1.75rem; }
+    .savings-section { margin-top: 1.75rem; }
+    .bilj-card {
+      background: var(--rt-white);
+      border-radius: 14px;
+      box-shadow: 0 2px 28px rgba(22,69,99,0.1), 0 1px 6px rgba(22,69,99,0.06);
+      border-top: 4px solid var(--rt-red);
+      padding: 1.75rem 1.75rem 1.5rem;
+    }
+    .bilj-title {
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: var(--rt-blue);
+      margin: 0 0 0.2rem;
+      line-height: 1.2;
+    }
+    .bilj-subtitle {
+      font-size: 0.79rem;
+      color: var(--rt-muted);
+      font-weight: 500;
+      margin: 0 0 1.5rem;
+    }
+    .bilj-top-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .bilj-chart-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--rt-muted);
+      margin-bottom: 0.4rem;
+    }
+    .bilj-chart-wrap {
+      position: relative;
+      height: 200px;
+    }
+    .bilj-chart-wrap canvas { position: absolute; inset: 0; }
+    .bilj-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.65rem;
+      margin-bottom: 1.35rem;
+    }
+    .bilj-stat-card {
+      background: var(--rt-beige-main);
+      border: 1.5px solid var(--rt-beige-contrast);
+      border-radius: 10px;
+      padding: 0.75rem 0.85rem 0.7rem;
+    }
+    .bilj-stat-card.hl { border-color: var(--rt-red); background: rgba(160,50,83,0.05); }
+    .bilj-stat-num {
+      display: block;
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--rt-red);
+      line-height: 1.15;
+      margin-bottom: 0.2rem;
+    }
+    .bilj-stat-card.hl .bilj-stat-num { color: var(--rt-blue); }
+    .bilj-stat-label {
+      display: block;
+      font-size: 0.73rem;
+      font-weight: 600;
+      color: var(--rt-text-color);
+      line-height: 1.4;
+    }
+    .bilj-caption {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--rt-text-color);
+      line-height: 1.65;
+      margin: 0 0 0.9rem;
+      padding: 0.9rem 1.1rem;
+      background: rgba(22,69,99,0.04);
+      border-left: 3px solid var(--rt-blue);
+      border-radius: 0 7px 7px 0;
+    }
+    .bilj-disclaimer {
+      font-size: 0.71rem;
+      color: var(--rt-muted);
+      line-height: 1.55;
+      border-top: 1.5px solid var(--rt-beige-contrast);
+      padding-top: 0.85rem;
+      margin: 0;
+    }
+    @media (max-width: 720px) {
+      .bilj-top-row { grid-template-columns: 1fr; gap: 1.25rem; }
+      .bilj-stat-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 420px) {
+      .bilj-stat-grid { grid-template-columns: 1fr; }
+    }
+
+
+    /* ══════════════════════════════════════════════════
+       ── Munro Partners restyle overrides ────────────
+       ══════════════════════════════════════════════════ */
+
+    /* Hide the animated gradient blobs */
+    .gradient-bg { display: none; }
+
+    /* ── Section headings — editorial serif ──────────── */
+    .calc-heading, .hist-title, .history-title,
+    .savings-title, .bilj-title {
+      font-family: "DM Serif Display", serif;
+      font-weight: 400;
+      font-size: clamp(1.8rem, 1.5rem + 1.2vw, 2.6rem);
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      color: var(--rt-blue);
+      margin: 0 0 0.5rem;
+    }
+
+    .chart-title {
+      font-family: "DM Serif Display", serif;
+      font-weight: 400;
+      font-size: clamp(1.3rem, 1.1rem + 0.8vw, 1.9rem);
+      color: var(--rt-blue);
+    }
+
+    /* ── Section cards — editorial content sections ───── */
+    .calculator,
+    .history-card,
+    .savings-card,
+    .bilj-card {
+      border-radius: 0;
+      box-shadow: none;
+      border: none;
+      border-top: 1.5px solid var(--rt-section-div);
+      background: var(--rt-white);
+      padding-top: 3.5rem;
+      padding-bottom: 3.5rem;
+    }
+    .calculator { border-top: 1.5px solid var(--rt-section-div) !important; }
+    /* Remove padding on inner cards that already have outer section spacing */
+    .history-card, .savings-card, .bilj-card {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    /* ── Controls col — light background ─────────────── */
+    .controls-col {
+      background: #f4f7f7 !important;
+    }
+
+    /* ── Stat cards — premium look ───────────────────── */
+    .bilj-stat-card {
+      background: var(--rt-beige-main);
+      border: 1px solid var(--rt-beige-contrast);
+      border-radius: 8px;
+    }
+
+    /* ── Input/select controls — teal palette ─────────── */
+    .currency-select, .lang-toggle, .h-select, .h-currency-select {
+      border-color: var(--rt-beige-contrast);
+    }
+    .currency-select:focus, .h-select:focus, .h-currency-select:focus {
+      border-color: var(--rt-blue);
+    }
+
+    /* Slider thumb — teal */
+    input[type="range"]::-webkit-slider-thumb { background: var(--rt-blue); }
+    input[type="range"]::-moz-range-thumb { background: var(--rt-blue); }
+
+    /* ── Section wrappers — remove extra margin ────────── */
+    .hist-section, .history-section,
+    .savings-section,
+    .bilj-section {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    /* ── Footer ──────────────────────────────────────── */
+    .site-footer { background:#0d3b38; color:rgba(255,255,255,0.82); padding:2.75rem 1.5rem 2rem; margin-top:2.5rem; position:relative; z-index:1; }
+    .site-footer-inner { max-width:1100px; margin:0 auto; }
+    .site-footer-cols { display:grid; grid-template-columns:1fr 1.35fr; gap:2.5rem; }
+    @media (max-width:680px){ .site-footer-cols{ grid-template-columns:1fr; gap:1.75rem; } }
+    .site-footer-brand { font-family:"DM Serif Display", serif; font-size:1.5rem; font-weight:400; color:#fff; margin-bottom:0.55rem; letter-spacing:0.01em; }
+    .site-footer-h { font-family:"DM Sans", sans-serif; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.09em; color:rgba(255,255,255,0.55); margin:0 0 0.55rem; }
+    .site-footer-text { font-size:0.82rem; line-height:1.65; color:rgba(255,255,255,0.78); margin:0 0 0.75rem; max-width:48ch; }
+    .site-footer-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0.5rem; }
+    .site-footer-list li { font-size:0.78rem; line-height:1.55; color:rgba(255,255,255,0.7); padding-left:1rem; position:relative; max-width:54ch; }
+    .site-footer-list li::before { content:"–"; position:absolute; left:0; color:rgba(255,255,255,0.4); }
+    .site-footer-bottom { border-top:1px solid rgba(255,255,255,0.13); margin-top:1.9rem; padding-top:1.1rem; display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap; }
+    .site-footer-disclaimer { font-size:0.72rem; line-height:1.6; color:rgba(255,255,255,0.5); margin:0; max-width:64ch; }
+    .site-footer-copy { font-size:0.72rem; color:rgba(255,255,255,0.4); margin:0; white-space:nowrap; }
+
+    /* ════════════════════════════════════════════════════
+       PASS 2 — refinements for editorial-fintech polish
+       ════════════════════════════════════════════════════ */
+
+    /* Fix dropdown SVG arrow to teal */
+    .currency-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%230d3b38'/%3E%3C/svg%3E");
+      font-family: "DM Sans", sans-serif;
+    }
+
+    /* Body: slightly larger for editorial */
+    body { font-size: clamp(0.93rem, 0.87rem + 0.28vw, 1.08rem); }
+
+    /* All section subtitles — muted lead text */
+    .chart-subtitle, .history-subtitle, .bilj-subtitle {
+      font-family: "DM Sans", sans-serif;
+      font-size: 0.95rem;
+      font-weight: 400;
+      color: var(--rt-muted);
+      line-height: 1.6;
+      max-width: 680px;
+      margin: 0 0 1.75rem;
+    }
+
+    /* Bilj stat cards — jewel-tone accents like Munro cards */
+    .bilj-stat-card {
+      border-radius: 10px;
+      padding: 1.2rem 1rem;
+      font-size: 0.83rem;
+    }
+    .bilj-stat-card.hl:nth-child(odd)  { background: rgba(13,59,56,0.07);  border-color: rgba(13,59,56,0.18); }
+    .bilj-stat-card.hl:nth-child(even) { background: rgba(90,61,122,0.07); border-color: rgba(90,61,122,0.18); }
+    .bilj-stat-num {
+      font-family: "DM Sans", "Nunito", sans-serif;
+      font-size: 2rem; font-weight: 400;
+      color: var(--rt-blue); line-height: 1;
+    }
+
+
+    /* calculator border — top-bar gets teal accent line */
+    .calculator { border-top: 3px solid var(--rt-blue) !important; }
+
+    /* Section-level headings get more breathing room at top */
+    .history-title, .savings-title, .bilj-title {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    /* Metric cards (compound result) — no pill-shadow, clean bordered */
+    .metric-card {
+      border-radius: 10px;
+      box-shadow: none;
+      border: 1.5px solid var(--rt-beige-contrast);
+    }
+
+    /* Chart area — subtle teal tint on canvas wrappers */
+    .chart-area {
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    /* Mode/tab buttons — editorial pill style */
+    .mode-btn, .tab-btn, .chart-mode-btn {
+      font-family: "DM Sans", sans-serif;
+      font-weight: 500;
+    }
+
+    /* Billionaires section number */
+    .bilj-stat-num { font-family: "DM Sans", "Nunito", sans-serif; font-weight: 400; }
+
+    /* Stronger divider before footer */
+    .wrapper { padding-bottom: 4rem; }
+
+    /* Wrapper gets a subtle off-white bg on very large screens */
+    @media (min-width: 1300px) {
+      html { background: #f0f4f3; }
+      .wrapper { background: var(--rt-white); padding-left: 3rem; padding-right: 3rem; }
+    }
+
+    /* ── Dark-mode pill toggle ────────────────────────────── */
+    .theme-pill {
+      display: flex;
+      align-items: center;
+      width: 52px; height: 28px;
+      background: var(--rt-beige-contrast);
+      border: none; border-radius: 999px;
+      padding: 3px; cursor: pointer;
+      transition: background 0.3s ease;
+      flex-shrink: 0; outline: none;
+      position: relative;
+    }
+    .theme-pill:focus-visible {
+      outline: 2px solid var(--rt-blue); outline-offset: 2px;
+    }
+    .theme-pill[aria-checked="true"] { background: var(--rt-blue); }
+    .theme-pill-knob {
+      width: 22px; height: 22px;
+      background: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+      transform: translateX(0);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+      flex-shrink: 0; position: relative;
+    }
+    .theme-pill[aria-checked="true"] .theme-pill-knob { transform: translateX(24px); }
+    .icon-sun, .icon-moon {
+      position: absolute; width: 13px; height: 13px;
+      transition: opacity 0.2s ease, transform 0.3s ease;
+    }
+    .icon-sun  { color: #b89a3c; }
+    .icon-moon { color: #5a7a78; }
+    .theme-pill[aria-checked="false"] .icon-sun  { opacity: 1; transform: scale(1); }
+    .theme-pill[aria-checked="false"] .icon-moon { opacity: 0; transform: scale(0.7); }
+    .theme-pill[aria-checked="true"]  .icon-sun  { opacity: 0; transform: scale(0.7); }
+    .theme-pill[aria-checked="true"]  .icon-moon { opacity: 1; transform: scale(1); }
+
+    /* ── Dark mode CSS variables ──────────────────────────── */
+    [data-theme="dark"] {
+      --rt-text-color:    #e8e9eb;
+      --rt-blue:          #5cc8c0;
+      --rt-blue-mid:      #3ab5ac;
+      --rt-pink:          #373a3f;
+      --rt-white:         #363a3f;
+      --rt-red:           #b79fe0;
+      --rt-beige-main:    #3d4147;
+      --rt-beige-contrast:#474c53;
+      --rt-muted:         #9ea3ac;
+      --rt-gold:          #d4b96a;
+      --rt-sapphire:      #6c9fd4;
+      --rt-section-div:   #4e535b;
+    }
+
+    /* ── Dark mode global ─────────────────────────────────── */
+    [data-theme="dark"] html,
+    [data-theme="dark"] body          { background: #2d3035 !important; color: #e8e9eb; }
+    [data-theme="dark"] .wrapper      { background: #2d3035; }
+    @media (min-width: 1300px) {
+      [data-theme="dark"] html        { background: #262930 !important; }
+      [data-theme="dark"] .wrapper    { background: #2d3035; }
+    }
+
+    /* ── Dark mode: controls column ───────────────────────── */
+    [data-theme="dark"] .controls-col { background: #3d4147 !important; }
+
+    /* ── Dark mode: all select/input controls ─────────────── */
+    [data-theme="dark"] .currency-select,
+    [data-theme="dark"] .h-select,
+    [data-theme="dark"] .h-currency-select {
+      background-color: #3d4147;
+      color: #e8e9eb;
+      border-color: #474c53;
+    }
+    [data-theme="dark"] .currency-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235cc8c0'/%3E%3C/svg%3E");
+    }
+    [data-theme="dark"] input[type="number"] {
+      background: #3d4147; color: #e8e9eb; border-color: #474c53;
+    }
+    [data-theme="dark"] option { background: #3d4147; }
+
+    /* ── Dark mode: range inputs ──────────────────────────── */
+    [data-theme="dark"] input[type="range"] { --sl-fill: #5cc8c0; --sl-track: #474c53; }
+    [data-theme="dark"] input[type="range"]::-webkit-slider-thumb {
+      background: #3d4147; border-color: #5cc8c0;
+    }
+    [data-theme="dark"] input[type="range"]:hover::-webkit-slider-thumb,
+    [data-theme="dark"] input[type="range"]:focus-visible::-webkit-slider-thumb {
+      box-shadow: 0 0 0 5px rgba(92,200,192,0.18);
+    }
+    [data-theme="dark"] input[type="range"]::-moz-range-thumb {
+      background: #3d4147; border-color: #5cc8c0;
+    }
+
+    /* ── Dark mode: metric cards ──────────────────────────── */
+    [data-theme="dark"] .metric-card { background: #3d4147; border-color: #474c53; }
+
+    /* ── Dark mode: stat cards ────────────────────────────── */
+    [data-theme="dark"] .bilj-stat-card { background: #3d4147; border-color: #474c53; }
+    [data-theme="dark"] .bilj-stat-card.hl:nth-child(odd)  { background: rgba(92,200,192,0.08); border-color: rgba(92,200,192,0.2); }
+    [data-theme="dark"] .bilj-stat-card.hl:nth-child(even) { background: rgba(183,159,224,0.08); border-color: rgba(183,159,224,0.2); }
+
+    /* ── Dark mode: history asset buttons ────────────────── */
+    [data-theme="dark"] .hist-asset-btn { background: #3d4147; border-color: #474c53; color: #e8e9eb; }
+
+
+    /* ── Dark mode: inflation section ────────────────────── */
+    /* ── Dark mode: bilj chart tooltip area ──────────────── */
+    [data-theme="dark"] .bilj-card-caption,
+    [data-theme="dark"] .bilj-caption,
+    [data-theme="dark"] .bilj-disclaimer { color: #9ea3ac; }
+
+    /* ── Dark mode: dividers and borders ─────────────────── */
+    [data-theme="dark"] hr { border-color: #4e535b; }
+
+    /* ── Dark mode: lang toggle ───────────────────────────── */
+    [data-theme="dark"] .lang-toggle { border-color: #5cc8c0; color: #5cc8c0; }
+    [data-theme="dark"] .lang-toggle:hover { background: #5cc8c0; color: #2d3035; }
+
+    /* ── Dark mode: theme pill knob in dark ──────────────── */
+    [data-theme="dark"] .theme-pill-knob { background: #2d3035; }
+    [data-theme="dark"] .icon-moon { color: #5cc8c0; }
+
+    /* ── Dark mode: footer ────────────────────────────────── */
+    [data-theme="dark"] .site-footer { background: #21242a; }
+
+    /* ── Dark mode: scrollbar ─────────────────────────────── */
+    [data-theme="dark"] { color-scheme: dark; }
+
+
+    /* ── Slider drag tooltip ──────────────────────────────── */
+    .slider-tip {
+      position: fixed;
+      pointer-events: none;
+      background: var(--rt-blue);
+      color: #fff;
+      font-size: 0.72rem; font-weight: 600; font-family: "DM Sans", sans-serif;
+      padding: 3px 8px; border-radius: 6px;
+      white-space: nowrap; z-index: 9999;
+      opacity: 0; transition: opacity 0.12s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .slider-tip.visible { opacity: 1; }
+    .slider-tip::after {
+      content: '';
+      position: absolute;
+      top: 100%; left: 50%; transform: translateX(-50%);
+      border: 4px solid transparent;
+      border-top-color: var(--rt-blue);
+    }
+    .slider-tip.lever-tip::after {
+      top: 50%; left: 100%; transform: translateY(-50%);
+      border-top-color: transparent;
+      border-left-color: var(--rt-blue);
+    }
+
+
+    [data-theme="dark"] .slider-tip { background: #5cc8c0; color: #2d3035; }
+    [data-theme="dark"] .slider-tip::after { border-top-color: #5cc8c0; }
+    [data-theme="dark"] .slider-tip.lever-tip::after { border-top-color: transparent; border-left-color: #5cc8c0; }
+
+    /* ── Site header ─────────────────────────────────────────── */
+    .site-header {
+      width: 100%;
+      position: relative;
+      z-index: 50;
+      padding: 0.95rem 1.75rem;
+      background: var(--rt-beige-main);
+      border-bottom: 1px solid var(--rt-beige-contrast);
+    }
+    [data-theme="dark"] .site-header { background: #22252a; border-bottom-color: #3a3f46; }
+    .site-header-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 1rem;
+    }
+    /* Brand (left) */
+    .sh-brand {
+      justify-self: start;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: "DM Serif Display", serif;
+      font-size: 1.15rem;
+      color: var(--rt-blue);
+      letter-spacing: 0.01em;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .sh-brand:hover { opacity: 0.68; }
+    .sh-brand-icon { width: 19px; height: 19px; color: var(--rt-blue); flex-shrink: 0; }
+    /* Nav (center) */
+    .sh-nav { justify-self: center; display: flex; }
+    .sh-nav-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: var(--rt-white);
+      border: 1px solid var(--rt-beige-contrast);
+      border-radius: 0;
+      padding: 0.25rem;
+    }
+    [data-theme="dark"] .sh-nav-pill { background: #2d3035; border-color: #474c53; }
+    .sh-nav-link {
+      font-family: "DM Sans", sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--rt-text-color);
+      background: none;
+      border: none;
+      padding: 0.5rem 1.25rem;
+      border-radius: 0;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+      outline: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      letter-spacing: 0.01em;
+    }
+    .sh-nav-link:hover { background: var(--rt-beige-contrast); }
+    [data-theme="dark"] .sh-nav-link:hover { background: #3d4147; }
+    .sh-nav-link.sh-nav-active { background: var(--rt-blue); color: #fff; font-weight: 600; }
+    [data-theme="dark"] .sh-nav-link.sh-nav-active { background: #5cc8c0; color: #22252a; }
+    /* Controls (right) */
+    .sh-controls {
+      justify-self: end;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    /* Responsive — nav wraps to its own centered row */
+    @media (max-width: 720px) {
+      .site-header { padding: 0.8rem 1rem; }
+      .site-header-inner { grid-template-columns: 1fr 1fr; row-gap: 0.75rem; }
+      .sh-nav { grid-column: 1 / -1; grid-row: 2; }
+      .sh-nav-pill { flex-wrap: wrap; justify-content: center; }
+      .sh-nav-link { font-size: 0.85rem; padding: 0.45rem 0.85rem; }
+    }
+    @media (max-width: 360px) {
+      .sh-brand-text { display: none; }
+    }
+        /* Dropdown */
+    .fh-dd { position: relative; }
+    .fh-dd-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-family: "DM Sans", sans-serif;
+      font-size: 0.77rem;
+      font-weight: 600;
+      color: var(--rt-blue);
+      background: var(--rt-white);
+      border: 1.5px solid var(--rt-beige-contrast);
+      border-radius: 999px;
+      padding: 0.28rem 0.55rem 0.28rem 0.75rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+      user-select: none;
+    }
+    .fh-dd-btn:hover { border-color: var(--rt-blue); }
+    .fh-dd-btn[aria-expanded="true"] {
+      border-color: var(--rt-blue);
+      box-shadow: 0 0 0 3px rgba(22,69,99,0.10);
+    }
+    [data-theme="dark"] .fh-dd-btn {
+      background: #3d4147;
+      border-color: #474c53;
+      color: #5cc8c0;
+    }
+    [data-theme="dark"] .fh-dd-btn:hover { border-color: #5cc8c0; }
+    [data-theme="dark"] .fh-dd-btn[aria-expanded="true"] {
+      border-color: #5cc8c0;
+      box-shadow: 0 0 0 3px rgba(92,200,192,0.12);
+    }
+    .fh-chevron {
+      width: 11px; height: 11px;
+      opacity: 0.6;
+      transition: transform 0.18s;
+      flex-shrink: 0;
+    }
+    .fh-dd-btn[aria-expanded="true"] .fh-chevron { transform: rotate(180deg); }
+    /* Dropdown menu */
+    .fh-dd-menu {
+      position: absolute;
+      top: calc(100% + 0.4rem);
+      right: 0;
+      min-width: 150px;
+      background: var(--rt-white);
+      border: 1.5px solid var(--rt-beige-contrast);
+      border-radius: 12px;
+      padding: 0.3rem;
+      box-shadow: 0 8px 30px rgba(22,69,99,0.13), 0 2px 8px rgba(22,69,99,0.07);
+      z-index: 200;
+      animation: fhMenuIn 0.14s ease;
+      transform-origin: top right;
+    }
+    .fh-dd-menu[hidden] { display: none; }
+    [data-theme="dark"] .fh-dd-menu {
+      background: #3d4147;
+      border-color: #474c53;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.20);
+    }
+    @keyframes fhMenuIn {
+      from { opacity: 0; transform: scale(0.95) translateY(-4px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    /* Dropdown items */
+    .fh-dd-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      font-family: "DM Sans", sans-serif;
+      font-size: 0.79rem;
+      font-weight: 500;
+      color: var(--rt-text-color);
+      padding: 0.42rem 0.6rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.1s;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+      outline: none;
+    }
+    .fh-dd-item:hover { background: var(--rt-beige-contrast); }
+    [data-theme="dark"] .fh-dd-item:hover { background: #474c53; }
+    .fh-dd-item[aria-selected="true"] { font-weight: 700; color: var(--rt-blue); }
+    [data-theme="dark"] .fh-dd-item[aria-selected="true"] { color: #5cc8c0; }
+    .fh-check {
+      width: 12px; height: 12px;
+      flex-shrink: 0;
+      visibility: hidden;
+      color: var(--rt-blue);
+    }
+    [data-theme="dark"] .fh-check { color: #5cc8c0; }
+    .fh-dd-item[aria-selected="true"] .fh-check { visibility: visible; }
+    .fh-dd-sep {
+      height: 1px;
+      background: var(--rt-beige-contrast);
+      margin: 0.22rem 0.3rem;
+    }
+    [data-theme="dark"] .fh-dd-sep { background: #474c53; }
+  </style>
+</head>
+<body>
+
+  <!-- ── Animated gradient background ───────────────── -->
+  <div class="gradient-bg">
+    <div class="gradient-blur" id="blobLayer"></div>
+  </div>
+
+  <!-- ── Site header ──────────────────────────────────────── -->
+  <header class="site-header" role="banner">
+    <div class="site-header-inner">
+      <!-- Brand (left) -->
+      <a href="index.html" class="sh-brand" aria-label="Decenniet – till startsidan">
+        <svg class="sh-brand-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M3 4 L3 20.5 L21 20.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.35"/>
+          <path d="M4 19 C11 19 15 13 20.5 4.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+          <circle cx="20.5" cy="4.5" r="1.7" fill="currentColor"/>
+        </svg>
+        <span class="sh-brand-text">Decenniet</span>
+      </a>
+      <!-- Centered pill nav -->
+      <nav class="sh-nav" aria-label="Main">
+        <div class="sh-nav-pill">
+          <button class="sh-nav-link sh-nav-active" onclick="navigateTo('index.html')" type="button" data-i18n="nav-home">Investera</button>
+          <button class="sh-nav-link" onclick="navigateTo('page2.html')" type="button" data-i18n="nav-housing">Bostad</button>
+          <button class="sh-nav-link" onclick="navigateTo('page3.html')" type="button" data-i18n="nav-fees">Avgifter</button>
+        </div>
+      </nav>
+      <!-- Controls (right) -->
+      <div class="sh-controls">
+        <!-- Language dropdown -->
+        <div class="fh-dd" id="langDd">
+          <button class="fh-dd-btn" id="langDdBtn" aria-expanded="false" aria-haspopup="listbox" aria-label="Language">
+            <span id="langDdLabel">SV</span>
+            <svg class="fh-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="fh-dd-menu" id="langDdMenu" role="listbox" aria-label="Language" hidden>
+            <button class="fh-dd-item" role="option" aria-selected="true" data-lang="sv">Svenska <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button class="fh-dd-item" role="option" aria-selected="false" data-lang="en">English <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+          </div>
+        </div>
+        <!-- Currency dropdown -->
+        <div class="fh-dd" id="currDd">
+          <button class="fh-dd-btn" id="currDdBtn" aria-expanded="false" aria-haspopup="listbox" aria-label="Currency">
+            <span id="currDdLabel">SEK</span>
+            <svg class="fh-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="fh-dd-menu" id="currDdMenu" role="listbox" aria-label="Currency" hidden>
+            <button class="fh-dd-item" role="option" aria-selected="true"  data-curr="SEK">SEK – kr <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button class="fh-dd-item" role="option" aria-selected="false" data-curr="NOK">NOK – kr <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button class="fh-dd-item" role="option" aria-selected="false" data-curr="DKK">DKK – kr <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <div class="fh-dd-sep" role="separator"></div>
+            <button class="fh-dd-item" role="option" aria-selected="false" data-curr="EUR">EUR – € <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button class="fh-dd-item" role="option" aria-selected="false" data-curr="GBP">GBP – £ <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button class="fh-dd-item" role="option" aria-selected="false" data-curr="USD">USD – $ <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+          </div>
+        </div>
+        <!-- Dark/light toggle -->
+        <button class="theme-pill" id="themeToggle" role="switch" aria-checked="false" aria-label="Toggle dark mode">
+          <span class="theme-pill-knob">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="13" height="13"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="13" height="13"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </span>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="wrapper">
+
+    <!-- Legacy controls hidden — IDs kept for existing JS event listeners -->
+    <button id="langToggle" style="display:none" aria-hidden="true">EN</button>
+    <select id="currencySelect" style="display:none" aria-hidden="true">
+      <option value="SEK" selected>SEK</option>
+      <option value="USD">USD</option>
+      <option value="EUR">EUR</option>
+      <option value="GBP">GBP</option>
+      <option value="NOK">NOK</option>
+      <option value="DKK">DKK</option>
+    </select>
+
+    <!-- ── Calculator ──────────────────────────────── -->
+    <div class="calculator">
+
+      <!-- LEFT: Controls column -->
+      <div class="controls-col">
+
+        <!-- Ränta per år -->
+        <div class="input-group">
+          <div class="input-label-row">
+            <span class="input-label" data-i18n="rate-label">Ränta per år</span>
+            <span class="input-value-tag" id="rateTag">7,0 %</span>
+          </div>
+          <div class="input-row">
+            <input type="range" id="rateSlider" min="0" max="15" step="0.5" value="7">
+            <input type="number" id="rateNum" min="0" max="100" step="0.5" value="7">
+          </div>
+        </div>
+
+        <!-- Månadssparande -->
+        <div class="input-group">
+          <div class="input-label-row">
+            <span class="input-label" id="monthlyLabel">Månadssparande (kr/mån)</span>
+            <span class="input-value-tag" id="monthlyTag">1 000 kr</span>
+          </div>
+          <div class="input-row">
+            <input type="range" id="monthlySlider" min="0" max="1000" step="1" value="91">
+            <input type="number" id="monthlyNum" min="0" max="1000000" step="1000" value="1000">
+          </div>
+        </div>
+
+        <!-- Startbelopp -->
+        <div class="input-group">
+          <div class="input-label-row">
+            <span class="input-label" id="startLabel">Startbelopp (kr)</span>
+            <span class="input-value-tag" id="startTag">10 000 kr</span>
+          </div>
+          <div class="input-row">
+            <input type="range" id="startSlider" min="0" max="1000" step="1" value="333">
+            <input type="number" id="startNum" min="0" max="1000000" step="1000" value="10000">
+          </div>
+        </div>
+
+        <!-- Sparhorisont -->
+        <div class="input-group">
+          <div class="input-label-row">
+            <span class="input-label" data-i18n="horisont-label">Sparhorisont</span>
+            <span class="input-value-tag" id="yearsTag">20 år</span>
+          </div>
+          <div class="input-row">
+            <input type="range" id="yearsSlider" min="1" max="100" step="1" value="20">
+            <input type="number" id="yearsNum" min="1" max="100" step="1" value="20">
+          </div>
+        </div>
+
+        <!-- Välj diagram -->
+        <div>
+          <div class="section-label" data-i18n="velj-diagram">Välj diagram</div>
+          <div class="mode-toggle" id="modeToggle">
+            <button class="mode-btn active" data-mode="enkel" data-i18n="mode-enkel">Enkel</button>
+            <button class="mode-btn" data-mode="detaljerad" data-i18n="mode-detaljerad">Detaljerad</button>
+            <button class="mode-btn" data-mode="arsandel" data-i18n="mode-arsandel">Årsandel</button>
+            <button class="mode-btn" data-mode="ackumulerad" data-i18n="mode-ackumulerad">Ackumulerad</button>
+            <button class="mode-btn" data-mode="slumpad" data-i18n="mode-slumpad">Slumpad som börsen</button>
+          </div>
+        </div>
+
+        <!-- Result line -->
+        <div class="result-line" id="resultLine"></div>
+
+      </div><!-- /controls-col -->
+
+      <!-- RIGHT: Chart column -->
+      <div class="chart-col">
+        <div class="chart-top">
+          <div>
+            <h2 class="chart-title" data-i18n="chart-title">Avkastning över tid</h2>
+            <p class="chart-subtitle" data-i18n="chart-subtitle">Se hur sparandet växer med ränta-på-ränta-effekten</p>
+          </div>
+          <div class="chart-legend" id="chartLegend">
+            <!-- populated by JS -->
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="growthChart"></canvas>
+          <div class="end-label" id="endLabel"></div>
+        </div>
+      </div>
+
+      <!-- Results bar (spans both columns) -->
+      <div class="results-bar">
+        <div class="result-item">
+          <div class="result-label" data-i18n="label-insatt">Insatt</div>
+          <div class="result-value" id="resInsatt">–</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label" data-i18n="label-avkastning">Avkastning</div>
+          <div class="result-value accent" id="resAvkastning">–</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label" data-i18n="label-totalt">Totalt</div>
+          <div class="result-value" id="resTotalt">–</div>
+        </div>
+      </div>
+
+    </div><!-- /calculator -->
+
+    <!-- ─── Historisk jämförelse ─────────────────────── -->
+    <section class="history-section" id="historySection">
+      <div class="history-card">
+        <div class="history-header">
+          <h2 class="history-title" data-i18n="hist-title">Tänk om du hade investerat tidigare</h2>
+          <p class="history-subtitle" data-i18n="hist-subtitle">Välj tillgångar, startår och belopp — jämför hur dina investeringar hade växt</p>
+        </div>
+                <div class="history-body">
+
+          <!-- LEFT: inputs -->
+          <div class="history-inputs">
+            <div class="input-group">
+              <div class="input-label-row">
+                <span class="input-label" data-i18n="hist-assets-label">Välj tillgångar</span>
+              </div>
+                                          <div class="h-asset-chips" id="hAssetToggles">
+                <div class="h-chip-group">
+                  <span class="h-chip-group-label" data-i18n="chip-group-indices">Aktieindex</span>
+                  <div class="h-chips-row">
+                    <button class="h-asset-btn active" data-asset="sp500">S&amp;P 500</button>
+                    <button class="h-asset-btn" data-asset="omxs30" data-i18n="asset-omxs30">OMXS30</button>
+                    <button class="h-asset-btn" data-asset="nasdaq100" data-i18n="asset-nasdaq100">Nasdaq 100</button>
+                    <button class="h-asset-btn" data-asset="msciworld" data-i18n="asset-msciworld">MSCI World</button>
+                    <button class="h-asset-btn" data-asset="dax" data-i18n="asset-dax">DAX</button>
+                    <button class="h-asset-btn" data-asset="ftse100" data-i18n="asset-ftse100">FTSE 100</button>
+                  </div>
+                </div>
+                <div class="h-chip-group">
+                  <span class="h-chip-group-label" data-i18n="chip-group-annat">Annat</span>
+                  <div class="h-chips-row">
+                    <button class="h-asset-btn" data-asset="bitcoin">Bitcoin</button>
+                    <button class="h-asset-btn active" data-asset="guld" data-i18n="asset-guld">Guld</button>
+                    <button class="h-asset-btn active" data-asset="silver">Silver</button>
+                    <button class="h-asset-btn" data-asset="koppar" data-i18n="asset-koppar">Koppar</button>
+                    <button class="h-asset-btn" data-asset="olja" data-i18n="asset-olja">Olja</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="input-group">
+              <div class="input-label-row">
+                <span class="input-label" data-i18n="hist-startar-label">Startår</span>
+              </div>
+              <select class="h-select" id="hYear"><!-- fylls av JS --></select>
+            </div>
+            <div class="input-group">
+              <div class="input-label-row">
+                <span class="input-label" data-i18n="hist-mode-label">Investeringsläge</span>
+              </div>
+              <div class="h-asset-toggles" id="hModeToggle">
+                <button class="h-asset-btn active" data-hmode="lump" data-i18n="hist-mode-lump">Engångsbelopp</button>
+                <button class="h-asset-btn" data-hmode="dca" data-i18n="hist-mode-dca">Månadssparande</button>
+              </div>
+            </div>
+            <div class="input-group">
+              <div class="input-label-row">
+                <span class="input-label" id="hAmountLabelSpan" data-i18n="hist-amount-label">Belopp</span>
+                <span class="input-value-tag" id="hAmountTag">10 000 kr (SEK)</span>
+              </div>
+              <div class="input-row">
+                <input type="range"  id="hAmountSlider" min="1000" max="500000" step="1000" value="10000">
+                <input type="number" id="hAmountNum"    min="1000" max="500000" step="1000" value="10000">
+              </div>
+            </div>
+            <div class="h-currency-row">
+              <span class="h-currency-label" data-i18n="hist-currency-label">Valuta</span>
+              <select class="h-currency-select" id="hCurrency">
+                <option value="SEK">kr (SEK)</option>
+                <option value="NOK">kr (NOK)</option>
+                <option value="DKK">kr (DKK)</option>
+                <option value="EUR">€ (EUR)</option>
+                <option value="GBP">£ (GBP)</option>
+                <option value="USD">$ (USD)</option>
+              </select>
+            </div>
+            <p class="h-sentence" id="hSentence"></p>
+          </div>
+
+          <!-- RIGHT: comparison + chart -->
+          <div class="history-result">
+            <div id="hCompRows" class="h-comp-rows"></div>
+            <div class="h-chart-outer">
+              <div id="hChartLegend" class="h-legend-wrap"></div>
+              <div class="h-chart-inner">
+                <canvas id="historyChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /history-body -->
+        <p class="h-disclaimer" data-i18n="hist-disclaimer">Siffrorna bygger på ungefärliga historiska årsvärden och är endast för illustration. Svenska bostäder baseras på SCB:s fastighetsprisindex för smhåus. Valutaeffekter ignoreras. Inte investeringsrådgivning.</p>
+      </div><!-- /history-card -->
+    </section>
+
+
+    <!-- ─── Vad har svenskarna sparat? ─────────────────── -->
+    <section class="savings-section" id="savingsSection">
+      <div class="savings-card">
+        <h2 class="savings-title" data-i18n="sarb-d-heading">Vad har svenskarna sparat?</h2>
+
+        <p class="sav-punch" data-i18n="sav-punch">De flesta svenskar har mycket mindre sparat än man tror — och bara en liten del är pengar man faktiskt kommer åt.</p>
+
+        <div class="savstat-grid">
+          <div class="savstat-card savstat-card--accent">
+            <div class="savstat-num" data-i18n="savstat-median-num">~50 000 kr</div>
+            <div class="savstat-lbl" data-i18n="savstat-median-lbl">Median – vad en vanlig svensk har i fritt sparande (utöver pension)</div>
+          </div>
+          <div class="savstat-card">
+            <div class="savstat-num" data-i18n="savstat-avg-num">~1,5 mkr</div>
+            <div class="savstat-lbl" data-i18n="savstat-avg-lbl">Genomsnitt – uppblåst av de rikaste</div>
+          </div>
+          <div class="savstat-card savstat-card--accent">
+            <div class="savstat-num" data-i18n="savstat-liq-num">~4 %</div>
+            <div class="savstat-lbl" data-i18n="savstat-liq-lbl">av inkomsten går till fritt sparande man kan ta till</div>
+          </div>
+          <div class="savstat-card">
+            <div class="savstat-num" data-i18n="savstat-tot-num">~15 %</div>
+            <div class="savstat-lbl" data-i18n="savstat-tot-lbl">av inkomsten sparas totalt – men mest låst i pension och bostad</div>
+          </div>
+        </div>
+        <p class="savstat-note" data-i18n="savstat-note">Median för fritt sparande är en ungefärlig uppskattning; det mesta av svenskarnas sparande sitter låst i pension. 4 % och 15 % avser andel av inkomsten (sparkvot).</p>
+
+        <div class="avanza-chart-box">
+          <div class="avanza-metric-toggle" role="group" aria-label="Välj visning">
+            <button class="avanza-metric-btn avanza-metric-btn--active" id="avanzaBtnKapital" data-metric="kapital" data-i18n="avanza-btn-kapital">Kapital</button>
+            <button class="avanza-metric-btn" id="avanzaBtnManad" data-metric="manad" data-i18n="avanza-btn-manad">Månadssparande</button>
+          </div>
+          <div class="avanza-chart-wrap"><canvas id="avanzaAgeChart"></canvas></div>
+          <p class="avanza-chart-caption" data-i18n="avanza-chart-caption">Gapet mellan medel och median växer med åldern — ett tecken på att en liten grupp förmögna drar upp genomsnittet kraftigt.</p>
+          <p class="avanza-chart-summary" id="avanzaChartSummary"></p>
+          <p class="sarb-avanza-caveat" id="avanzaChartCaveat"></p>
+        </div>
+
+        <div class="savtbl-card">
+          <div class="savtbl-title" id="savtblTitle"></div>
+          <div class="savtbl-scroll">
+            <table class="savtbl">
+              <thead>
+                <tr>
+                  <th class="savtbl-th" data-i18n="savtbl-col-age">Ålder</th>
+                  <th class="savtbl-th savtbl-th--num" data-i18n="savtbl-col-medel">Medel</th>
+                  <th class="savtbl-th savtbl-th--num" data-i18n="savtbl-col-median">Median</th>
+                </tr>
+              </thead>
+              <tbody id="savtblBody"></tbody>
+            </table>
+          </div>
+          <p class="savtbl-caption" id="savtblCaption"></p>
+        </div>
+
+        <p class="sav-disclaimer" data-i18n="sarb-disclaimer">Ungefärliga siffror för illustration. Median visar ett typiskt hushåll; genomsnitt dras upp av de rikaste. Källor: Riksbanken, SCB, Finansinspektionen, Credit Suisse/UBS Global Wealth Report, Avanza. Inte investeringsrådgivning.</p>
+      </div><!-- /savings-card -->
+    </section>
+
+    <!-- ─── Miljardärernas Sverige ─────────────────────── -->
+    <section class="bilj-section" id="biljSection">
+      <div class="bilj-card">
+        <h2 class="bilj-title" data-i18n="bilj-title">Miljard&#228;rernas Sverige</h2>
+        <p class="bilj-subtitle" data-i18n="bilj-subtitle">S&#229; har f&#246;rm&#246;genheterna koncentrerats till toppen</p>
+
+        <div class="bilj-top-row">
+          <!-- A: Billionaire count chart -->
+          <div>
+            <div class="bilj-chart-label" data-i18n="bilj-count-label">Antal milj&#228;rd&#228;rer i Sverige</div>
+            <div class="bilj-chart-wrap">
+              <canvas id="biljCountChart"></canvas>
+            </div>
+          </div>
+          <!-- B: Wealth-as-GDP chart -->
+          <div>
+            <div class="bilj-chart-label" data-i18n="bilj-gdp-label">Milj&#228;rd&#228;rernas f&#246;rm&#246;genhet som andel av BNP</div>
+            <div class="bilj-chart-wrap">
+              <canvas id="biljGdpChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- C: Stat callout cards -->
+        <div class="bilj-stat-grid">
+          <div class="bilj-stat-card">
+            <span class="bilj-stat-num" data-i18n="bilj-stat1-num">0,05 &#8240;</span>
+            <span class="bilj-stat-label" data-i18n="bilj-stat1-lbl">av befolkningen</span>
+          </div>
+          <div class="bilj-stat-card hl">
+            <span class="bilj-stat-num" data-i18n="bilj-stat2-num">68&thinsp;%</span>
+            <span class="bilj-stat-label" data-i18n="bilj-stat2-lbl">av BNP i samlade tillg&#229;ngar</span>
+          </div>
+          <div class="bilj-stat-card">
+            <span class="bilj-stat-num" data-i18n="bilj-stat3-num">542</span>
+            <span class="bilj-stat-label" data-i18n="bilj-stat3-lbl">milj&#228;rd&#228;rer 2021 — fördubblat under pandemin</span>
+          </div>
+          <div class="bilj-stat-card hl">
+            <span class="bilj-stat-num" data-i18n="bilj-stat4-num">3&#8239;514&#8239;Mdr</span>
+            <span class="bilj-stat-label" data-i18n="bilj-stat4-lbl">kr i samlade tillg&#229;ngar (2021)</span>
+          </div>
+        </div>
+
+        <!-- D: Caption -->
+        <p class="bilj-caption" data-i18n="bilj-caption">N&#228;r r&#228;ntor pressas ned mot noll stiger priserna p&#229; tillg&#229;ngar — aktier och fastigheter — kraftigt. Det gynnar de som redan &#228;ger s&#229;dana tillg&#229;ngar och missgynnar sparare och hyresg&#228;ster. Under pandemin f&#246;rst&#228;rktes detta ytterligare av massiva stimulanser, vilket drev upp antalet kr&#243;nmilj&#228;rd&#228;rer fr&#229;n 206 till 542 p&#229; tv&#229; &#229;r.</p>
+
+        <!-- Source/disclaimer -->
+        <p class="bilj-disclaimer" data-i18n="bilj-disclaimer">Siffror enligt Andreas Cervenkas kartl&#228;ggning (boken Girig-Sverige) och offentlig rapportering. Avser kron-milj&#228;rd&#228;rer (f&#246;rm&#246;genhet &#8805;&#8239;1&#8239;miljard&#8239;kr). F&#246;r illustration.</p>
+      </div><!-- /bilj-card -->
+    </section>
+
+
+  </div><!-- /wrapper -->
+
+  <!-- ─── Footer ────────────────────────────────────── -->
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div class="site-footer-cols">
+        <div class="site-footer-col">
+          <div class="site-footer-brand">Decenniet</div>
+          <h2 class="site-footer-h" data-i18n="footer-about-h">Om Decenniet</h2>
+          <p class="site-footer-text" data-i18n="footer-about">Decenniet är en oberoende sida som vill göra privatekonomi begriplig — hur sparande växer, vad avgifter kostar och hur räntor och skulder påverkar vanliga hushåll. Alla siffror är ungefärliga och för illustration, inte investeringsrådgivning.</p>
+        </div>
+        <div class="site-footer-col">
+          <h2 class="site-footer-h" data-i18n="footer-privacy-h">Din integritet</h2>
+          <p class="site-footer-text" data-i18n="footer-privacy-intro">Den här sidan är byggd helt som en frontend-sida. Vi samlar inte in, lagrar eller säljer några personuppgifter om dig. Det finns inga konton, ingen inloggning och inga spårningskakor.</p>
+          <ul class="site-footer-list">
+            <li data-i18n="footer-privacy-1">Vissa av dina inställningar (språk, valuta, ljust/mörkt läge) sparas lokalt i din egen webbläsare, bara för din bekvämlighet — de skickas aldrig till oss.</li>
+            <li data-i18n="footer-privacy-2">Sidan använder en värdtjänst (webbhotell) för att finnas tillgänglig online, och som alla webbplatser kan värdtjänsten se viss teknisk trafikdata (t.ex. IP-adress) på sin servernivå. Det är inget vi samlar in eller använder.</li>
+            <li data-i18n="footer-privacy-3">Vi visar inga annonser och delar ingen data med annonsörer.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="site-footer-bottom">
+        <p class="site-footer-disclaimer" data-i18n="footer-disclaimer">Decenniet ger allmän information, inte personlig rådgivning. Kontakta en licensierad rådgivare för beslut om din ekonomi.</p>
+        <p class="site-footer-copy">© 2026 Decenniet</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  // ── Currency config ──────────────────────────────────────
+  const CURRENCIES = {
+    SEK: { symbol: 'kr', locale: 'sv-SE', pos: 'after',  unit: 'kr',  monthUnit: 'kr/mån'  },
+    USD: { symbol: '$',  locale: 'en-US', pos: 'before', unit: '$',   monthUnit: '$/mån'   },
+    EUR: { symbol: '€',  locale: 'de-DE', pos: 'after',  unit: '€',   monthUnit: '€/mån'   },
+    GBP: { symbol: '£',  locale: 'en-GB', pos: 'before', unit: '£',   monthUnit: '£/mån'   },
+    NOK: { symbol: 'kr', locale: 'nb-NO', pos: 'after',  unit: 'kr',  monthUnit: 'kr/mån'  },
+    DKK: { symbol: 'kr', locale: 'da-DK', pos: 'after',  unit: 'kr',  monthUnit: 'kr/mån'  },
+  };
+  let currentCurrency = 'SEK';
+  try { currentCurrency = localStorage.getItem('decennium-curr') || 'SEK'; } catch(e) {}
+
+  // ── SCB börskapital per åldersgrupp (hela befolkningen, ungefärligt) ──
+  var SCB_KAPITAL_BY_AGE = {
+    '18-34': { medel: 190000,  median: 30000  },
+    '35-44': { medel: 360000,  median: 60000  },
+    '45-54': { medel: 620000,  median: 90000  },
+    '55-64': { medel: 980000,  median: 120000 },
+    '65-74': { medel: 1700000, median: 155000 },
+    '75+':   { medel: 1450000, median: 140000 },
+  };
+
+  // ── Avanza månadssparande per åldersgrupp (exkl. pension) ──
+  var AVANZA_MANAD_BY_AGE = {
+    '21-30': { medel: 2070, median: 970  },
+    '31-40': { medel: 2450, median: 1300 },
+    '41-50': { medel: 2490, median: 1340 },
+    '51-60': { medel: 2300, median: 1130 },
+    '61-70': { medel: 2300, median: 1110 },
+    '71-80': { medel: 2010, median: 1000 },
+    '81-90': { medel: 1980, median: 1000 },
+  };
+
+  // ── Language support ──────────────────────────────────────────
+  let currentLang = 'sv';
+  try { currentLang = localStorage.getItem('decennium-lang') || 'sv'; } catch(e) {}
+
+  const STRINGS = {
+    sv: {
+      'rate-label':         'Ränta per år',
+      'horisont-label':     'Sparhorisont',
+      'velj-diagram':       'Välj diagram',
+      'mode-enkel':         'Enkel',
+      'mode-detaljerad':    'Detaljerad',
+      'mode-arsandel':      'Årsandel',
+      'mode-ackumulerad':   'Ackumulerad',
+      'mode-slumpad':       'Slumpad som börsen',
+      'chart-title':        'Avkastning över tid',
+      'chart-subtitle':     'Se hur sparandet växer med ränta-på-ränta-effekten',
+      'label-insatt':       'Insatt',
+      'label-avkastning':   'Avkastning',
+      'label-totalt':       'Totalt',
+      'hist-title':         'Tänk om du hade investerat tidigare',
+      'hist-subtitle':      'Välj tillgångar, startår och belopp — jämför hur dina investeringar hade växt',
+      'hist-assets-label':  'Välj tillgångar',
+      'asset-guld':         'Guld',
+      'asset-omxs30':      'OMXS30',
+      'asset-nasdaq100':    'Nasdaq 100',
+      'asset-msciworld':    'MSCI World',
+      'asset-dax':          'DAX',
+      'asset-ftse100':      'FTSE 100',
+      'chip-group-indices': 'Aktieindex',
+      'chip-group-annat':   'Annat',
+      'asset-koppar':       'Koppar',
+      'asset-olja':         'Olja',
+      'hist-startar-label': 'Startår',
+      'hist-amount-label':  'Belopp',
+      'hist-currency-label':'Valuta',
+      'hist-disclaimer':    'Ungefärliga historiska värden, endast för illustration. Aktieindex exkluderar utdelningar. Koppar och olja är råvarupriser utan löpande avkastning. Värden före 2000 är grova uppskattningar. Valutaeffekter ignoreras. Inte investeringsrådgivning.',
+      'page-title':         'Decenniet – Avkastning över tid',
+      'monthly-label':      (mu) => `Månadssparande (${mu})`,
+      'start-label':        (u)  => `Startbelopp (${u})`,
+      'years-tag':          (y)  => `${y} år`,
+      'result-line':        (y, yw, amt) => `<span class="rl-label">Beloppet efter <strong>${y}</strong> ${yw} är</span><span class="rl-amount" id="rlTotal">${amt}</span>`,
+      'yr-pfx':             'År ',
+      'end-yr-pfx':         'År: ',
+      'x-yr':               (v)  => `${v} år`,
+      'ds-total':           'Totalt',
+      'ds-insatt-kapital':  'Insatt kapital',
+      'ds-avkastning':      'Avkastning',
+      'ds-insatt-ar':       'Insatt detta år',
+      'ds-avkastning-ar':   'Avkastning detta år',
+      'ds-insatt':          'Insatt',
+      'ds-simulerat':       'Simulerat totalt',
+      'legend-total':       'Totalt',
+      'legend-insatt':      'Insatt',
+      'legend-avkastning':  'Avkastning',
+      'legend-simulerat':   'Simulerat',
+      'hist-mode-label':    'Investeringsläge',
+      'hist-mode-lump':     'Engångsbelopp',
+      'hist-mode-dca':      'Månadssparande',
+      'hist-amount-lbl':    'Belopp',
+      'hist-monthly-lbl':   'Månadsbelopp',
+      'hist-dca-from':      (yr) => 'från ' + yr,
+      'hist-dca-single':    (amt, asset, yr, val, total, mult) =>
+        `Om du sparat <strong>${amt}/mån</strong> i <strong>${asset}</strong> sedan år <strong>${yr}</strong> hade du idag haft <strong>${val}</strong>. Insatt: <strong>${total}</strong> — en uppgång på <strong>${mult}</strong>.`,
+      'hist-dca-multi':     (n, yr, amt) =>
+        `Jämför <strong>${n} tillgångar</strong> med <strong>${amt}/mån</strong> sedan år <strong>${yr}</strong>.`,
+      'hist-empty':         'Välj minst en tillgång.',
+      'hist-nodata':        'Ingen data för det året',
+      'hist-single': (amt, asset, yr, val, mult) =>
+        `Om du investerat <strong>${amt}</strong> i <strong>${asset}</strong> år <strong>${yr}</strong> hade det varit värt <strong>${val}</strong> idag — en ökning på <strong>${mult}</strong>.`,
+      'hist-multi': (n, yr, amt) =>
+        `Jämför <strong>${n} tillgångar</strong> från år <strong>${yr}</strong> med ett startbelopp på <strong>${amt}</strong>.`,
+      'mdr-suffix': ' Mdr',
+      'bn-suffix':  ' Bn',
+      'bilj-title':        'Miljärdärernas Sverige',
+      'bilj-subtitle':     'Så har förmögenheterna koncentrerats till toppen',
+      'sarb-d-heading':        'Vad har svenskarna sparat?',
+      'sav-punch':             'De flesta svenskar har mycket mindre sparat än man tror — och bara en liten del är pengar man faktiskt kommer åt.',
+      'savstat-median-num':    '~50 000 kr',
+      'savstat-median-lbl':    'Median – vad en vanlig svensk har i fritt sparande (utöver pension)',
+      'savstat-avg-num':       '~1,5 mkr',
+      'savstat-avg-lbl':       'Genomsnitt – uppblåst av de rikaste',
+      'savstat-liq-num':       '~4 %',
+      'savstat-liq-lbl':       'av inkomsten går till fritt sparande man kan ta till',
+      'savstat-tot-num':       '~15 %',
+      'savstat-tot-lbl':       'av inkomsten sparas totalt – men mest låst i pension och bostad',
+      'savstat-note':          'Median för fritt sparande är en ungefärlig uppskattning; det mesta av svenskarnas sparande sitter låst i pension. 4 % och 15 % avser andel av inkomsten (sparkvot).',
+      'avanza-btn-kapital':            'Kapital',
+      'avanza-btn-manad':              'Månadssparande',
+      'avanza-chart-caption':          'Gapet mellan medel och median växer med åldern — ett tecken på att en liten grupp förmögna drar upp genomsnittet kraftigt.',
+      'avanza-chart-summary-kapital':  'I åldersgruppen 65–74 är medel ~1 700 000 kr mot median ~155 000 kr — genomsnittet är över 10× medianen.',
+      'avanza-chart-summary-manad':    'Avanza-kunder: medel ~2 300 kr/mån, median ~1 200 kr/mån. Avser aktiva sparare — inte representativt för hela befolkningen.',
+      'avanza-chart-caveat-kapital':   'Börskapital (aktier och fonder), hela befolkningen. Källa: SCB. Ungefärligt.',
+      'avanza-chart-caveat-manad':     'OBS: Avser Avanza-kunder, inte snittsvensken. Avanza-kunder sparar mer aktivt än genomsnittet. För hela befolkningen är medianen lägre — ungefär 2 000 kr/mån bland dem som sparar, och cirka 21 % sparar inget alls.',
+      'savtbl-title-kapital':          'Börskapital per åldersgrupp (SCB)',
+      'savtbl-title-manad':            'Månadssparande per åldersgrupp (Avanza)',
+      'savtbl-col-age':                'Ålder',
+      'savtbl-col-medel':              'Medel',
+      'savtbl-col-median':             'Median',
+      'savtbl-caption-kapital':        'Börskapital (aktier/fonder), hela befolkningen. Ungefärligt, källa SCB.',
+      'savtbl-caption-manad':          'Avanza-kunder (exkl. pension). Inte representativt för hela befolkningen.',
+      'sarb-disclaimer':               'Kapital: börskapital (aktier/fonder) för hela befolkningen, ungefärligt, källa SCB. Månadssparande: Avanza-kunder (exkl. pension), inte representativt för snittsvensken. Median visar ett typiskt fall; genomsnitt dras upp av de rikaste. För illustration. Inte investeringsrådgivning.',
+      'bilj-count-label':  'Antal miljärdärer i Sverige',
+      'bilj-gdp-label':    'Miljärdärernas förmögenhet som andel av BNP',
+      'bilj-stat1-num':    '0,05 ‰',
+      'bilj-stat1-lbl':    'av befolkningen',
+      'bilj-stat2-num':    '68 %',
+      'bilj-stat2-lbl':    'av BNP i samlade tillgångar',
+      'bilj-stat3-num':    '542',
+      'bilj-stat3-lbl':    'miljärdärer 2021 — fördubblat under pandemin',
+      'bilj-stat4-num':    '3 514 Mdr',
+      'bilj-stat4-lbl':    'kr i samlade tillgångar (2021)',
+      'bilj-caption':      'När räntor pressas ned mot noll stiger priserna på tillgångar — aktier och fastigheter — kraftigt. Det gynnar de som redan äger sådana tillgångar och missgynnar sparare och hyresgäster. Under pandemin förstärktes detta ytterligare av massiva stimulanser, vilket drev upp antalet krönmiljärdärer från 206 till 542 på två år.',
+      'bilj-disclaimer':   'Siffror enligt Andreas Cervenkas kartläggning (boken Girig-Sverige) och offentlig rapportering. Avser kron-miljärdärer (förmögenhet ≥ 1 miljard kr). För illustration.',
+      'bilj-count-yr':     (y) => `År ${y}`,
+      'bilj-count-tip':    (n) => ` ${n} miljärdärer`,
+      'bilj-gdp-tip':      (v) => ` ${v} % av BNP`,
+      'footer-about-h':      'Om Decenniet',
+      'footer-about':        'Decenniet är en oberoende sida som vill göra privatekonomi begriplig — hur sparande växer, vad avgifter kostar och hur räntor och skulder påverkar vanliga hushåll. Alla siffror är ungefärliga och för illustration, inte investeringsrådgivning.',
+      'footer-privacy-h':    'Din integritet',
+      'footer-privacy-intro':'Den här sidan är byggd helt som en frontend-sida. Vi samlar inte in, lagrar eller säljer några personuppgifter om dig. Det finns inga konton, ingen inloggning och inga spårningskakor.',
+      'footer-privacy-1':    'Vissa av dina inställningar (språk, valuta, ljust/mörkt läge) sparas lokalt i din egen webbläsare, bara för din bekvämlighet — de skickas aldrig till oss.',
+      'footer-privacy-2':    'Sidan använder en värdtjänst (webbhotell) för att finnas tillgänglig online, och som alla webbplatser kan värdtjänsten se viss teknisk trafikdata (t.ex. IP-adress) på sin servernivå. Det är inget vi samlar in eller använder.',
+      'footer-privacy-3':    'Vi visar inga annonser och delar ingen data med annonsörer.',
+      'footer-disclaimer':   'Decenniet ger allmän information, inte personlig rådgivning. Kontakta en licensierad rådgivare för beslut om din ekonomi.',
+      'nav-home':          'Investera',
+      'nav-housing':       'Bostad',
+      'nav-fees':          'Avgifter',
+    },
+    en: {
+      'rate-label':         'Annual return (%)',
+      'horisont-label':     'Time horizon',
+      'velj-diagram':       'Chart type',
+      'mode-enkel':         'Simple',
+      'mode-detaljerad':    'Detailed',
+      'mode-arsandel':      'Annual share',
+      'mode-ackumulerad':   'Accumulated',
+      'mode-slumpad':       'Random like the market',
+      'chart-title':        'Return over time',
+      'chart-subtitle':     'See how savings grow with the compound interest effect',
+      'label-insatt':       'Invested',
+      'label-avkastning':   'Return',
+      'label-totalt':       'Total',
+      'hist-title':         'What if you had invested earlier',
+      'hist-subtitle':      'Choose assets, start year and amount — compare how your investments would have grown',
+      'hist-assets-label':  'Select assets',
+      'asset-guld':         'Gold',
+      'asset-omxs30':      'OMXS30',
+      'asset-nasdaq100':    'Nasdaq 100',
+      'asset-msciworld':    'MSCI World',
+      'asset-dax':          'DAX',
+      'asset-ftse100':      'FTSE 100',
+      'chip-group-indices': 'Stock indices',
+      'chip-group-annat':   'Other',
+      'asset-koppar':       'Copper',
+      'asset-olja':         'Oil',
+      'hist-startar-label': 'Start year',
+      'hist-amount-label':  'Amount',
+      'hist-currency-label':'Currency',
+      'hist-disclaimer':    "Approximate historical values for illustration only. Stock indices exclude dividends. Copper and oil are commodity spot prices with no yield. Pre-2000 figures are rough estimates. Currency effects ignored. Not investment advice.",
+      'page-title':         'Decenniet – Return over time',
+      'monthly-label':      (mu) => `Monthly savings (${mu})`,
+      'start-label':        (u)  => `Initial amount (${u})`,
+      'years-tag':          (y)  => `${y} yr`,
+      'result-line':        (y, yw, amt) => `<span class="rl-label">After <strong>${y}</strong> ${yw} the amount is</span><span class="rl-amount" id="rlTotal">${amt}</span>`,
+      'yr-pfx':             'Year ',
+      'end-yr-pfx':         'Year: ',
+      'x-yr':               (v)  => `${v} yr`,
+      'ds-total':           'Total',
+      'ds-insatt-kapital':  'Invested capital',
+      'ds-avkastning':      'Return',
+      'ds-insatt-ar':       'Invested this year',
+      'ds-avkastning-ar':   'Return this year',
+      'ds-insatt':          'Invested',
+      'ds-simulerat':       'Simulated total',
+      'legend-total':       'Total',
+      'legend-insatt':      'Invested',
+      'legend-avkastning':  'Return',
+      'legend-simulerat':   'Simulated',
+      'hist-mode-label':    'Investment mode',
+      'hist-mode-lump':     'Lump sum',
+      'hist-mode-dca':      'Monthly / DCA',
+      'hist-amount-lbl':    'Amount',
+      'hist-monthly-lbl':   'Monthly amount',
+      'hist-dca-from':      (yr) => 'from ' + yr,
+      'hist-dca-single':    (amt, asset, yr, val, total, mult) =>
+        `If you had saved <strong>${amt}/mo</strong> in <strong>${asset}</strong> since <strong>${yr}</strong> you would today have <strong>${val}</strong>. Invested: <strong>${total}</strong> — an increase of <strong>${mult}</strong>.`,
+      'hist-dca-multi':     (n, yr, amt) =>
+        `Comparing <strong>${n} assets</strong> at <strong>${amt}/mo</strong> since <strong>${yr}</strong>.`,
+      'hist-empty':         'Select at least one asset.',
+      'hist-nodata':        'No data for that year',
+      'hist-single': (amt, asset, yr, val, mult) =>
+        `If you had invested <strong>${amt}</strong> in <strong>${asset}</strong> in <strong>${yr}</strong> it would be worth <strong>${val}</strong> today — an increase of <strong>${mult}</strong>.`,
+      'hist-multi': (n, yr, amt) =>
+        `Comparing <strong>${n} assets</strong> from <strong>${yr}</strong> with an initial amount of <strong>${amt}</strong>.`,
+      'mdr-suffix': ' bn',
+      'bn-suffix':  ' tn',
+      'bilj-title':        'Sweden of the Billionaires',
+      'bilj-subtitle':     'How wealth has concentrated at the very top',
+      'sarb-d-heading':        'What have Swedes saved?',
+      'sav-punch':             'Most Swedes have far less saved than they think — and only a small part is money they can actually access.',
+      'savstat-median-num':    '~SEK 50,000',
+      'savstat-median-lbl':    'Median – what a typical Swede has in free savings (outside pension)',
+      'savstat-avg-num':       '~SEK 1.5M',
+      'savstat-avg-lbl':       'Average – inflated by the wealthiest',
+      'savstat-liq-num':       '~4%',
+      'savstat-liq-lbl':       'of income goes to free savings you can actually access',
+      'savstat-tot-num':       '~15%',
+      'savstat-tot-lbl':       'of income is saved in total – but mostly locked in pension and housing',
+      'savstat-note':          'The free-savings median is an approximate estimate; most Swedish savings are locked in pensions. 4% and 15% refer to share of income (savings rate).',
+      'avanza-btn-kapital':            'Capital',
+      'avanza-btn-manad':              'Monthly saving',
+      'avanza-chart-caption':          'The gap between mean and median grows with age — a sign that a small group of wealthy individuals pulls the average up strongly.',
+      'avanza-chart-summary-kapital':  'In the 65–74 age group, the mean is ~SEK 1,700,000 vs median ~SEK 155,000 — the average is over 10× the median.',
+      'avanza-chart-summary-manad':    'Avanza customers: mean ~SEK 2,300/month, median ~SEK 1,200/month. Active savers only — not representative of the general population.',
+      'avanza-chart-caveat-kapital':   'Stock-market assets (equities and funds), general population. Source: SCB. Approximate.',
+      'avanza-chart-caveat-manad':     'NOTE: Refers to Avanza customers, not the average Swede. Avanza customers save more actively than average. For the general population the median is lower — around SEK 2,000/month among those who save, and approximately 21% save nothing at all.',
+      'savtbl-title-kapital':          'Stock-market assets by age group (SCB)',
+      'savtbl-title-manad':            'Monthly saving by age group (Avanza)',
+      'savtbl-col-age':                'Age',
+      'savtbl-col-medel':              'Average',
+      'savtbl-col-median':             'Median',
+      'savtbl-caption-kapital':        'Stock-market assets (equities/funds), general population. Approximate, source SCB.',
+      'savtbl-caption-manad':          'Avanza customers (excl. pension). Not representative of the general population.',
+      'sarb-disclaimer':               'Capital: stock-market assets (equities/funds) for the general population, approximate, source SCB. Monthly saving: Avanza customers (excl. pension), not representative of the average Swede. The median shows a typical case; the average is pulled up by the wealthiest. For illustration. Not investment advice.',
+      'bilj-count-label':  'Number of billionaires in Sweden',
+      'bilj-gdp-label':    'Billionaires’ wealth as a share of GDP',
+      'bilj-stat1-num':    '0.005%',
+      'bilj-stat1-lbl':    'of the population',
+      'bilj-stat2-num':    '68%',
+      'bilj-stat2-lbl':    'of GDP in combined assets',
+      'bilj-stat3-num':    '542',
+      'bilj-stat3-lbl':    'billionaires in 2021 — doubled during the pandemic',
+      'bilj-stat4-num':    'SEK 3,514 bn',
+      'bilj-stat4-lbl':    'in combined assets (2021)',
+      'bilj-caption':      'When interest rates are pushed toward zero, asset prices — stocks and property — rise sharply. This benefits those who already own such assets and disadvantages savers and renters. During the pandemic this was amplified by massive stimulus, driving the number of krona-billionaires from 206 to 542 in two years.',
+      'bilj-disclaimer':   'Figures based on Andreas Cervenka’s research (book: Girig-Sverige) and public reporting. Refers to krona-billionaires (wealth ≥ SEK 1 billion). For illustration only.',
+      'bilj-count-yr':     (y) => `Year ${y}`,
+      'bilj-count-tip':    (n) => ` ${n} billionaires`,
+      'bilj-gdp-tip':      (v) => ` ${v}% of GDP`,
+      'footer-about-h':      'About Decenniet',
+      'footer-about':        'Decenniet is an independent site that aims to make personal finance easy to understand — how savings grow, what fees cost, and how interest rates and debt affect ordinary households. All figures are approximate and for illustration, not investment advice.',
+      'footer-privacy-h':    'Your privacy',
+      'footer-privacy-intro':'This site is built entirely as a frontend site. We do not collect, store or sell any personal data about you. There are no accounts, no login and no tracking cookies.',
+      'footer-privacy-1':    'Some of your settings (language, currency, light/dark mode) are saved locally in your own browser, purely for your convenience — they are never sent to us.',
+      'footer-privacy-2':    'The site uses a hosting provider so it can be available online, and like every website the host can see some technical traffic data (e.g. your IP address) at its server level. That is nothing we collect or use.',
+      'footer-privacy-3':    'We show no ads and share no data with advertisers.',
+      'footer-disclaimer':   'Decenniet provides general information, not personal advice. Consult a licensed advisor for decisions about your finances.',
+      'nav-home':          'Investing',
+      'nav-housing':       'Housing',
+      'nav-fees':          'Fees',
+    }
+  };
+
+  function T(key, ...args) {
+    const v = STRINGS[currentLang][key];
+    return typeof v === 'function' ? v(...args) : v;
+  }
+
+  function getAssetName(key) {
+    const names = {
+      sv: { guld: 'Guld', silver: 'Silver', sp500: 'S&P 500', bitcoin: 'Bitcoin', omxs30: 'OMXS30 (svenska börsen)', nasdaq100: 'Nasdaq 100 (USA tech)', msciworld: 'MSCI World (global)', dax: 'DAX (Tyskland)', ftse100: 'FTSE 100 (Storbritannien)', koppar: 'Koppar', olja: 'Olja' },
+      en: { guld: 'Gold', silver: 'Silver', sp500: 'S&P 500', bitcoin: 'Bitcoin', omxs30: 'OMXS30 (Swedish stocks)', nasdaq100: 'Nasdaq 100 (USA tech)', msciworld: 'MSCI World (global)', dax: 'DAX (Germany)', ftse100: 'FTSE 100 (UK)', koppar: 'Copper', olja: 'Oil' }
+    };
+    return (names[currentLang] || names.sv)[key] || key;
+  }
+
+  function fmtNum(n) {
+    const cur = CURRENCIES[currentCurrency];
+    return Math.round(n).toLocaleString(cur.locale);
+  }
+  function fmtAmt(n) {
+    const cur = CURRENCIES[currentCurrency];
+    const s = fmtNum(n);
+    return cur.pos === 'before' ? cur.symbol + s : s + ' ' + cur.symbol;
+  }
+  function fmtPct(n) {
+    return n.toLocaleString('sv-SE', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' %';
+  }
+  function curUnit() { return CURRENCIES[currentCurrency].unit; }
+  function curMonthUnit() {
+    const cur = CURRENCIES[currentCurrency];
+    return currentLang === 'en' ? cur.symbol + '/mo' : cur.monthUnit;
+  }
+
+  // ── Compound interest ─────────────────────────────────────
+  function calcYearData(start, monthly, annualRate, years) {
+    const r = annualRate / 100 / 12;
+    const rows = [];
+    for (let y = 0; y <= years; y++) {
+      const m = y * 12;
+      let total = r === 0
+        ? start + monthly * m
+        : start * Math.pow(1 + r, m) + monthly * (Math.pow(1 + r, m) - 1) / r;
+      const insatt = start + monthly * m;
+      rows.push({ year: y, total, insatt, avkastning: total - insatt });
+    }
+    return rows;
+  }
+
+  // ── Random data for "Slumpad som börsen" ───────────────────
+  let _zScores = []; // stored z-scores so shape is stable across input changes
+
+  function randNormal() {
+    let u1 = Math.random(), u2 = Math.random();
+    while (u1 <= 0) u1 = Math.random();
+    return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+  }
+
+  function ensureZScores(n) {
+    while (_zScores.length < n) _zScores.push(randNormal());
+  }
+
+  function regenerateZScores(n) {
+    _zScores = Array.from({ length: n }, randNormal);
+  }
+
+  function calcSlumpadData(start, monthly, baseRate, years) {
+    ensureZScores(years);
+    let total = start;
+    const rows = [{ year: 0, total, insatt: start, avkastning: 0 }];
+    for (let y = 1; y <= years; y++) {
+      const annRate = baseRate + _zScores[y - 1] * 18; // ±18 % std dev
+      const mr = annRate / 100 / 12;
+      for (let m = 0; m < 12; m++) {
+        total = mr === 0 ? total + monthly : total * (1 + mr) + monthly;
+      }
+      total = Math.max(0, total);
+      const insatt = start + monthly * y * 12;
+      rows.push({ year: y, total, insatt, avkastning: total - insatt });
+    }
+    return rows;
+  }
+
+  // ── Chart state ───────────────────────────────────────────
+  let chartInst = null;
+  let currentMode = 'enkel';
+
+
+  function tooltipLabel(item) {
+    return ' ' + item.dataset.label + ': ' + fmtAmt(item.raw);
+  }
+
+  // ── Chart builders ────────────────────────────────────────
+  function buildEnkel(base) {
+    return {
+      type: 'line',
+      data: {
+        labels: base.map(d => d.year),
+        datasets: [{
+          label: T('ds-total'), data: base.map(d => d.total),
+          borderColor: '#a03253', borderWidth: 2.5,
+          backgroundColor: 'rgba(160,50,83,0.10)',
+          fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 5,
+        }]
+      },
+      options: makeOpts({ title: items => T('yr-pfx') + items[0].label, label: tooltipLabel })
+    };
+  }
+
+  function buildDetaljerad(base) {
+    return {
+      type: 'bar',
+      data: {
+        labels: base.map(d => d.year),
+        datasets: [
+          { label: T('ds-insatt-kapital'), data: base.map(d => d.insatt),
+            backgroundColor: 'rgba(22,69,99,0.65)', stack: 'stk', borderRadius: 2 },
+          { label: T('ds-avkastning'), data: base.map(d => d.avkastning),
+            backgroundColor: 'rgba(160,50,83,0.72)', stack: 'stk', borderRadius: 2 },
+        ]
+      },
+      options: makeOpts({ title: items => T('yr-pfx') + items[0].label, label: tooltipLabel }, true)
+    };
+  }
+
+  function buildArsandel(base) {
+    const annInsatt = base.map((d, i) => {
+      if (i === 0) return d.insatt;
+      const prev = base[i - 1];
+      return d.insatt - prev.insatt; // monthly * 12
+    });
+    const annReturn = base.map((d, i) => {
+      if (i === 0) return 0;
+      const prev = base[i - 1];
+      return (d.total - prev.total) - (d.insatt - prev.insatt);
+    });
+    return {
+      type: 'bar',
+      data: {
+        labels: base.map(d => d.year),
+        datasets: [
+          { label: T('ds-insatt-ar'), data: annInsatt,
+            backgroundColor: 'rgba(22,69,99,0.65)', stack: 'stk', borderRadius: 2 },
+          { label: T('ds-avkastning-ar'), data: annReturn,
+            backgroundColor: 'rgba(160,50,83,0.72)', stack: 'stk', borderRadius: 2 },
+        ]
+      },
+      options: makeOpts({ title: items => T('yr-pfx') + items[0].label, label: tooltipLabel }, true)
+    };
+  }
+
+  function buildAckumulerad(base) {
+    return {
+      type: 'line',
+      data: {
+        labels: base.map(d => d.year),
+        datasets: [
+          { label: T('ds-insatt'), data: base.map(d => d.insatt),
+            backgroundColor: 'rgba(22,69,99,0.11)', borderColor: 'rgba(22,69,99,0.30)',
+            borderWidth: 1.5, fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 5 },
+          { label: T('ds-total'), data: base.map(d => d.total),
+            backgroundColor: 'rgba(160,50,83,0.13)', borderColor: '#a03253',
+            borderWidth: 2.5, fill: '-1', tension: 0.4, pointRadius: 0, pointHoverRadius: 5 },
+        ]
+      },
+      options: makeOpts({ title: items => T('yr-pfx') + items[0].label, label: tooltipLabel })
+    };
+  }
+
+  function buildSlumpad(start, monthly, rate, years) {
+    const sd = calcSlumpadData(start, monthly, rate, years);
+    return {
+      type: 'line',
+      data: {
+        labels: sd.map(d => d.year),
+        datasets: [{
+          label: T('ds-simulerat'), data: sd.map(d => d.total),
+          borderColor: '#a03253', borderWidth: 2,
+          backgroundColor: 'rgba(160,50,83,0.08)',
+          fill: true, tension: 0.15, pointRadius: 0, pointHoverRadius: 5,
+        }]
+      },
+      options: makeOpts({ title: items => T('yr-pfx') + items[0].label, label: tooltipLabel })
+    };
+  }
+
+
+  // ── End-of-line callout ────────────────────────────────────────
+  function positionEndLabel(chart) {
+    if (chart.canvas.id !== 'growthChart') return;
+    const el = document.getElementById('endLabel');
+    if (!el || !chart) return;
+    const n = chart.data.labels.length - 1;
+    if (n < 0) { el.style.display = 'none'; return; }
+    let pt;
+    switch (currentMode) {
+      case 'ackumulerad':
+      case 'detaljerad':
+      case 'arsandel':
+        pt = chart.getDatasetMeta(1).data[n]; break;
+      default:
+        pt = chart.getDatasetMeta(0).data[n]; break;
+    }
+    if (!pt) { el.style.display = 'none'; return; }
+    const years   = chart.data.labels[n];
+    const amtText = document.getElementById('rlTotal').textContent;
+    el.innerHTML =
+      '<span class="end-year">' + T('end-yr-pfx') + years + '</span>' +
+      '<strong class="end-amt">' + amtText + '</strong>';
+    el.style.display = 'block';
+
+    // Clamp horizontally within chart area so label never clips the edge
+    const ca = chart.chartArea;
+    const lw = el.offsetWidth;
+    const lh = el.offsetHeight;
+    const MARGIN = 6;
+    let leftPx = pt.x;
+    if (ca) {
+      const minL = ca.left  + lw / 2 + MARGIN;
+      const maxL = ca.right - lw / 2 - MARGIN;
+      leftPx = Math.max(minL, Math.min(maxL, pt.x));
+    }
+    el.style.left = leftPx + 'px';
+    el.style.top  = pt.y + 'px';
+
+    // Keep the triangle pointing at the actual data point
+    const triPct = lw > 0 ? ((pt.x - leftPx) / lw + 0.5) * 100 : 50;
+    el.style.setProperty('--tri-offset', Math.max(10, Math.min(90, triPct)) + '%');
+  }
+
+  const endLabelPlugin = {
+    id: 'endLabelPlugin',
+    afterDraw(chart) { positionEndLabel(chart); }
+  };
+  Chart.register(endLabelPlugin);
+
+  // ── Compact number formatting for large values ──────────────
+  function compactNum(v) {
+    if (v === 0) return '0';
+    const abs = Math.abs(v);
+    if (abs >= 1e12) return (v / 1e12).toLocaleString('sv-SE', { maximumFractionDigits: 1 }) + _bilSuffix();
+    if (abs >= 1e9)  return (v / 1e9 ).toLocaleString('sv-SE', { maximumFractionDigits: 1 }) + _mdrSuffix();
+    return Math.round(v).toLocaleString('sv-SE');
+  }
+  // suffix helpers — overridden by lang patch to return T() values
+  function _mdrSuffix() { return T('mdr-suffix'); }
+  function _bilSuffix() { return T('bn-suffix'); }
+  function fmtAmtCompact(n) {
+    const cur = CURRENCIES[currentCurrency];
+    const s = compactNum(n);
+    return cur.pos === 'before' ? cur.symbol + s : s + ' ' + cur.symbol;
+  }
+
+  function makeOpts(ttlCbs, stacked) {
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 250 },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(22,69,99,0.93)',
+          titleFont:  { family: '"DM Sans",sans-serif', weight: '700', size: 12 },
+          bodyFont:   { family: '"DM Sans",sans-serif', size: 11 },
+          padding: 10,
+          displayColors: true,
+          callbacks: ttlCbs,
+        }
+      },
+      scales: {
+        x: {
+          stacked: !!stacked,
+          grid:   { color: '#f0ede8' },
+          border: { display: false },
+          ticks:  {
+            font: { family: '"DM Sans",sans-serif', size: 10 },
+            color: '#aaa', maxTicksLimit: 11,
+            callback(v, i, arr) { return T('x-yr', arr[i].value); }
+          }
+        },
+        y: {
+          stacked: !!stacked,
+          grid:   { color: '#f0ede8' },
+          border: { display: false },
+          ticks:  {
+            font: { family: '"DM Sans",sans-serif', size: 10 },
+            color: '#aaa', maxTicksLimit: 6,
+            callback(v) { return compactNum(v); }
+          }
+        }
+      }
+    };
+  }
+
+  // ── Legend HTML ───────────────────────────────────────────
+  function legendHTML(mode) {
+    const sw = (bg, border) =>
+      `<div class="legend-swatch" style="background:${bg};border:1.5px solid ${border}"></div>`;
+    switch (mode) {
+      case 'enkel':
+        return `<div class="legend-item">${sw('rgba(160,50,83,0.22)','#a03253')}<span>${T('legend-total')}</span></div>`;
+      case 'detaljerad':
+      case 'arsandel':
+        return `
+          <div class="legend-item">${sw('rgba(22,69,99,0.55)','rgba(22,69,99,0.7)')}<span>${T('legend-insatt')}</span></div>
+          <div class="legend-item">${sw('rgba(160,50,83,0.55)','#a03253')}<span>${T('legend-avkastning')}</span></div>`;
+      case 'ackumulerad':
+        return `
+          <div class="legend-item">${sw('rgba(22,69,99,0.22)','rgba(22,69,99,0.35)')}<span>${T('legend-insatt')}</span></div>
+          <div class="legend-item">${sw('rgba(160,50,83,0.22)','#a03253')}<span>${T('legend-avkastning')}</span></div>`;
+      case 'slumpad':
+        return `<div class="legend-item">${sw('rgba(160,50,83,0.22)','#a03253')}<span>${T('legend-simulerat')}</span></div>`;
+    }
+    return '';
+  }
+
+  // ── Render chart ──────────────────────────────────────────
+  function renderChart(start, monthly, rate, years) {
+    if (chartInst) { chartInst.destroy(); chartInst = null; }
+
+    const base = calcYearData(start, monthly, rate, years);
+    let cfg;
+    switch (currentMode) {
+      case 'enkel':       cfg = buildEnkel(base); break;
+      case 'detaljerad':  cfg = buildDetaljerad(base); break;
+      case 'arsandel':    cfg = buildArsandel(base); break;
+      case 'ackumulerad': cfg = buildAckumulerad(base); break;
+      case 'slumpad':     cfg = buildSlumpad(start, monthly, rate, years); break;
+    }
+
+    chartInst = new Chart(
+      document.getElementById('growthChart').getContext('2d'),
+      cfg
+    );
+    document.getElementById('chartLegend').innerHTML = legendHTML(currentMode);
+  }
+
+
+  // ── Patch chart data in-place (no destroy/recreate) ──────
+  let _chartTimer = null;
+
+  function patchChart(start, monthly, rate, years) {
+    if (!chartInst) { renderChart(start, monthly, rate, years); return; }
+    const base = calcYearData(start, monthly, rate, years);
+    const oldLen = chartInst.data.labels.length;
+    chartInst.data.labels = base.map(d => d.year);
+    switch (currentMode) {
+      case 'enkel':
+        chartInst.data.datasets[0].data = base.map(d => d.total);
+        break;
+      case 'detaljerad':
+        chartInst.data.datasets[0].data = base.map(d => d.insatt);
+        chartInst.data.datasets[1].data = base.map(d => d.avkastning);
+        break;
+      case 'arsandel': {
+        const annI = base.map((d, i) => i === 0 ? d.insatt : d.insatt - base[i-1].insatt);
+        const annR = base.map((d, i) => i === 0 ? 0 :
+          (d.total - base[i-1].total) - (d.insatt - base[i-1].insatt));
+        chartInst.data.datasets[0].data = annI;
+        chartInst.data.datasets[1].data = annR;
+        break;
+      }
+      case 'ackumulerad':
+        chartInst.data.datasets[0].data = base.map(d => d.insatt);
+        chartInst.data.datasets[1].data = base.map(d => d.total);
+        break;
+      case 'slumpad': {
+        const sd = calcSlumpadData(start, monthly, rate, years);
+        chartInst.data.datasets[0].data = sd.map(d => d.total);
+        break;
+      }
+    }
+    // When label count changes, skip animation to prevent glitch
+    chartInst.update((_langChanging || oldLen !== base.length) ? 'none' : undefined);
+  }
+
+  // ── Slider track fill via CSS --pct custom property ──────────
+  function updateTrack(slider) {
+    var pct = (parseFloat(slider.value) - parseFloat(slider.min)) /
+              (parseFloat(slider.max)   - parseFloat(slider.min)) * 100;
+    slider.style.setProperty('--pct', pct.toFixed(2) + '%');
+  }
+
+  // ── Main update ───────────────────────────────────────────
+  function update() {
+    const start   = Math.max(0, parseFloat(document.getElementById('startNum').value)   || 0);
+    const monthly = Math.max(0, parseFloat(document.getElementById('monthlyNum').value) || 0);
+    const rate    = Math.max(0, parseFloat(document.getElementById('rateNum').value)    || 0);
+    const years   = Math.max(1, parseInt(document.getElementById('yearsNum').value)     || 1);
+
+    const base = calcYearData(start, monthly, rate, years);
+    const last = base[base.length - 1];
+
+    // For slumpad, get that data's final value
+    let displayTotal = last.total;
+    if (currentMode === 'slumpad') {
+      const sd = calcSlumpadData(start, monthly, rate, years);
+      displayTotal = sd[sd.length - 1].total;
+    }
+
+    // Input tags
+    document.getElementById('startTag').textContent   = fmtAmt(start);
+    document.getElementById('monthlyTag').textContent = fmtAmt(monthly);
+    document.getElementById('rateTag').textContent    = fmtPct(rate);
+    document.getElementById('yearsTag').textContent   = T('years-tag', years);
+
+    // Currency-sensitive labels
+    const u = curUnit(), mu = curMonthUnit();
+    document.getElementById('monthlyLabel').textContent = T('monthly-label', mu);
+    document.getElementById('startLabel').textContent   = T('start-label', u);
+
+    // Result line
+    const yw = currentLang === 'sv' ? 'år' : (years === 1 ? 'year' : 'years');
+    document.getElementById('resultLine').innerHTML = T('result-line', years, yw, fmtAmtCompact(displayTotal));
+
+    // Results bar
+    document.getElementById('resInsatt').textContent     = fmtAmtCompact(last.insatt);
+    document.getElementById('resAvkastning').textContent = fmtAmtCompact(last.avkastning);
+    document.getElementById('resTotalt').textContent     = fmtAmtCompact(last.total);
+
+    // Debounce chart patch so rapid slider moves don't cause full redraws
+    clearTimeout(_chartTimer);
+    _chartTimer = setTimeout(() => patchChart(start, monthly, rate, years), 40);
+  }
+
+  // ── Bind slider + number pair ─────────────────────────────
+  function bindPair(sliderId, numId) {
+    const slider = document.getElementById(sliderId);
+    const num    = document.getElementById(numId);
+    function fromSlider() { num.value = slider.value; updateTrack(slider); update(); }
+    function fromNum() {
+      let v = parseFloat(num.value);
+      if (isNaN(v)) return;
+      v = Math.min(Math.max(v, +slider.min), (+num.max || +slider.max));
+      num.value = v; slider.value = Math.min(v, +slider.max); updateTrack(slider); update();
+    }
+    slider.addEventListener('input', fromSlider);
+    num.addEventListener('input',   fromNum);
+    num.addEventListener('change',  fromNum);
+    updateTrack(slider);
+  }
+
+  // ── Snap log-slider value to a round number ──────────────────
+  function snapRound(v) {
+    if (v <= 0) return 0;
+    if (v < 500)    return Math.round(v / 50)    * 50;
+    if (v < 2000)   return Math.round(v / 100)   * 100;
+    if (v < 10000)  return Math.round(v / 500)   * 500;
+    if (v < 50000)  return Math.round(v / 1000)  * 1000;
+    if (v < 200000) return Math.round(v / 5000)  * 5000;
+    return           Math.round(v / 10000) * 10000;
+  }
+
+  // ── Logarithmic slider + number field pair ─────────────────
+  function bindLogPair(sliderId, numId, maxVal, minLog) {
+    const slider  = document.getElementById(sliderId);
+    const num     = document.getElementById(numId);
+    const logMin  = Math.log10(minLog);
+    const logMax  = Math.log10(maxVal);
+    const L_STEPS = 1000;
+
+    function sliderToValue(pos) {
+      if (pos <= 0) return 0;
+      const lv = logMin + (logMax - logMin) * pos / L_STEPS;
+      return snapRound(Math.round(Math.pow(10, lv)));
+    }
+    function valueToSlider(val) {
+      if (val <= 0) return 0;
+      const clamped = Math.max(minLog, Math.min(maxVal, val));
+      return Math.round(L_STEPS * (Math.log10(clamped) - logMin) / (logMax - logMin));
+    }
+
+    slider.addEventListener('input', () => {
+      num.value = sliderToValue(parseInt(slider.value));
+      updateTrack(slider);
+      update();
+    });
+    function fromNum() {
+      let v = parseFloat(num.value);
+      if (isNaN(v)) return;
+      v = Math.min(maxVal, Math.max(0, v));
+      num.value = v;
+      slider.value = valueToSlider(v);
+      updateTrack(slider);
+      update();
+    }
+    num.addEventListener('input',  fromNum);
+    num.addEventListener('change', fromNum);
+    updateTrack(slider);
+  }
+
+  bindPair('rateSlider',  'rateNum');
+  bindLogPair('monthlySlider', 'monthlyNum', 1000000, 500);
+  bindLogPair('startSlider',   'startNum',   1000000, 1000);
+  bindPair('yearsSlider', 'yearsNum');
+
+  // ── Mode toggle ───────────────────────────────────────────
+  document.getElementById('modeToggle').addEventListener('click', e => {
+    const btn = e.target.closest('.mode-btn');
+    if (!btn) return;
+    const mode = btn.dataset.mode;
+    if (mode === 'slumpad') {
+      const years = Math.max(1, parseInt(document.getElementById('yearsNum').value) || 1);
+      regenerateZScores(years);
+    }
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentMode = mode;
+    clearTimeout(_chartTimer); // cancel any pending debounced patch
+    const _s = Math.max(0, parseFloat(document.getElementById('startNum').value) || 0);
+    const _m = Math.max(0, parseFloat(document.getElementById('monthlyNum').value) || 0);
+    const _r = Math.max(0, parseFloat(document.getElementById('rateNum').value) || 0);
+    const _y = Math.max(1, parseInt(document.getElementById('yearsNum').value) || 1);
+    renderChart(_s, _m, _r, _y);
+    update(); // refresh DOM displays
+  });
+
+  // ── Currency change ───────────────────────────────────────
+  document.getElementById('currencySelect').addEventListener('change', e => {
+    currentCurrency = e.target.value;
+    try { localStorage.setItem('decennium-curr', currentCurrency); } catch(e) {}
+    update();
+  });
+
+  // ── Animated gradient blobs ───────────────────────────────
+  (function initBlobs() {
+    const layer = document.getElementById('blobLayer');
+    const configs = [
+      { color: '#164563', size: 520, top: '5%',  left: '10%', dur: 22 },
+      { color: '#f8c8d8', size: 480, top: '40%', left: '55%', dur: 27 },
+      { color: '#F3EADB', size: 560, top: '60%', left: '5%',  dur: 19 },
+      { color: '#a03253', size: 340, top: '10%', left: '65%', dur: 31 },
+      { color: '#e6ded2', size: 450, top: '70%', left: '45%', dur: 24 },
+    ];
+    configs.forEach(cfg => {
+      const el = document.createElement('div');
+      el.className = 'blob';
+      el.style.cssText = `
+        width:${cfg.size}px; height:${cfg.size}px;
+        top:${cfg.top}; left:${cfg.left};
+        background:${cfg.color};
+        animation-duration:${cfg.dur}s;
+        animation-delay:-${(Math.random() * cfg.dur).toFixed(1)}s;
+      `;
+      el.style.setProperty('--tx1', (Math.random() * 2 - 1).toFixed(3));
+      el.style.setProperty('--ty1', (Math.random() * 2 - 1).toFixed(3));
+      el.style.setProperty('--tx2', (Math.random() * 2 - 1).toFixed(3));
+      el.style.setProperty('--ty2', (Math.random() * 2 - 1).toFixed(3));
+      el.style.setProperty('--tx3', (Math.random() * 2 - 1).toFixed(3));
+      el.style.setProperty('--ty3', (Math.random() * 2 - 1).toFixed(3));
+      el.style.setProperty('--tx4', (Math.random() * 2 - 1).toFixed(3));
+      el.style.setProperty('--ty4', (Math.random() * 2 - 1).toFixed(3));
+      layer.appendChild(el);
+    });
+  })();
+
+  // ── Initial render ────────────────────────────────────────
+
+  // ════════════════════════════════════════════════════════════════
+  // HISTORISK JÄMFÖRELSE
+  // ════════════════════════════════════════════════════════════════
+
+  // ── Redigera dessa för att uppdatera priser ──────────────────
+  const HIST_CURRENT = {
+    guld:     4200,    // USD/oz
+    silver:   64,      // USD/oz
+    sp500:    7440,    // index
+    bitcoin:  68000,   // USD
+    omxs30:    2930,    // OMXS30 price index
+    nasdaq100: 23500,   // Nasdaq 100 index
+    msciworld: 4050,    // MSCI World index
+    dax:       24700,   // DAX index
+    ftse100:   10600,   // FTSE 100 index
+    koppar:    6.40,    // USD per pound
+    olja:      82,      // USD per barrel
+  };
+
+  const HIST_DATA = {
+    guld: {
+      name: 'Guld',
+      prices: {
+        1970:37,   1971:43,   1972:64,   1973:112,  1974:184,
+        1975:140,  1976:134,  1977:165,  1978:226,  1979:512,
+        1980:590,  1981:400,  1982:448,  1983:382,  1984:309,
+        1985:327,  1986:391,  1987:484,  1988:410,  1989:401,
+        1990:392,  1991:353,  1992:333,  1993:392,  1994:383,
+        1995:387,  1996:369,  1997:290,  1998:288,  1999:290,
+        2000:273,  2001:277,  2002:348,  2003:416,  2004:438,
+        2005:513,  2006:636,  2007:834,  2008:870,  2009:1100,
+        2010:1410, 2011:1565, 2012:1675, 2013:1205, 2014:1200,
+        2015:1060, 2016:1150, 2017:1300, 2018:1280, 2019:1520,
+        2020:1900, 2021:1830, 2022:1825, 2023:2065, 2024:2625, 2025:3900,
+      }
+    },
+    silver: {
+      name: 'Silver',
+      prices: {
+        1970:1.63,  1971:1.39,  1972:2.03,  1973:2.92,  1974:4.07,
+        1975:4.04,  1976:4.35,  1977:4.62,  1978:6.00,  1979:28.00,
+        1980:16.00, 1981:8.50,  1982:11.00, 1983:11.50, 1984:6.30,
+        1985:5.50,  1986:5.30,  1987:6.70,  1988:6.00,  1989:5.00,
+        1990:4.10,  1991:3.90,  1992:3.70,  1993:5.10,  1994:4.80,
+        1995:5.10,  1996:4.70,  1997:5.95,  1998:5.00,  1999:5.40,
+        2000:4.60,  2001:4.52,  2002:4.67,  2003:5.97,  2004:6.82,
+        2005:8.83,  2006:12.90, 2007:14.76, 2008:10.79, 2009:16.99,
+        2010:30.63, 2011:28.18, 2012:29.95, 2013:19.50, 2014:15.97,
+        2015:13.80, 2016:15.99, 2017:17.13, 2018:15.52, 2019:17.90,
+        2020:26.40, 2021:23.35, 2022:23.96, 2023:22.65, 2024:29.00, 2025:50.00,
+      }
+    },
+    sp500: {
+      name: 'S&P 500',
+      prices: {
+        1970:92,   1971:102,  1972:118,  1973:98,   1974:69,
+        1975:90,   1976:107,  1977:95,   1978:96,   1979:108,
+        1980:136,  1981:123,  1982:141,  1983:165,  1984:167,
+        1985:211,  1986:242,  1987:247,  1988:278,  1989:353,
+        1990:330,  1991:417,  1992:436,  1993:466,  1994:459,
+        1995:616,  1996:741,  1997:970,  1998:1229, 1999:1469,
+        2000:1320, 2001:1148, 2002:880,  2003:1112, 2004:1212,
+        2005:1248, 2006:1418, 2007:1468, 2008:903,  2009:1115,
+        2010:1258, 2011:1257, 2012:1426, 2013:1848, 2014:2059,
+        2015:2044, 2016:2239, 2017:2674, 2018:2507, 2019:3231,
+        2020:3756, 2021:4766, 2022:3840, 2023:4770, 2024:5882, 2025:6900,
+      }
+    },
+    bitcoin: {
+      name: 'Bitcoin',
+      prices: {
+        2010:0.30,  2011:4.25,  2012:13.50, 2013:758,
+        2014:320,   2015:430,   2016:960,   2017:13880,
+        2018:3740,  2019:7200,  2020:29000, 2021:46300,
+        2022:16500, 2023:42300, 2024:93400, 2025:95000,
+      }
+    },
+    omxs30: {
+      name: 'OMXS30',
+      prices: {
+        1986:130,  1987:105,  1988:150,  1989:200,  1990:130,
+        1991:150,  1992:110,  1993:200,  1994:195,  1995:230,
+        1996:320,  1997:420,  1998:480,  1999:920,  2000:880,
+        2001:690,  2002:430,  2003:600,  2004:700,  2005:950,
+        2006:1150, 2007:1230, 2008:660,  2009:950,  2010:1150,
+        2011:950,  2012:1100, 2013:1290, 2014:1465, 2015:1450,
+        2016:1520, 2017:1577, 2018:1408, 2019:1775, 2020:1875,
+        2021:2420, 2022:2040, 2023:2396, 2024:2580, 2025:2750,
+      }
+    },
+    nasdaq100: {
+      name: 'Nasdaq 100',
+      prices: {
+        1986:140,  1987:157,  1988:177,  1989:223,  1990:200,
+        1991:330,  1992:360,  1993:398,  1994:404,  1995:577,
+        1996:821,  1997:990,  1998:1836, 1999:3707, 2000:2342,
+        2001:1578, 2002:985,  2003:1468, 2004:1621, 2005:1645,
+        2006:1757, 2007:2085, 2008:1212, 2009:1860, 2010:2218,
+        2011:2278, 2012:2660, 2013:3592, 2014:4237, 2015:4593,
+        2016:4864, 2017:6396, 2018:6329, 2019:8733, 2020:12888,
+        2021:16320, 2022:10939, 2023:16826, 2024:21012, 2025:22800,
+      }
+    },
+    msciworld: {
+      name: 'MSCI World',
+      prices: {
+        1990:480,  1991:540,  1992:520,  1993:600,  1994:610,
+        1995:680,  1996:760,  1997:880,  1998:1020, 1999:1240,
+        2000:1100, 2001:920,  2002:740,  2003:960,  2004:1060,
+        2005:1170, 2006:1380, 2007:1480, 2008:880,  2009:1170,
+        2010:1280, 2011:1180, 2012:1340, 2013:1660, 2014:1710,
+        2015:1660, 2016:1760, 2017:2090, 2018:1880, 2019:2360,
+        2020:2690, 2021:3230, 2022:2600, 2023:3170, 2024:3700, 2025:3950,
+      }
+    },
+    dax: {
+      name: 'DAX',
+      prices: {
+        1990:1400, 1991:1580, 1992:1545, 1993:2270, 1994:2110,
+        1995:2255, 1996:2890, 1997:4250, 1998:5000, 1999:6960,
+        2000:6430, 2001:5160, 2002:2890, 2003:3965, 2004:4256,
+        2005:5408, 2006:6597, 2007:8067, 2008:4810, 2009:5957,
+        2010:6914, 2011:5898, 2012:7612, 2013:9552, 2014:9806,
+        2015:10743, 2016:11481, 2017:12918, 2018:10559, 2019:13249,
+        2020:13719, 2021:15885, 2022:13923, 2023:16752, 2024:19909, 2025:23800,
+      }
+    },
+    ftse100: {
+      name: 'FTSE 100',
+      prices: {
+        1990:2143, 1991:2493, 1992:2846, 1993:3418, 1994:3066,
+        1995:3689, 1996:4119, 1997:5135, 1998:5882, 1999:6930,
+        2000:6222, 2001:5217, 2002:3940, 2003:4477, 2004:4814,
+        2005:5619, 2006:6221, 2007:6457, 2008:4434, 2009:5413,
+        2010:5900, 2011:5572, 2012:5898, 2013:6749, 2014:6566,
+        2015:6242, 2016:7143, 2017:7688, 2018:6728, 2019:7542,
+        2020:6461, 2021:7385, 2022:7452, 2023:7733, 2024:8173, 2025:9500,
+      }
+    },
+    koppar: {
+      name: 'Koppar',
+      prices: {
+        1990:1.12, 1991:1.05, 1992:1.03, 1993:0.83, 1994:1.40,
+        1995:1.31, 1996:0.95, 1997:0.83, 1998:0.66, 1999:0.85,
+        2000:0.83, 2001:0.66, 2002:0.70, 2003:1.05, 2004:1.46,
+        2005:2.07, 2006:2.87, 2007:3.04, 2008:1.41, 2009:3.34,
+        2010:4.45, 2011:3.44, 2012:3.65, 2013:3.41, 2014:2.83,
+        2015:2.13, 2016:2.50, 2017:3.30, 2018:2.63, 2019:2.80,
+        2020:3.52, 2021:4.46, 2022:3.82, 2023:3.89, 2024:4.02, 2025:4.85,
+      }
+    },
+    olja: {
+      name: 'Olja',
+      prices: {
+        1990:28,  1991:19,  1992:19,  1993:14,  1994:17,
+        1995:19,  1996:25,  1997:17,  1998:11,  1999:25,
+        2000:27,  2001:20,  2002:30,  2003:32,  2004:43,
+        2005:61,  2006:61,  2007:96,  2008:45,  2009:79,
+        2010:91,  2011:99,  2012:91,  2013:98,  2014:53,
+        2015:37,  2016:54,  2017:60,  2018:45,  2019:61,
+        2020:48,  2021:75,  2022:80,  2023:72,  2024:74,  2025:70,
+      }
+    },
+  };
+
+  // ── Formattering ──────────────────────────────────────────────────────
+  const HIST_COLORS = {
+    guld:     { line: '#d4a017', fill: 'rgba(212,160,23,0.10)'   },
+    silver:   { line: '#7a8fa0', fill: 'rgba(122,143,160,0.10)'  },
+    sp500:    { line: '#164563', fill: 'rgba(22,69,99,0.10)'     },
+    bitcoin:  { line: '#f7931a', fill: 'rgba(247,147,26,0.10)'   },
+    omxs30:    { line: '#2e7d32', fill: 'rgba(46,125,50,0.10)'    },
+    nasdaq100: { line: '#7c3aed', fill: 'rgba(124,58,237,0.10)'  },
+    msciworld: { line: '#0891b2', fill: 'rgba(8,145,178,0.10)'   },
+    dax:       { line: '#c0392b', fill: 'rgba(192,57,43,0.10)'   },
+    ftse100:   { line: '#1a7a4a', fill: 'rgba(26,122,74,0.10)'   },
+    koppar:    { line: '#b87333', fill: 'rgba(184,115,51,0.10)'  },
+    olja:      { line: '#475569', fill: 'rgba(71,85,105,0.10)'   },
+  };
+
+
+  let histCurrency = 'SEK';
+  let histMode = 'lump';   // 'lump' (engångsbelopp) | 'dca' (månadssparande)
+
+  function histFmtAmt(n) {
+    const cur = CURRENCIES[histCurrency];
+    const s = Math.round(n).toLocaleString(cur.locale);
+    if (histCurrency === 'SEK') return s + ' kr (SEK)';
+    if (histCurrency === 'NOK') return s + ' kr (NOK)';
+    if (histCurrency === 'DKK') return s + ' kr (DKK)';
+    return cur.pos === 'before' ? cur.symbol + s : s + ' ' + cur.symbol;
+  }
+  function histFmtAmtShort(n) {
+    const cur = CURRENCIES[histCurrency];
+    const s = Math.round(n).toLocaleString(cur.locale);
+    if (histCurrency === 'SEK' || histCurrency === 'NOK' || histCurrency === 'DKK')
+      return s + ' kr';
+    return cur.pos === 'before' ? cur.symbol + s : s + ' ' + cur.symbol;
+  }
+  function histCurrencyLabel() {
+    if (histCurrency === 'SEK') return 'kr (SEK)';
+    if (histCurrency === 'NOK') return 'kr (NOK)';
+    if (histCurrency === 'DKK') return 'kr (DKK)';
+    const cur = CURRENCIES[histCurrency];
+    return cur.symbol + ' (' + histCurrency + ')';
+  }
+  function histFmtMult(m) {
+    if (m >= 1000) return Math.round(m).toLocaleString('sv-SE') + 'x';
+    if (m >= 10)   return m.toFixed(1) + 'x';
+    return m.toFixed(2) + 'x';
+  }
+
+
+  // ── Månadssparande (dollar-cost averaging) ────────────────────────────────
+  // Investerar (monthly × 12) varje år från startår (eller tillgångens första
+  // tillgängliga år, det senaste av dem) fram till idag. Köper andelar till
+  // varje års pris; värdet idag = totala andelar × dagens pris.
+  function histCalcDCA(key, startYear, monthlyAmount) {
+    const data = HIST_DATA[key];
+    if (!data) return null;
+    const prices = data.prices;
+    const dataYears = Object.keys(prices).map(Number).sort((a, b) => a - b);
+    if (dataYears.length === 0) return null;
+
+    const firstYear   = dataYears[0];
+    const currentYear = new Date().getFullYear();
+    const fromYear    = Math.max(startYear, firstYear);
+    const currentPrice = HIST_CURRENT[key];
+    const annual = monthlyAmount * 12;
+
+    // Pris för ett givet år: historiskt pris, eller dagens pris för innevarande år.
+    const priceAt = (y) => (y === currentYear ? currentPrice : prices[y]);
+
+    let totalUnits = 0, totalInvested = 0, contribYears = 0;
+    const runningValues = [];
+    for (let y = fromYear; y <= currentYear; y++) {
+      const p = priceAt(y);
+      if (!p) continue;               // hoppa över år som saknar data
+      totalUnits   += annual / p;
+      totalInvested += annual;
+      contribYears++;
+      runningValues.push({ year: y, value: totalUnits * p });
+    }
+    if (contribYears === 0) return null;
+
+    const valueToday = totalUnits * currentPrice;
+    return {
+      valueToday,
+      totalInvested,
+      multiple: totalInvested > 0 ? valueToday / totalInvested : 0,
+      startedLate: fromYear > startYear,
+      fromYear,
+      contribYears,
+      runningValues,
+    };
+  }
+
+  // ── Historisk graf (multi-asset) ──────────────────────────────────────────
+  let histChartInst = null;
+
+  function histRenderChart(assets, startYear, amount) {
+    const ctx = document.getElementById('historyChart').getContext('2d');
+    const legendEl = document.getElementById('hChartLegend');
+    legendEl.innerHTML = '';
+
+    const datasets = [];
+    if (histMode === 'dca') {
+      assets.forEach(key => {
+        const result = histCalcDCA(key, startYear, amount);
+        if (!result || result.runningValues.length === 0) return;
+        const { runningValues } = result;
+        datasets.push({
+          label: getAssetName(key),
+          _years: runningValues.map(v => v.year),
+          data: runningValues.map(v => v.value),
+          borderColor: HIST_COLORS[key].line,
+          backgroundColor: HIST_COLORS[key].fill,
+          borderWidth: 2.5,
+          fill: false,
+          tension: 0.3,
+          pointRadius: 0,
+          pointHoverRadius: 5,
+        });
+        const item = document.createElement('div');
+        item.className = 'h-legend-item';
+        item.innerHTML = '<span class="h-legend-swatch" style="background:' + HIST_COLORS[key].line + '"></span>' + getAssetName(key);
+        legendEl.appendChild(item);
+      });
+    } else {
+      assets.forEach(key => {
+        const prices = HIST_DATA[key].prices;
+        if (!prices[startYear]) return;
+        const allYears = Object.keys(prices).map(Number).sort((a,b) => a-b);
+        const years    = allYears.filter(y => y >= startYear);
+        const startP   = prices[startYear];
+        const series   = years.map(y => amount * (prices[y] / startP));
+        datasets.push({
+          label: getAssetName(key),
+          _years: years,
+          data: series,
+          borderColor: HIST_COLORS[key].line,
+          backgroundColor: HIST_COLORS[key].fill,
+          borderWidth: 2.5,
+          fill: false,
+          tension: 0.3,
+          pointRadius: 0,
+          pointHoverRadius: 5,
+        });
+        const item = document.createElement('div');
+        item.className = 'h-legend-item';
+        item.innerHTML = '<span class="h-legend-swatch" style="background:' + HIST_COLORS[key].line + '"></span>' + getAssetName(key);
+        legendEl.appendChild(item);
+      });
+    }
+
+    if (datasets.length === 0) {
+      if (histChartInst) { histChartInst.destroy(); histChartInst = null; }
+      return;
+    }
+
+    // Build shared x-axis (union of all years)
+    const allYearsSet = new Set();
+    datasets.forEach(ds => ds._years.forEach(y => allYearsSet.add(y)));
+    const sharedYears = Array.from(allYearsSet).sort((a,b) => a-b);
+
+    datasets.forEach(ds => {
+      const map = {};
+      ds._years.forEach((y, i) => { map[y] = ds.data[i]; });
+      ds.data = sharedYears.map(y => (map[y] !== undefined ? map[y] : null));
+      delete ds._years;
+    });
+
+    if (histChartInst) {
+      histChartInst.data.labels = sharedYears;
+      histChartInst.data.datasets = datasets;
+      histChartInst.update('none');
+      return;
+    }
+
+    histChartInst = new Chart(ctx, {
+      type: 'line',
+      data: { labels: sharedYears, datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 300 },
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(22,69,99,0.93)',
+            titleFont: { family: '"DM Sans",sans-serif', weight: '700', size: 12 },
+            bodyFont:  { family: '"DM Sans",sans-serif', size: 11 },
+            padding: 10,
+            displayColors: true,
+            callbacks: {
+              title: items => T('yr-pfx') + items[0].label,
+              label: item  => ' ' + item.dataset.label + ': ' + histFmtAmtShort(item.raw),
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid:   { color: '#f0ede8' },
+            border: { display: false },
+            ticks: { font: { family: '"DM Sans",sans-serif', size: 10 }, color: '#aaa', maxTicksLimit: 9 }
+          },
+          y: {
+            grid:   { color: '#f0ede8' },
+            border: { display: false },
+            ticks: {
+              font: { family: '"DM Sans",sans-serif', size: 10 },
+              color: '#aaa', maxTicksLimit: 5,
+              callback(v) { return compactNum(v); }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // ── Fyll år-dropdown (statisk 1970–2025) ───────────────────────────────
+  function histPopulateYears() {
+    const sel  = document.getElementById('hYear');
+    const prev = parseInt(sel.value) || 2000;
+    sel.innerHTML = '';
+    for (let y = 1970; y <= 2025; y++) {
+      const opt = document.createElement('option');
+      opt.value = y; opt.textContent = y;
+      sel.appendChild(opt);
+    }
+    sel.value = (prev >= 1970 && prev <= 2025) ? prev : 2000;
+  }
+
+  // ── Hämta valda tillgångar ──────────────────────────────────────────────────
+  function histSelectedAssets() {
+    return Array.from(document.querySelectorAll('#hAssetToggles .h-asset-btn.active'))
+      .map(btn => btn.dataset.asset);
+  }
+
+  // ── Uppdatera jämförelsetabell ─────────────────────────────────────────────
+  function histRenderResults(assets, year, amount) {
+    const container = document.getElementById('hCompRows');
+    container.innerHTML = '';
+
+    if (histMode === 'dca') {
+      const rows = [];
+      assets.forEach(key => {
+        const result = histCalcDCA(key, year, amount);
+        if (!result) return;
+        rows.push({ key, ...result });
+      });
+      rows.sort((a, b) => b.valueToday - a.valueToday);
+      if (rows.length === 0) {
+        container.innerHTML = '<div class="h-comp-empty">' + T('hist-empty') + '</div>';
+        return;
+      }
+      rows.forEach(r => {
+        const row = document.createElement('div');
+        row.className = 'h-comp-row';
+        const lateLbl = r.startedLate ? ' <span class="h-comp-late">(' + T('hist-dca-from', r.fromYear) + ')</span>' : '';
+        row.innerHTML =
+          '<span class="h-comp-dot" style="background:' + HIST_COLORS[r.key].line + '"></span>' +
+          '<span class="h-comp-name">' + getAssetName(r.key) + lateLbl + '</span>' +
+          '<span class="h-comp-value">' + histFmtAmtShort(r.valueToday) + '</span>' +
+          '<span class="h-comp-badge">' + histFmtMult(r.multiple) + '</span>';
+        container.appendChild(row);
+      });
+      return;
+    }
+
+    const rows = [], noData = [];
+    assets.forEach(key => {
+      const prices = HIST_DATA[key].prices;
+      if (!prices[year]) { noData.push(key); return; }
+      const valueToday = amount * (HIST_CURRENT[key] / prices[year]);
+      rows.push({ key, valueToday, multiple: valueToday / amount });
+    });
+    rows.sort((a, b) => b.valueToday - a.valueToday);
+
+    if (rows.length === 0 && noData.length === 0) {
+      container.innerHTML = '<div class="h-comp-empty">' + T('hist-empty') + '</div>';
+      return;
+    }
+
+    rows.forEach(r => {
+      const row = document.createElement('div');
+      row.className = 'h-comp-row';
+      row.innerHTML =
+        '<span class="h-comp-dot" style="background:' + HIST_COLORS[r.key].line + '"></span>' +
+        '<span class="h-comp-name">' + getAssetName(r.key) + '</span>' +
+        '<span class="h-comp-value">' + histFmtAmtShort(r.valueToday) + '</span>' +
+        '<span class="h-comp-badge">' + histFmtMult(r.multiple) + '</span>';
+      container.appendChild(row);
+    });
+
+    noData.forEach(key => {
+      const row = document.createElement('div');
+      row.className = 'h-comp-row';
+      row.innerHTML =
+        '<span class="h-comp-dot" style="background:' + HIST_COLORS[key].line + '"></span>' +
+        '<span class="h-comp-name">' + getAssetName(key) + '</span>' +
+        '<span class="h-comp-nodata">' + T('hist-nodata') + '</span>';
+      container.appendChild(row);
+    });
+  }
+
+  // ── Belopps-etikett ──────────────────────────────────────────────────────────
+  function histUpdateAmountTag() {
+    const amount = Math.max(0, parseFloat(document.getElementById('hAmountNum').value) || 0);
+    document.getElementById('hAmountTag').textContent =
+      Math.round(amount).toLocaleString('sv-SE') + ' ' + histCurrencyLabel();
+  }
+
+  // ── Huvud-uppdatering ──────────────────────────────────────────────────
+  let _histTimer = null;
+  function histUpdate() {
+    const assets = histSelectedAssets();
+    const year   = parseInt(document.getElementById('hYear').value);
+    const amount = Math.max(0, parseFloat(document.getElementById('hAmountNum').value) || 0);
+
+    histUpdateAmountTag();
+    histRenderResults(assets, year, amount);
+
+    // Update amount label for current mode
+    const lblEl = document.getElementById('hAmountLabelSpan');
+    if (lblEl) lblEl.textContent = T(histMode === 'dca' ? 'hist-monthly-lbl' : 'hist-amount-lbl');
+
+    if (histMode === 'dca') {
+      const withResults = assets
+        .map(k => { const r = histCalcDCA(k, year, amount); return r ? { key: k, ...r } : null; })
+        .filter(Boolean);
+      if (withResults.length === 1 && amount > 0) {
+        const r = withResults[0];
+        document.getElementById('hSentence').innerHTML = T('hist-dca-single',
+          histFmtAmt(amount), getAssetName(r.key), r.fromYear, histFmtAmt(r.valueToday), histFmtAmt(r.totalInvested), histFmtMult(r.multiple));
+      } else if (withResults.length > 1 && amount > 0) {
+        document.getElementById('hSentence').innerHTML = T('hist-dca-multi', withResults.length, year, histFmtAmt(amount));
+      } else {
+        document.getElementById('hSentence').innerHTML = '';
+      }
+    } else {
+      const withData = assets.filter(k => HIST_DATA[k].prices[year]);
+      if (withData.length === 1 && amount > 0) {
+        const key        = withData[0];
+        const valueToday = amount * (HIST_CURRENT[key] / HIST_DATA[key].prices[year]);
+        const multiple   = valueToday / amount;
+        document.getElementById('hSentence').innerHTML = T('hist-single',
+          histFmtAmt(amount), getAssetName(key), year, histFmtAmt(valueToday), histFmtMult(multiple));
+      } else if (withData.length > 1 && amount > 0) {
+        document.getElementById('hSentence').innerHTML = T('hist-multi', withData.length, year, histFmtAmt(amount));
+      } else {
+        document.getElementById('hSentence').innerHTML = '';
+      }
+    }
+
+    clearTimeout(_histTimer);
+    _histTimer = setTimeout(() => histRenderChart(assets, year, amount), 40);
+  }
+
+  // ── Händelsebindningar ─────────────────────────────────────────────────────────────
+  document.getElementById('hAssetToggles').addEventListener('click', e => {
+    const btn = e.target.closest('.h-asset-btn');
+    if (!btn) return;
+    btn.classList.toggle('active');
+    histUpdate();
+  });
+
+  document.getElementById('hModeToggle').addEventListener('click', e => {
+    const btn = e.target.closest('.h-asset-btn');
+    if (!btn) return;
+    document.querySelectorAll('#hModeToggle .h-asset-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    histMode = btn.dataset.hmode;
+    if (histChartInst) { histChartInst.destroy(); histChartInst = null; }
+    histUpdate();
+  });
+
+  document.getElementById('hYear').addEventListener('change', histUpdate);
+  document.getElementById('hCurrency').addEventListener('change', () => {
+    histCurrency = document.getElementById('hCurrency').value;
+    histUpdate();
+  });
+
+  (function bindHistAmount() {
+    const slider = document.getElementById('hAmountSlider');
+    const num    = document.getElementById('hAmountNum');
+    function fromSlider() { num.value = slider.value; updateTrack(slider); histUpdate(); }
+    function fromNum() {
+      let v = parseFloat(num.value);
+      if (isNaN(v)) return;
+      v = Math.min(Math.max(v, +slider.min), +slider.max);
+      num.value = v; slider.value = v; updateTrack(slider); histUpdate();
+    }
+    slider.addEventListener('input',  fromSlider);
+    num.addEventListener('input',     fromNum);
+    num.addEventListener('change',    fromNum);
+    updateTrack(slider);
+  })();
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MILJARDÄRERNAS SVERIGE
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // ── Editable data ─────────────────────────────────────────────────────────
+  const BILJ_COUNT_DATA = {
+    1996: 28,
+    2011: 110,
+    2019: 206,
+    2021: 542,
+  };
+
+  const BILJ_GDP_DATA = {
+    1996:  6,
+    2019: 34,
+    2021: 68,
+  };
+
+  // ── Charts ────────────────────────────────────────────────────────────────
+  let biljCountChartInst = null;
+  let biljGdpChartInst   = null;
+
+  function biljChartOpts(tipCbs, yTickCb) {
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 0 },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(22,69,99,0.93)',
+          titleFont: { family: '"DM Sans",sans-serif', weight: '700', size: 12 },
+          bodyFont:  { family: '"DM Sans",sans-serif', size: 11 },
+          padding: 10, displayColors: false,
+          callbacks: tipCbs,
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: '#f0ede8' }, border: { display: false },
+          ticks: { font: { family: '"DM Sans",sans-serif', size: 10 }, color: '#aaa' }
+        },
+        y: {
+          grid: { color: '#f0ede8' }, border: { display: false },
+          ticks: { font: { family: '"DM Sans",sans-serif', size: 10 }, color: '#aaa', maxTicksLimit: 5, callback: yTickCb },
+          beginAtZero: true,
+        }
+      }
+    };
+  }
+
+  function biljRenderCountChart() {
+    if (biljCountChartInst) { biljCountChartInst.update('none'); return; }
+    const years = Object.keys(BILJ_COUNT_DATA).map(Number).sort((a, b) => a - b);
+    const vals  = years.map(y => BILJ_COUNT_DATA[y]);
+    biljCountChartInst = new Chart(
+      document.getElementById('biljCountChart').getContext('2d'),
+      {
+        type: 'line',
+        data: {
+          labels: years,
+          datasets: [{
+            data: vals,
+            borderColor: '#a03253',
+            backgroundColor: 'rgba(160,50,83,0.10)',
+            borderWidth: 2.5,
+            fill: true,
+            tension: 0.25,
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            pointBackgroundColor: '#a03253',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+          }]
+        },
+        options: biljChartOpts(
+          {
+            title: items => T('bilj-count-yr', items[0].label),
+            label: item  => T('bilj-count-tip', item.raw),
+          },
+          v => v
+        )
+      }
+    );
+  }
+
+  function biljRenderGdpChart() {
+    if (biljGdpChartInst) { biljGdpChartInst.update('none'); return; }
+    const years = Object.keys(BILJ_GDP_DATA).map(Number).sort((a, b) => a - b);
+    const vals  = years.map(y => BILJ_GDP_DATA[y]);
+    biljGdpChartInst = new Chart(
+      document.getElementById('biljGdpChart').getContext('2d'),
+      {
+        type: 'bar',
+        data: {
+          labels: years,
+          datasets: [{
+            data: vals,
+            backgroundColor: ['rgba(22,69,99,0.50)', 'rgba(22,69,99,0.65)', 'rgba(160,50,83,0.75)'],
+            borderColor:      ['rgba(22,69,99,0.8)',  'rgba(22,69,99,0.9)',  '#a03253'],
+            borderWidth: 2,
+            borderRadius: 4,
+          }]
+        },
+        options: biljChartOpts(
+          {
+            title: items => T('bilj-count-yr', items[0].label),
+            label: item  => T('bilj-gdp-tip', item.raw),
+          },
+          v => v + ' %'
+        )
+      }
+    );
+  }
+
+
+  // ── Slider drag tooltip ───────────────────────────────────────
+  var _slTip = null;
+  function getSlTip() {
+    if (!_slTip) {
+      _slTip = document.createElement('span');
+      _slTip.className = 'slider-tip';
+      document.body.appendChild(_slTip);
+    }
+    return _slTip;
+  }
+
+  function fmtTipKr(rawVal) {
+    var n = Math.round(parseFloat(rawVal) || 0);
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' kr';
+  }
+
+  var SLIDER_TIP_FMT = {
+    rateSlider:      function(s) { var v = parseFloat(s.value); return (Number.isInteger(v) ? v : v.toFixed(1)) + ' %'; },
+    monthlySlider:   function()  { return fmtTipKr(document.getElementById('monthlyNum').value); },
+    startSlider:     function()  { return fmtTipKr(document.getElementById('startNum').value); },
+    yearsSlider:     function(s) { return s.value + ' ' + (currentLang === 'sv' ? 'år' : 'yrs'); },
+    hAmountSlider:   function()  { return fmtTipKr(document.getElementById('hAmountNum').value); },
+  };
+
+  function showSlTip(slider) {
+    var fmt = SLIDER_TIP_FMT[slider.id];
+    if (!fmt) return;
+    var tip = getSlTip();
+    tip.textContent = fmt(slider);
+    var pct = (parseFloat(slider.value) - parseFloat(slider.min)) /
+              (parseFloat(slider.max)   - parseFloat(slider.min));
+    var rect = slider.getBoundingClientRect();
+    var isLever = slider.classList.contains('rb-lever');
+    if (isLever) {
+      // Lever is rotate(-90deg): visual rect.height ≈ 222px (logical width)
+      var thumbH = 38;
+      var trackH = rect.height;
+      // pct=0 = bottom visually, pct=1 = top visually
+      var thumbCY = rect.bottom - thumbH / 2 - pct * (trackH - thumbH);
+      tip.classList.add('lever-tip');
+      tip.style.left = (rect.right + 8) + 'px';
+      tip.style.top  = (thumbCY - 10) + 'px';
+      tip.style.transform = 'none';
+    } else {
+      var thumbW = 20;
+      var trackW = rect.width;
+      var thumbCX = rect.left + thumbW / 2 + pct * (trackW - thumbW);
+      tip.classList.remove('lever-tip');
+      tip.style.left = thumbCX + 'px';
+      tip.style.top  = (rect.top - 34) + 'px';
+      tip.style.transform = 'translateX(-50%)';
+    }
+    tip.classList.add('visible');
+  }
+
+  function hideSlTip() { if (_slTip) _slTip.classList.remove('visible'); }
+
+  function initSliderTips() {
+    document.querySelectorAll('input[type="range"]').forEach(function(s) {
+      s.addEventListener('pointerdown', function() { showSlTip(s); });
+      s.addEventListener('input',       function() { showSlTip(s); });
+      s.addEventListener('pointerup',   hideSlTip);
+      s.addEventListener('pointercancel', hideSlTip);
+    });
+    // Ensure all sliders have initial --pct set
+    document.querySelectorAll('input[type="range"]').forEach(updateTrack);
+  }
+
+  // ── Floating header dropdowns ────────────────────────────────
+  function closeAllDropdowns() {
+    document.querySelectorAll('.fh-dd-menu').forEach(function(m) { m.hidden = true; });
+    document.querySelectorAll('.fh-dd-btn').forEach(function(b) { b.setAttribute('aria-expanded', 'false'); });
+  }
+
+  function updateLangDropdown(lang) {
+    var label = document.getElementById('langDdLabel');
+    if (label) label.textContent = lang === 'sv' ? 'SV' : 'EN';
+    document.querySelectorAll('#langDdMenu .fh-dd-item').forEach(function(item) {
+      item.setAttribute('aria-selected', item.dataset.lang === lang ? 'true' : 'false');
+    });
+  }
+
+  function updateCurrDropdown(curr) {
+    var label = document.getElementById('currDdLabel');
+    if (label) label.textContent = curr;
+    document.querySelectorAll('#currDdMenu .fh-dd-item').forEach(function(item) {
+      item.setAttribute('aria-selected', item.dataset.curr === curr ? 'true' : 'false');
+    });
+  }
+
+  function initHeaderDropdowns() {
+    var langBtn  = document.getElementById('langDdBtn');
+    var langMenu = document.getElementById('langDdMenu');
+    if (langBtn && langMenu) {
+      langBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var wasOpen = !langMenu.hidden;
+        closeAllDropdowns();
+        if (!wasOpen) { langMenu.hidden = false; langBtn.setAttribute('aria-expanded', 'true'); }
+      });
+      langMenu.querySelectorAll('.fh-dd-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+          currentLang = item.dataset.lang;
+          try { localStorage.setItem('decennium-lang', currentLang); } catch(e) {}
+          applyLang();
+          closeAllDropdowns();
+        });
+      });
+    }
+
+    var currBtn  = document.getElementById('currDdBtn');
+    var currMenu = document.getElementById('currDdMenu');
+    if (currBtn && currMenu) {
+      currBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var wasOpen = !currMenu.hidden;
+        closeAllDropdowns();
+        if (!wasOpen) { currMenu.hidden = false; currBtn.setAttribute('aria-expanded', 'true'); }
+      });
+      currMenu.querySelectorAll('.fh-dd-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+          var curr = item.dataset.curr;
+          var sel = document.getElementById('currencySelect');
+          if (sel) { sel.value = curr; sel.dispatchEvent(new Event('change')); }
+          updateCurrDropdown(curr);
+          closeAllDropdowns();
+        });
+      });
+    }
+
+    document.addEventListener('click', closeAllDropdowns);
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeAllDropdowns(); });
+  }
+
+  var _langChanging = false;
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // VAD HAR SVENSKARNA SPARAT? — age chart (SCB kapital / Avanza manad tabs)
+  // ═══════════════════════════════════════════════════════════════════════════
+  var avanzaChartInst = null, avanzaMetric = 'kapital';
+
+  function updateAvanzaMeta() {
+    var isK = avanzaMetric === 'kapital';
+    var sumEl = document.getElementById('avanzaChartSummary');
+    if (sumEl) sumEl.textContent = T(isK ? 'avanza-chart-summary-kapital' : 'avanza-chart-summary-manad');
+    var cavEl = document.getElementById('avanzaChartCaveat');
+    if (cavEl) cavEl.textContent = T(isK ? 'avanza-chart-caveat-kapital' : 'avanza-chart-caveat-manad');
+    var titleEl = document.getElementById('savtblTitle');
+    if (titleEl) titleEl.textContent = T(isK ? 'savtbl-title-kapital' : 'savtbl-title-manad');
+    var capEl = document.getElementById('savtblCaption');
+    if (capEl) capEl.textContent = T(isK ? 'savtbl-caption-kapital' : 'savtbl-caption-manad');
+  }
+
+  function avanzaBuildChart() {
+    var ctx = document.getElementById('avanzaAgeChart'); if (!ctx) return;
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    var gridColor = dark ? 'rgba(255,255,255,0.10)' : '#f0ede8', tickColor = dark ? '#9ea3ac' : '#999';
+    var legColor = dark ? '#9ea3ac' : '#555';
+    var medelColor = dark ? '#5cc8c0' : '#0d3b38', medianColor = dark ? '#6c9fd4' : '#2d5fa0';
+    var medelBg = dark ? 'rgba(92,200,192,0.07)' : 'rgba(13,59,56,0.06)', medianBg = dark ? 'rgba(108,159,212,0.07)' : 'rgba(45,95,160,0.06)';
+    var medelLabel = currentLang === 'sv' ? 'Medel' : 'Mean';
+    var xTitle = currentLang === 'sv' ? 'Åldersgrupp' : 'Age group';
+    var src = avanzaMetric === 'kapital' ? SCB_KAPITAL_BY_AGE : AVANZA_MANAD_BY_AGE;
+    var labels = Object.keys(src);
+    var medelData = labels.map(function(k) { return src[k].medel; });
+    var medianData = labels.map(function(k) { return src[k].median; });
+    if (avanzaChartInst) {
+      avanzaChartInst.data.labels = labels;
+      avanzaChartInst.data.datasets[0].label = medelLabel; avanzaChartInst.data.datasets[0].data = medelData;
+      avanzaChartInst.data.datasets[0].borderColor = medelColor; avanzaChartInst.data.datasets[0].backgroundColor = medelBg;
+      avanzaChartInst.data.datasets[1].data = medianData;
+      avanzaChartInst.data.datasets[1].borderColor = medianColor; avanzaChartInst.data.datasets[1].backgroundColor = medianBg;
+      var ao = avanzaChartInst.options;
+      if (ao.scales.x.ticks) ao.scales.x.ticks.color = tickColor;
+      if (ao.scales.x.grid) ao.scales.x.grid.color = gridColor;
+      if (ao.scales.x.title) { ao.scales.x.title.text = xTitle; ao.scales.x.title.color = tickColor; }
+      if (ao.scales.y.ticks) ao.scales.y.ticks.color = tickColor;
+      if (ao.scales.y.grid) ao.scales.y.grid.color = gridColor;
+      if (ao.plugins.legend && ao.plugins.legend.labels) ao.plugins.legend.labels.color = legColor;
+      avanzaChartInst.update('none');
+    } else {
+      avanzaChartInst = new Chart(ctx.getContext('2d'), {
+        type: 'line',
+        data: { labels: labels, datasets: [
+          { label: medelLabel, data: medelData, borderColor: medelColor, backgroundColor: medelBg,
+            borderWidth: 2.5, pointRadius: 4, pointHoverRadius: 6, tension: 0.3, fill: false },
+          { label: 'Median', data: medianData, borderColor: medianColor, backgroundColor: medianBg,
+            borderWidth: 2.5, pointRadius: 4, pointHoverRadius: 6, tension: 0.3, fill: false }
+        ]},
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { labels: { color: legColor, boxWidth: 14, font: { size: 12 } } },
+            tooltip: { callbacks: {
+              title: function(items) { return items[0].label; },
+              label: function(item) {
+                var v = Math.round(item.raw);
+                var s = v.toLocaleString('sv-SE');
+                return ' ' + item.dataset.label + ': ' + s + ' kr';
+              }
+            }}
+          },
+          scales: {
+            x: { grid: { color: gridColor }, ticks: { color: tickColor },
+                 title: { display: true, text: xTitle, color: tickColor, font: { size: 11 } } },
+            y: { grid: { color: gridColor }, ticks: { color: tickColor,
+                   callback: function(val) {
+                     if (val >= 1000000) return (val / 1000000).toFixed(1).replace('.', ',') + ' Mnkr';
+                     if (val >= 1000) return Math.round(val / 1000) + 'tkr';
+                     return val;
+                   }
+                 }
+               }
+          }
+        }
+      });
+    }
+    updateAvanzaMeta();
+  }
+
+  ['avanzaBtnKapital', 'avanzaBtnManad'].forEach(function(id) {
+    var btn = document.getElementById(id); if (!btn) return;
+    btn.addEventListener('click', function() {
+      avanzaMetric = this.dataset.metric;
+      document.querySelectorAll('.avanza-metric-btn').forEach(function(b) {
+        b.classList.toggle('avanza-metric-btn--active', b.dataset.metric === avanzaMetric);
+      });
+      avanzaBuildChart();
+      renderSavingsTable();
+    });
+  });
+  // --- Chart data table ---
+  function fmtKrPlain(n) { return Math.round(n).toLocaleString('sv-SE') + ' kr'; }
+  function renderSavingsTable() {
+    var body = document.getElementById('savtblBody');
+    if (!body) return;
+    var src = avanzaMetric === 'kapital' ? SCB_KAPITAL_BY_AGE : AVANZA_MANAD_BY_AGE;
+    var html = '';
+    Object.keys(src).forEach(function(age, i) {
+      var d = src[age];
+      html += '<tr>'
+        + '<td><span class="savtbl-pill savtbl-pill--c' + (i % 7) + '">' + age + '</span></td>'
+        + '<td class="savtbl-num">' + fmtKrPlain(d.medel) + '</td>'
+        + '<td class="savtbl-num">' + fmtKrPlain(d.median) + '</td>'
+        + '</tr>';
+    });
+    body.innerHTML = html;
+  }
+  function applyLang() {
+    _langChanging = true;
+    document.documentElement.lang = currentLang;
+    const toggle = document.getElementById('langToggle');
+    if (toggle) toggle.textContent = currentLang === 'sv' ? 'EN' : 'SV';
+    updateLangDropdown(currentLang);
+    document.title = T('page-title');
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      el.textContent = T(el.dataset.i18n);
+    });
+
+    // Update main chart dataset labels in-place — no destroy/recreate
+    if (chartInst) {
+      const ds = chartInst.data.datasets;
+      switch (currentMode) {
+        case 'enkel':
+          ds[0].label = T('ds-total');
+          break;
+        case 'detaljerad':
+          ds[0].label = T('ds-insatt-kapital');
+          ds[1].label = T('ds-avkastning');
+          break;
+        case 'arsandel':
+          ds[0].label = T('ds-insatt-ar');
+          ds[1].label = T('ds-avkastning-ar');
+          break;
+        case 'ackumulerad':
+          ds[0].label = T('ds-insatt');
+          ds[1].label = T('ds-total');
+          break;
+        case 'slumpad':
+          ds[0].label = T('ds-simulerat');
+          break;
+      }
+      chartInst.update('none');
+      document.getElementById('chartLegend').innerHTML = legendHTML(currentMode);
+    }
+
+    update();
+    histUpdate();
+    biljRenderCountChart();
+    biljRenderGdpChart();
+    avanzaBuildChart();
+    renderSavingsTable();
+    _langChanging = false;
+  }
+
+  // ── Dark mode ────────────────────────────────────────────────
+  var _darkMode = false;
+
+  function dmChartColors(dark) {
+    var grid  = dark ? 'rgba(255,255,255,0.10)' : '#f0ede8';
+    var tick  = dark ? '#9ea3ac' : '#aaa';
+    var leg   = dark ? '#9ea3ac' : '#aaa';
+    var all   = [chartInst, histChartInst, 
+                 biljCountChartInst, biljGdpChartInst];
+    all.forEach(function(inst) {
+      if (!inst) return;
+      var opts = inst.options;
+      ['x','y'].forEach(function(ax) {
+        if (opts.scales && opts.scales[ax]) {
+          if (opts.scales[ax].ticks) opts.scales[ax].ticks.color = tick;
+          if (opts.scales[ax].grid)  opts.scales[ax].grid.color  = grid;
+        }
+      });
+      if (opts.plugins && opts.plugins.legend && opts.plugins.legend.labels) {
+        opts.plugins.legend.labels.color = leg;
+      }
+      inst.update('none');
+    });
+  }
+
+  function setDarkMode(dark) {
+    _darkMode = dark;
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    var btn = document.getElementById('themeToggle');
+    if (btn) btn.setAttribute('aria-checked', dark ? 'true' : 'false');
+    try { localStorage.setItem('decennium-theme', dark ? 'dark' : 'light'); } catch(e) {}
+    dmChartColors(dark);
+    if (avanzaChartInst) avanzaBuildChart();
+  }
+
+  document.getElementById('themeToggle').addEventListener('click', function() {
+    setDarkMode(!_darkMode);
+  });
+
+  // Restore saved preference or use system preference
+  (function() {
+    var saved = '';
+    try { saved = localStorage.getItem('decennium-theme') || ''; } catch(e) {}
+    if (saved === 'dark' || (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      setDarkMode(true);
+    }
+  })();
+
+  document.getElementById('langToggle').addEventListener('click', () => {
+    currentLang = currentLang === 'sv' ? 'en' : 'sv';
+    try { localStorage.setItem('decennium-lang', currentLang); } catch(e) {}
+    applyLang();
+  });
+
+    histPopulateYears();
+  biljRenderCountChart();
+  biljRenderGdpChart();
+  applyLang();
+  initSliderTips();
+  initHeaderDropdowns();
+  // Apply saved currency/lang state to dropdowns and charts on load
+  updateCurrDropdown(currentCurrency);
+  var sel = document.getElementById('currencySelect');
+  if (sel && sel.value !== currentCurrency) {
+    sel.value = currentCurrency;
+    sel.dispatchEvent(new Event('change'));
+  }
+
+  // ── Page transitions ─────────────────────────────────────────
+  function navigateTo(url) {
+    document.body.style.transition = 'opacity 0.3s ease';
+    document.body.style.opacity = '0';
+    setTimeout(function() { window.location.href = url; }, 310);
+  }
+
+  // Fade in on load
+  window.addEventListener('load', function() {
+    document.body.classList.add('page-loaded');
+  });
+  </script>
+</body>
+</html>
+

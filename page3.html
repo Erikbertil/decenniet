@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decenniet – Avgiftskostnad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* ── Variables — home page values ──────────────────────────── */
+    :root {
+      --rt-text-color:    #1a2e2e;
+      --rt-blue:          #0d3b38;
+      --rt-blue-mid:      #1a5c58;
+      --rt-white:         #ffffff;
+      --rt-beige-main:    #f9f9f7;
+      --rt-beige-contrast:#dde8e7;
+      --rt-muted:         #7a8b8b;
+      --rt-section-div:   #e0e8e7;
+      /* Navy dark-green — nav active pill ONLY */
+      --page-accent:      #37614f;
+      --page-accent-bg:   rgba(55,97,79,0.08);
+      /* Fee chart semantic colors */
+      --fee-a:            #c0392b;
+      --fee-b:            #0d3b38;
+    }
+    [data-theme="dark"] {
+      --rt-text-color:    #e8e9eb;
+      --rt-blue:          #5cc8c0;
+      --rt-blue-mid:      #3ab5ac;
+      --rt-white:         #363a3f;
+      --rt-beige-main:    #3d4147;
+      --rt-beige-contrast:#474c53;
+      --rt-muted:         #9ea3ac;
+      --rt-section-div:   #4e535b;
+      --page-accent:      #549675;
+      --page-accent-bg:   rgba(84,150,117,0.10);
+      --fee-a:            #e05c4a;
+      --fee-b:            #5cc8c0;
+    }
+
+    *, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { background: var(--rt-white); }
+
+    body {
+      font-family: "DM Sans", "Nunito", sans-serif;
+      font-size: clamp(0.9rem, 0.85rem + 0.25vw, 1.1rem);
+      color: var(--rt-text-color);
+      background: var(--rt-white);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      opacity: 0;
+      position: relative;
+      z-index: 1;
+    }
+    body.page-loaded { opacity: 1; transition: opacity 0.38s ease; }
+
+    /* ── Animated gradient background ────────────────────────── */
+    .gradient-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: var(--rt-beige-main);
+      overflow: hidden;
+      pointer-events: none;
+      /* Match home page exactly: animated blobs hidden, flat white background */
+      display: none;
+    }
+    [data-theme="dark"] .gradient-bg { background: #22252a; }
+    .gradient-blur {
+      position: absolute;
+      inset: -20%;
+      filter: blur(90px);
+      overflow: hidden;
+    }
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.38;
+      animation: blobDrift linear infinite;
+      will-change: transform;
+    }
+    [data-theme="dark"] .blob { display: none; }
+    @keyframes blobDrift {
+      0%,100% { transform: translate(0, 0); }
+      20%  { transform: translate(calc(var(--tx1,0.3) * 200px), calc(var(--ty1,0.2) * 200px)); }
+      40%  { transform: translate(calc(var(--tx2,-0.4) * 200px), calc(var(--ty2,0.5) * 200px)); }
+      60%  { transform: translate(calc(var(--tx3,0.2) * 200px), calc(var(--ty3,-0.3) * 200px)); }
+      80%  { transform: translate(calc(var(--tx4,-0.2) * 200px), calc(var(--ty4,-0.4) * 200px)); }
+    }
+
+    /* ── Header ─────────────────────────────────────────────────── */
+    .site-header {
+      width: 100%;
+      position: relative;
+      z-index: 50;
+      padding: 0.95rem 1.75rem;
+      background: var(--rt-beige-main);
+      border-bottom: 1px solid var(--rt-beige-contrast);
+    }
+    [data-theme="dark"] .site-header {
+      background: #22252a;
+      border-bottom-color: #3a3f46;
+    }
+    .site-header-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 1rem;
+    }
+    .sh-brand {
+      justify-self: start;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: "DM Serif Display", serif;
+      font-size: 1.15rem;
+      color: var(--rt-blue);
+      letter-spacing: 0.01em;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .sh-brand:hover { opacity: 0.68; }
+    .sh-brand-icon { width: 19px; height: 19px; color: var(--rt-blue); flex-shrink: 0; }
+    .sh-nav { justify-self: center; display: flex; }
+    .sh-nav-pill {
+      display: inline-flex;
+      align-items: center;
+      background: var(--rt-white);
+      border: 1px solid var(--rt-beige-contrast);
+      border-radius: 0;
+      padding: 0.25rem;
+      gap: 0.3rem;
+    }
+    [data-theme="dark"] .sh-nav-pill { background: #2d3035; border-color: #474c53; }
+    .sh-nav-link {
+      font-family: "DM Sans", sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--rt-text-color);
+      background: none;
+      border: none;
+      padding: 0.5rem 1.25rem;
+      border-radius: 0;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+      outline: none;
+      display: inline-flex;
+      align-items: center;
+      letter-spacing: 0.01em;
+    }
+    .sh-nav-link:hover { background: var(--rt-beige-contrast); }
+    [data-theme="dark"] .sh-nav-link:hover { background: #3d4147; }
+    /* Green active state — this page's identity */
+    .sh-nav-link.sh-nav-active {
+      background: var(--page-accent);
+      color: #fff;
+      font-weight: 600;
+    }
+    [data-theme="dark"] .sh-nav-link.sh-nav-active {
+      background: var(--page-accent);
+      color: #fff;
+    }
+    .sh-controls { justify-self: end; display: flex; align-items: center; gap: 0.4rem; }
+    @media (max-width: 720px) {
+      .site-header { padding: 0.8rem 1rem; }
+      .site-header-inner { grid-template-columns: 1fr 1fr; row-gap: 0.75rem; }
+      .sh-nav { grid-column: 1 / -1; grid-row: 2; }
+      .sh-nav-pill { flex-wrap: wrap; justify-content: center; }
+      .sh-nav-link { font-size: 0.82rem; padding: 0.45rem 0.85rem; }
+    }
+    @media (max-width: 360px) { .sh-brand-text { display: none; } }
+
+    /* ── Language dropdown ──────────────────────────────────────── */
+    .fh-dd { position: relative; }
+    .fh-dd-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-family: "DM Sans", sans-serif;
+      font-size: 0.77rem;
+      font-weight: 600;
+      color: var(--rt-blue);
+      background: var(--rt-white);
+      border: 1.5px solid var(--rt-beige-contrast);
+      border-radius: 999px;
+      padding: 0.28rem 0.55rem 0.28rem 0.75rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color 0.15s;
+      outline: none;
+      user-select: none;
+    }
+    .fh-dd-btn:hover { border-color: var(--rt-blue); }
+    [data-theme="dark"] .fh-dd-btn { background: #3d4147; border-color: #474c53; color: #5cc8c0; }
+    .fh-chevron { width: 11px; height: 11px; opacity: 0.6; transition: transform 0.18s; flex-shrink: 0; }
+    .fh-dd-btn[aria-expanded="true"] .fh-chevron { transform: rotate(180deg); }
+    .fh-dd-menu {
+      position: absolute;
+      top: calc(100% + 0.4rem);
+      right: 0;
+      min-width: 140px;
+      background: var(--rt-white);
+      border: 1.5px solid var(--rt-beige-contrast);
+      border-radius: 12px;
+      padding: 0.3rem;
+      box-shadow: 0 8px 30px rgba(13,59,56,0.13);
+      z-index: 200;
+      animation: fhMenuIn 0.14s ease;
+      transform-origin: top right;
+    }
+    .fh-dd-menu[hidden] { display: none; }
+    [data-theme="dark"] .fh-dd-menu { background: #3d4147; border-color: #474c53; }
+    @keyframes fhMenuIn { from{opacity:0;transform:scale(0.95) translateY(-4px)} to{opacity:1;transform:none} }
+    .fh-dd-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      font-size: 0.79rem;
+      font-weight: 500;
+      color: var(--rt-text-color);
+      padding: 0.42rem 0.6rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.1s;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+      outline: none;
+    }
+    .fh-dd-item:hover { background: var(--rt-beige-contrast); }
+    [data-theme="dark"] .fh-dd-item:hover { background: #474c53; }
+    .fh-dd-item[aria-selected="true"] { font-weight: 700; color: var(--rt-blue); }
+    [data-theme="dark"] .fh-dd-item[aria-selected="true"] { color: #5cc8c0; }
+    .fh-check { width: 12px; height: 12px; flex-shrink: 0; visibility: hidden; color: var(--rt-blue); }
+    [data-theme="dark"] .fh-check { color: #5cc8c0; }
+    .fh-dd-item[aria-selected="true"] .fh-check { visibility: visible; }
+    .fh-dd-sep { height: 1px; background: var(--rt-beige-contrast); margin: 0.22rem 0.3rem; }
+    [data-theme="dark"] .fh-dd-sep { background: #474c53; }
+
+    /* ── Theme pill ─────────────────────────────────────────────── */
+    .theme-pill {
+      display: inline-flex;
+      align-items: center;
+      width: 44px; height: 24px;
+      border-radius: 999px;
+      background: var(--rt-beige-contrast);
+      border: 1.5px solid var(--rt-beige-contrast);
+      cursor: pointer;
+      padding: 2px;
+      transition: background 0.2s;
+      flex-shrink: 0;
+      outline: none;
+    }
+    .theme-pill-knob {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--rt-white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    }
+    [data-theme="dark"] .theme-pill-knob { transform: translateX(20px); background: #2d3035; }
+    .icon-sun { display: block; }
+    .icon-moon { display: none; }
+    [data-theme="dark"] .icon-sun { display: none; }
+    [data-theme="dark"] .icon-moon { display: block; color: #5cc8c0; }
+
+    /* ── Page wrapper ───────────────────────────────────────────── */
+    .page-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem 6rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Hero ───────────────────────────────────────────────────── */
+    .hero-section {
+      padding: 3rem 1.5rem 2.25rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-label {
+      font-family: "Nunito", sans-serif;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--rt-muted);
+      margin-bottom: 0.75rem;
+    }
+    .hero-title {
+      /* Match home page "Avkastning över tid" heading (.chart-title) */
+      font-family: "DM Serif Display", serif;
+      font-size: clamp(1.3rem, 1.1rem + 0.8vw, 1.9rem);
+      font-weight: 400;
+      line-height: 1.35;
+      color: var(--rt-blue);
+      margin-bottom: 0.9rem;
+    }
+    .hero-sub {
+      /* Match home page subtitle "Se hur sparandet växer..." (.chart-subtitle) */
+      font-family: "DM Sans", sans-serif;
+      font-size: 0.95rem;
+      font-weight: 400;
+      color: var(--rt-muted);
+      max-width: 540px;
+      line-height: 1.65;
+    }
+
+    /* ── Section headings — match home page heading style (editorial serif) ───── */
+    .section-title {
+      font-family: "DM Serif Display", serif;
+      font-weight: 400;
+      font-size: clamp(1.3rem, 1.1rem + 0.8vw, 1.9rem);
+      color: var(--rt-blue);
+      margin: 0 0 0.15rem;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+    }
+    .section-sub {
+      font-size: 0.79rem;
+      color: var(--rt-muted);
+      margin: 0 0 1.5rem;
+      font-weight: 500;
+    }
+
+    /* ── Fee Calculator ─────────────────────────────────────────── */
+    .fee-calc-section { margin-bottom: 2rem; }
+
+    /* Two-column layout: white card left, transparent chart area right */
+    .fee-calc-layout {
+      display: grid;
+      grid-template-columns: 310px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+    @media (max-width: 800px) {
+      .fee-calc-layout { grid-template-columns: 1fr; gap: 1.5rem; }
+    }
+
+    /* Left — inputs card (white, matches home page calculator card) */
+    .fee-inputs-card {
+      background: var(--rt-white);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 28px rgba(22,69,99,0.10), 0 1px 6px rgba(22,69,99,0.06);
+      border-top: 4px solid var(--rt-blue);
+      padding: 1.5rem 1.5rem 1.75rem;
+    }
+    [data-theme="dark"] .fee-inputs-card {
+      background: #363a3f;
+      box-shadow: 0 2px 28px rgba(0,0,0,0.25);
+    }
+
+    /* Right — chart area: no card background, chart floats on page bg */
+    .fee-chart-area {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      padding-top: 0.25rem;
+    }
+    .fee-chart-wrap {
+      position: relative;
+      height: 260px;
+    }
+    .fee-chart-wrap canvas {
+      position: absolute;
+      inset: 0;
+    }
+
+    /* ── Input groups ───────────────────────────────────────────── */
+    .fee-inputs { display: flex; flex-direction: column; gap: 0; }
+    .fee-input-section { margin-bottom: 1.1rem; }
+
+    .fee-input-section-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--rt-text-color);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.6rem;
+      margin-top: 0.25rem;
+      display: block;
+    }
+    .fee-input-group { margin-bottom: 0.8rem; }
+    .fee-input-group:last-child { margin-bottom: 0; }
+
+    .fee-input-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.25rem;
+    }
+    .fee-input-lbl {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--rt-text-color);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    /* Home page style: blue pill tag for current value */
+    .fee-input-tag {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--rt-blue);
+      background: rgba(13,59,56,0.07);
+      padding: 0.06rem 0.5rem;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    [data-theme="dark"] .fee-input-tag {
+      color: #5cc8c0;
+      background: rgba(92,200,192,0.10);
+    }
+    .fee-a-accent .fee-input-tag {
+      color: var(--fee-a);
+      background: rgba(192,57,43,0.08);
+    }
+    [data-theme="dark"] .fee-a-accent .fee-input-tag {
+      color: var(--fee-a);
+      background: rgba(224,92,74,0.10);
+    }
+    .fee-b-accent .fee-input-tag {
+      color: var(--rt-blue);
+      background: rgba(13,59,56,0.07);
+    }
+
+    .slider-num-row { display: flex; align-items: center; gap: 0.6rem; }
+
+    /* ── Range slider — home page style ─────────────────────────── */
+    input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 20px;
+      background: transparent;
+      outline: none;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(
+        to right,
+        var(--sl-fill, var(--rt-blue)) var(--pct, 0%),
+        var(--rt-beige-contrast) var(--pct, 0%)
+      );
+    }
+    input[type="range"]::-moz-range-track {
+      height: 4px;
+      border-radius: 999px;
+      background: var(--rt-beige-contrast);
+      border: none;
+    }
+    input[type="range"]::-moz-range-progress {
+      height: 4px;
+      border-radius: 999px;
+      background: var(--sl-fill, var(--rt-blue));
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--rt-white);
+      border: 2px solid var(--sl-fill, var(--rt-blue));
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+      transition: transform 0.12s, box-shadow 0.12s;
+      margin-top: -8px;
+    }
+    input[type="range"]:hover::-webkit-slider-thumb,
+    input[type="range"]:focus-visible::-webkit-slider-thumb {
+      box-shadow: 0 0 0 5px rgba(13,59,56,0.10);
+    }
+    input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.12); }
+    input[type="range"]::-moz-range-thumb {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--rt-white);
+      border: 2px solid var(--sl-fill, var(--rt-blue));
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+      cursor: pointer;
+    }
+    [data-theme="dark"] input[type="range"] { --sl-fill: #5cc8c0; }
+    [data-theme="dark"] input[type="range"]::-webkit-slider-thumb {
+      background: #2d3035;
+      border-color: var(--sl-fill, #5cc8c0);
+    }
+    [data-theme="dark"] input[type="range"]:hover::-webkit-slider-thumb {
+      box-shadow: 0 0 0 5px rgba(92,200,192,0.15);
+    }
+    [data-theme="dark"] input[type="range"]::-moz-range-thumb {
+      background: #2d3035;
+    }
+
+    /* Fee A/B — colored slider fills */
+    .fee-a-accent input[type="range"] { --sl-fill: var(--fee-a); }
+    .fee-b-accent input[type="range"] { --sl-fill: var(--fee-b); }
+    .fee-b-accent input[type="range"]:hover::-webkit-slider-thumb {
+      box-shadow: 0 0 0 5px rgba(13,59,56,0.10);
+    }
+    [data-theme="dark"] .fee-a-accent input[type="range"] { --sl-fill: var(--fee-a); }
+    [data-theme="dark"] .fee-b-accent input[type="range"] { --sl-fill: var(--fee-b); }
+
+    /* Number input — home page style */
+    input[type="number"] {
+      width: 90px;
+      padding: 0.28rem 0.45rem;
+      border: 2px solid var(--rt-beige-contrast);
+      border-radius: 7px;
+      font-family: "DM Sans", "Nunito", sans-serif;
+      font-size: 0.83rem;
+      font-weight: 700;
+      color: var(--rt-text-color);
+      text-align: right;
+      background: var(--rt-white);
+      transition: border-color 0.15s;
+      -moz-appearance: textfield;
+    }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { opacity: 0.5; }
+    input[type="number"]:focus { outline: none; border-color: var(--rt-blue); }
+    [data-theme="dark"] input[type="number"] {
+      background: #3d4147;
+      border-color: #474c53;
+      color: var(--rt-text-color);
+    }
+
+    /* Divider inside inputs card */
+    .fee-inputs-divider {
+      height: 1px;
+      background: var(--rt-beige-contrast);
+      margin: 0.9rem 0 1rem;
+    }
+
+    /* ── Result cards (on transparent area) ─────────────────────── */
+    .fee-result-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+    .fee-res-card {
+      background: var(--rt-white);
+      border: 1px solid var(--rt-beige-contrast);
+      border-radius: 12px;
+      padding: 0.85rem 1rem;
+      box-shadow: 0 1px 6px rgba(13,59,56,0.05);
+    }
+    [data-theme="dark"] .fee-res-card { background: #363a3f; border-color: #474c53; }
+    .fee-res-lbl {
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--rt-muted);
+      margin-bottom: 0.25rem;
+    }
+    .fee-res-val {
+      font-family: "DM Sans", "Nunito", sans-serif;
+      font-size: clamp(1rem, 0.85rem + 0.5vw, 1.2rem);
+      color: var(--rt-text-color);
+      line-height: 1.2;
+    }
+    .fee-res-card.accent-a .fee-res-lbl { color: var(--fee-a); }
+    .fee-res-card.accent-b .fee-res-lbl { color: var(--rt-blue); }
+    .fee-res-card.accent-a .fee-res-val { color: var(--fee-a); }
+    .fee-res-card.accent-b .fee-res-val { color: var(--rt-blue); }
+
+    /* ── Headline diff card ─────────────────────────────────────── */
+    .fee-diff-card {
+      background: #0d3b38;
+      border-radius: 12px;
+      padding: 1rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      box-shadow: 0 2px 16px rgba(13,59,56,0.25);
+    }
+    [data-theme="dark"] .fee-diff-card {
+      background: #0d3b38;
+      box-shadow: 0 2px 16px rgba(13,59,56,0.35);
+    }
+    .fee-diff-lbl {
+      font-family: "Nunito", sans-serif;
+      font-size: 0.67rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.72);
+    }
+    .fee-diff-num {
+      font-family: "DM Sans", "Nunito", sans-serif;
+      font-size: clamp(1.4rem, 1.1rem + 1vw, 1.95rem);
+      color: #fff;
+      line-height: 1.1;
+    }
+    .fee-diff-sub {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.62);
+      line-height: 1.4;
+      margin-top: 0.1rem;
+    }
+
+    .fee-meta-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .fee-meta-item { font-size: 0.75rem; color: var(--rt-muted); }
+
+    .fee-sentence {
+      font-size: 0.85rem;
+      color: var(--rt-muted);
+      line-height: 1.6;
+      border-left: 3px solid var(--rt-beige-contrast);
+      padding-left: 0.8rem;
+    }
+
+    /* ── Facts section ──────────────────────────────────────────── */
+    .facts-section { margin-bottom: 2rem; }
+    .facts-card {
+      background: var(--rt-white);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 28px rgba(22,69,99,0.10), 0 1px 6px rgba(22,69,99,0.06);
+      border-top: 4px solid var(--rt-blue);
+      padding: 1.75rem 1.75rem 1.5rem;
+    }
+    [data-theme="dark"] .facts-card {
+      background: #363a3f;
+      box-shadow: 0 2px 28px rgba(0,0,0,0.25);
+    }
+
+    /* Focus blocks — the two kept takeaways, laid out as twin cards */
+    .facts-focus {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .focus-card {
+      background: var(--rt-beige-main);
+      border: 1px solid var(--rt-beige-contrast);
+      border-top: 3px solid var(--rt-blue);
+      border-radius: 12px;
+      padding: 1.5rem 1.5rem 1.4rem;
+    }
+    [data-theme="dark"] .focus-card { background: #2d3035; border-color: #474c53; border-top-color: var(--rt-blue); }
+    .ex-label {
+      font-family: "Nunito", sans-serif;
+      font-size: 0.63rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--rt-muted);
+      margin-bottom: 0.35rem;
+      display: block;
+    }
+    .focus-title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--rt-text-color);
+      line-height: 1.3;
+      margin: 0 0 0.55rem;
+    }
+    .focus-text { font-size: 0.9rem; color: var(--rt-muted); line-height: 1.65; }
+
+    /* Disclaimer */
+    .p-disclaimer { font-size: 0.73rem; color: var(--rt-muted); opacity: 0.8; line-height: 1.5; }
+
+    /* Site footer (shared) */
+    .site-footer { background:#0d3b38; color:rgba(255,255,255,0.82); padding:2.75rem 1.5rem 2rem; margin-top:2.5rem; position:relative; z-index:1; }
+    [data-theme="dark"] .site-footer { background:#21242a; }
+    .site-footer-inner { max-width:1100px; margin:0 auto; }
+    .site-footer-cols { display:grid; grid-template-columns:1fr 1.35fr; gap:2.5rem; }
+    @media (max-width:680px){ .site-footer-cols{ grid-template-columns:1fr; gap:1.75rem; } }
+    .site-footer-brand { font-family:"DM Serif Display", serif; font-size:1.5rem; font-weight:400; color:#fff; margin-bottom:0.55rem; letter-spacing:0.01em; }
+    .site-footer-h { font-family:"DM Sans", sans-serif; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.09em; color:rgba(255,255,255,0.55); margin:0 0 0.55rem; }
+    .site-footer-text { font-size:0.82rem; line-height:1.65; color:rgba(255,255,255,0.78); margin:0 0 0.75rem; max-width:48ch; }
+    .site-footer-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0.5rem; }
+    .site-footer-list li { font-size:0.78rem; line-height:1.55; color:rgba(255,255,255,0.7); padding-left:1rem; position:relative; max-width:54ch; }
+    .site-footer-list li::before { content:"–"; position:absolute; left:0; color:rgba(255,255,255,0.4); }
+    .site-footer-bottom { border-top:1px solid rgba(255,255,255,0.13); margin-top:1.9rem; padding-top:1.1rem; display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap; }
+    .site-footer-disclaimer { font-size:0.72rem; line-height:1.6; color:rgba(255,255,255,0.5); margin:0; max-width:64ch; }
+    .site-footer-copy { font-size:0.72rem; color:rgba(255,255,255,0.4); margin:0; white-space:nowrap; }
+  </style>
+</head>
+<body>
+
+  <!-- ── Animated gradient background ── -->
+  <div class="gradient-bg">
+    <div class="gradient-blur" id="blobLayer"></div>
+  </div>
+
+  <!-- ── Site header ── -->
+  <header class="site-header" role="banner">
+    <div class="site-header-inner">
+      <a href="index.html" class="sh-brand" aria-label="Decenniet – till startsidan">
+        <svg class="sh-brand-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M3 4 L3 20.5 L21 20.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.35"/>
+          <path d="M4 19 C11 19 15 13 20.5 4.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+          <circle cx="20.5" cy="4.5" r="1.7" fill="currentColor"/>
+        </svg>
+        <span class="sh-brand-text">Decenniet</span>
+      </a>
+      <nav class="sh-nav" aria-label="Main">
+        <div class="sh-nav-pill">
+          <button class="sh-nav-link" onclick="navigateTo('index.html')" type="button" data-i18n="nav-home">Investera</button>
+          <button class="sh-nav-link" onclick="navigateTo('page2.html')" type="button" data-i18n="nav-housing">Bostad</button>
+          <button class="sh-nav-link sh-nav-active" type="button" data-i18n="nav-fees">Avgifter</button>
+        </div>
+      </nav>
+      <div class="sh-controls">
+        <div class="fh-dd" id="langDd">
+          <button class="fh-dd-btn" id="langDdBtn" aria-expanded="false" aria-haspopup="listbox" aria-label="Language">
+            <span id="langDdLabel">SV</span>
+            <svg class="fh-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="fh-dd-menu" id="langDdMenu" role="listbox" aria-label="Language" hidden>
+            <button class="fh-dd-item" role="option" aria-selected="true"  data-lang="sv">Svenska <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button class="fh-dd-item" role="option" aria-selected="false" data-lang="en">English <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+          </div>
+        </div>
+        <div class="fh-dd" id="currDd">
+          <button class="fh-dd-btn" id="currDdBtn" aria-expanded="false" aria-haspopup="listbox" aria-label="Currency">
+            <span id="currDdLabel">SEK</span>
+            <svg class="fh-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="fh-dd-menu" id="currDdMenu" role="listbox" aria-label="Currency" hidden>
+            <button class="fh-dd-item" role="option" aria-selected="true"  data-curr="SEK">SEK – kr <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button class="fh-dd-item" role="option" aria-selected="false" data-curr="NOK">NOK – kr <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button class="fh-dd-item" role="option" aria-selected="false" data-curr="DKK">DKK – kr <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <div class="fh-dd-sep" role="separator"></div>
+            <button class="fh-dd-item" role="option" aria-selected="false" data-curr="EUR">EUR – € <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button class="fh-dd-item" role="option" aria-selected="false" data-curr="GBP">GBP – £ <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button class="fh-dd-item" role="option" aria-selected="false" data-curr="USD">USD – $ <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+          </div>
+        </div>
+        <button class="theme-pill" id="themeToggle" role="switch" aria-checked="false" aria-label="Toggle dark mode">
+          <span class="theme-pill-knob">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="13" height="13"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="13" height="13"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Hero ── -->
+  <div class="hero-section">
+    <p class="hero-label" data-i18n="hero-label">Avgiftskostnad</p>
+    <h1 class="hero-title" data-i18n="hero-title">Vad kostar avgifterna egentligen?</h1>
+    <p class="hero-sub" data-i18n="hero-sub">En liten avgiftsskillnad ser oskyldig ut — men ränte-på-ränta-effekten gör att den slukar enorma belopp ur ditt långsiktiga sparande.</p>
+  </div>
+
+  <!-- ── Main content ── -->
+  <div class="page-wrap">
+
+    <!-- ── Fee Calculator ── -->
+    <section class="fee-calc-section" aria-label="Avgiftskalkylator">
+      <div class="fee-calc-layout">
+
+        <!-- LEFT: inputs card (white, like home page calculator card) -->
+        <div class="fee-inputs-card">
+          <h2 class="section-title" data-i18n="calc-title">Räkna på din avgiftskostnad</h2>
+          <p class="section-sub" data-i18n="calc-sub">Justera belopp och avgifter — se hur gapet växer.</p>
+
+          <div class="fee-inputs">
+            <div class="fee-input-section">
+              <span class="fee-input-section-label" data-i18n="lbl-section-savings">Ditt sparande</span>
+
+              <div class="fee-input-group">
+                <div class="fee-input-label-row">
+                  <label class="fee-input-lbl" for="fcStart" data-i18n="lbl-start">Startbelopp</label>
+                  <span class="fee-input-tag" id="fcStartTag">100 000 kr</span>
+                </div>
+                <div class="slider-num-row">
+                  <input type="range" id="fcStartSlider" min="0" max="5000000" step="10000" value="100000">
+                  <input type="number" id="fcStart" min="0" max="5000000" step="10000" value="100000">
+                </div>
+              </div>
+
+              <div class="fee-input-group">
+                <div class="fee-input-label-row">
+                  <label class="fee-input-lbl" for="fcMonthly" data-i18n="lbl-monthly">Månadssparande</label>
+                  <span class="fee-input-tag" id="fcMonthlyTag">1 000 kr/mån</span>
+                </div>
+                <div class="slider-num-row">
+                  <input type="range" id="fcMonthlySlider" min="0" max="50000" step="500" value="1000">
+                  <input type="number" id="fcMonthly" min="0" max="50000" step="500" value="1000">
+                </div>
+              </div>
+
+              <div class="fee-input-group">
+                <div class="fee-input-label-row">
+                  <label class="fee-input-lbl" for="fcYears" data-i18n="lbl-years">Sparhorisont</label>
+                  <span class="fee-input-tag" id="fcYearsTag">30 år</span>
+                </div>
+                <div class="slider-num-row">
+                  <input type="range" id="fcYearsSlider" min="1" max="50" step="1" value="30">
+                  <input type="number" id="fcYears" min="1" max="50" step="1" value="30">
+                </div>
+              </div>
+
+              <div class="fee-input-group">
+                <div class="fee-input-label-row">
+                  <label class="fee-input-lbl" for="fcReturn" data-i18n="lbl-return">Avkastning per år</label>
+                  <span class="fee-input-tag" id="fcReturnTag">7,00 %</span>
+                </div>
+                <div class="slider-num-row">
+                  <input type="range" id="fcReturnSlider" min="0" max="15" step="0.5" value="7">
+                  <input type="number" id="fcReturn" min="0" max="15" step="0.5" value="7">
+                </div>
+              </div>
+            </div>
+
+            <div class="fee-inputs-divider"></div>
+
+            <div class="fee-input-section">
+              <span class="fee-input-section-label" data-i18n="lbl-section-fees">Avgifter att jämföra</span>
+
+              <div class="fee-input-group fee-a-accent">
+                <div class="fee-input-label-row">
+                  <label class="fee-input-lbl" for="fcFeeA" data-i18n="lbl-fee-a">Avgift A – Aktivt förvaltad</label>
+                  <span class="fee-input-tag" id="fcFeeATag">1,30 %</span>
+                </div>
+                <div class="slider-num-row">
+                  <input type="range" id="fcFeeASlider" min="0" max="3" step="0.01" value="1.30">
+                  <input type="number" id="fcFeeA" min="0" max="3" step="0.01" value="1.30">
+                </div>
+              </div>
+
+              <div class="fee-input-group fee-b-accent">
+                <div class="fee-input-label-row">
+                  <label class="fee-input-lbl" for="fcFeeB" data-i18n="lbl-fee-b">Avgift B – Indexfond</label>
+                  <span class="fee-input-tag" id="fcFeeBTag">0,20 %</span>
+                </div>
+                <div class="slider-num-row">
+                  <input type="range" id="fcFeeBSlider" min="0" max="3" step="0.01" value="0.20">
+                  <input type="number" id="fcFeeB" min="0" max="3" step="0.01" value="0.20">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div><!-- /fee-inputs-card -->
+
+        <!-- RIGHT: chart area — transparent, floats on page background -->
+        <div class="fee-chart-area">
+
+          <div class="fee-chart-wrap">
+            <canvas id="feeChartCanvas"></canvas>
+          </div>
+
+          <div class="fee-diff-card">
+            <p class="fee-diff-lbl" data-i18n="res-diff-label">Avgifternas kostnad (skillnad i slutvärde)</p>
+            <p class="fee-diff-num" id="fcDiff">–</p>
+            <p class="fee-diff-sub" id="fcDiffSub"></p>
+          </div>
+
+          <div class="fee-result-row">
+            <div class="fee-res-card accent-a">
+              <p class="fee-res-lbl" data-i18n="res-with-a">Med avgift A</p>
+              <p class="fee-res-val" id="fcResA">–</p>
+            </div>
+            <div class="fee-res-card accent-b">
+              <p class="fee-res-lbl" data-i18n="res-with-b">Med avgift B</p>
+              <p class="fee-res-val" id="fcResB">–</p>
+            </div>
+          </div>
+
+          <div class="fee-meta-row">
+            <span class="fee-meta-item" id="fcMetaInvested"></span>
+          </div>
+
+          <p class="fee-sentence" id="fcSentence"></p>
+
+        </div><!-- /fee-chart-area -->
+      </div><!-- /fee-calc-layout -->
+    </section>
+
+    <!-- ── Facts ── -->
+    <section class="facts-section" aria-label="Fakta">
+      <div class="facts-card">
+        <h2 class="section-title" data-i18n="facts-title">Vad säger siffrorna?</h2>
+        <p class="section-sub" data-i18n="facts-sub">Två saker värda att veta om fondavgifter.</p>
+
+        <div class="facts-focus">
+          <div class="focus-card">
+            <span class="ex-label" data-i18n="ex3-label">Medvetenhet</span>
+            <p class="focus-title" data-i18n="ex3-title">Varannan vet inte vad de betalar</p>
+            <p class="focus-text" data-i18n="ex3-body">Varannan svensk fondsparare vet inte vad de betalar i avgift — trots att avgiften finns öppet redovisad i fondernas faktablad. Avgiften syns inte på kontoutdraget, bara stilla i bakgrunden varje år. (Källa: Finansinspektionen)</p>
+          </div>
+          <div class="focus-card">
+            <span class="ex-label" data-i18n="balance-label">Perspektiv</span>
+            <p class="focus-title" data-i18n="balance-title">Avgifter är inte alltid fel — men sällan värda det</p>
+            <p class="focus-text" data-i18n="balance-body">En högre avgift kan vara värd det om fonden faktiskt slår sitt index efter avgift. Men historiskt lyckas mycket få aktivt förvaltade fonder med det konsekvent över tid. Problemet är avgifter som inte motsvaras av bättre avkastning. Titta alltid på avkastning efter avgift — inte bara marknadsstrategi eller fondens namn.</p>
+          </div>
+        </div>
+
+        <p class="p-disclaimer" data-i18n="disclaimer">Ungefärliga siffror för illustration, baserade på bl.a. Finansinspektionens jämförelsetal och offentlig fondrapportering. Kalkylatorn simulerar schablonmässig ränte-på-ränte-tillväxt. Inte investeringsrådgivning.</p>
+      </div>
+    </section>
+
+  </div><!-- /page-wrap -->
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div class="site-footer-cols">
+        <div class="site-footer-col">
+          <div class="site-footer-brand">Decenniet</div>
+          <h2 class="site-footer-h" data-i18n="footer-about-h">Om Decenniet</h2>
+          <p class="site-footer-text" data-i18n="footer-about">Decenniet är en oberoende sida som vill göra privatekonomi begriplig — hur sparande växer, vad avgifter kostar och hur räntor och skulder påverkar vanliga hushåll. Alla siffror är ungefärliga och för illustration, inte investeringsrådgivning.</p>
+        </div>
+        <div class="site-footer-col">
+          <h2 class="site-footer-h" data-i18n="footer-privacy-h">Din integritet</h2>
+          <p class="site-footer-text" data-i18n="footer-privacy-intro">Den här sidan är byggd helt som en frontend-sida. Vi samlar inte in, lagrar eller säljer några personuppgifter om dig. Det finns inga konton, ingen inloggning och inga spårningskakor.</p>
+          <ul class="site-footer-list">
+            <li data-i18n="footer-privacy-1">Vissa av dina inställningar (språk, valuta, ljust/mörkt läge) sparas lokalt i din egen webbläsare, bara för din bekvämlighet — de skickas aldrig till oss.</li>
+            <li data-i18n="footer-privacy-2">Sidan använder en värdtjänst (webbhotell) för att finnas tillgänglig online, och som alla webbplatser kan värdtjänsten se viss teknisk trafikdata (t.ex. IP-adress) på sin servernivå. Det är inget vi samlar in eller använder.</li>
+            <li data-i18n="footer-privacy-3">Vi visar inga annonser och delar ingen data med annonsörer.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="site-footer-bottom">
+        <p class="site-footer-disclaimer" data-i18n="footer-disclaimer">Decenniet ger allmän information, inte personlig rådgivning. Kontakta en licensierad rådgivare för beslut om din ekonomi.</p>
+        <p class="site-footer-copy">© 2026 Decenniet</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  // ── Strings ────────────────────────────────────────────────────────
+  const STRINGS = {
+    sv: {
+      'page-title':          'Decenniet – Avgiftskostnad',
+      'nav-home':            'Investera',
+      'nav-housing':         'Bostad',
+      'nav-fees':            'Avgifter',
+      'hero-label':          'Avgiftskostnad',
+      'hero-title':          'Vad kostar avgifterna egentligen?',
+      'hero-sub':            'En liten avgiftsskillnad ser oskyldig ut — men ränte-på-ränta-effekten gör att den slukar enorma belopp ur ditt långsiktiga sparande.',
+      'calc-title':          'Räkna på din avgiftskostnad',
+      'calc-sub':            'Justera belopp och avgifter — se hur gapet växer.',
+      'lbl-section-savings': 'Ditt sparande',
+      'lbl-section-fees':    'Avgifter att jämföra',
+      'lbl-start':           'Startbelopp',
+      'lbl-monthly':         'Månadssparande',
+      'lbl-years':           'Sparhorisont',
+      'lbl-return':          'Avkastning per år',
+      'lbl-fee-a':           'Avgift A – Aktivt förvaltad',
+      'lbl-fee-b':           'Avgift B – Indexfond',
+      'res-diff-label':      'Avgifternas kostnad (skillnad i slutvärde)',
+      'res-with-a':          'Med avgift A',
+      'res-with-b':          'Med avgift B',
+      'chart-label-a':       'Aktivt förvaltad fond',
+      'chart-label-b':       'Indexfond',
+      'chart-yr':            'År',
+      'meta-invested':       (amt) => `Totalt inbetalat: ${amt}`,
+      'diff-sub':            (years, feeA, feeB) => `Kostnaden för avgiftsskillnaden (${fmtPct(feeA)} vs ${fmtPct(feeB)}) under ${years} år`,
+      'result-sentence':     (years, diff) => `Med ${years} års sparande kostar den högre avgiften dig ungefär ${diff} — pengar som hamnar hos fondbolaget i stället för hos dig.`,
+      'facts-title':         'Vad säger siffrorna?',
+      'facts-sub':           'Två saker värda att veta om fondavgifter.',
+      'ex3-label':           'Medvetenhet',
+      'ex3-title':           'Varannan vet inte vad de betalar',
+      'ex3-body':            'Varannan svensk fondsparare vet inte vad de betalar i avgift — trots att avgiften finns öppet redovisad i fondernas faktablad. Avgiften syns inte på kontoutdraget, bara stilla i bakgrunden varje år. (Källa: Finansinspektionen)',
+      'balance-label':       'Perspektiv',
+      'balance-title':       'Avgifter är inte alltid fel — men sällan värda det',
+      'balance-body':        'En högre avgift kan vara värd det om fonden faktiskt slår sitt index efter avgift. Men historiskt lyckas mycket få aktivt förvaltade fonder med det konsekvent över tid. Problemet är avgifter som inte motsvaras av bättre avkastning. Titta alltid på avkastning efter avgift — inte bara marknadsstrategi eller fondens namn.',
+      'disclaimer':          'Ungefärliga siffror för illustration, baserade på bl.a. Finansinspektionens jämförelsetal och offentlig fondrapportering. Kalkylatorn simulerar schablonmässig ränte-på-ränte-tillväxt. Inte investeringsrådgivning.',
+      'footer-about-h':      'Om Decenniet',
+      'footer-about':        'Decenniet är en oberoende sida som vill göra privatekonomi begriplig — hur sparande växer, vad avgifter kostar och hur räntor och skulder påverkar vanliga hushåll. Alla siffror är ungefärliga och för illustration, inte investeringsrådgivning.',
+      'footer-privacy-h':    'Din integritet',
+      'footer-privacy-intro':'Den här sidan är byggd helt som en frontend-sida. Vi samlar inte in, lagrar eller säljer några personuppgifter om dig. Det finns inga konton, ingen inloggning och inga spårningskakor.',
+      'footer-privacy-1':    'Vissa av dina inställningar (språk, valuta, ljust/mörkt läge) sparas lokalt i din egen webbläsare, bara för din bekvämlighet — de skickas aldrig till oss.',
+      'footer-privacy-2':    'Sidan använder en värdtjänst (webbhotell) för att finnas tillgänglig online, och som alla webbplatser kan värdtjänsten se viss teknisk trafikdata (t.ex. IP-adress) på sin servernivå. Det är inget vi samlar in eller använder.',
+      'footer-privacy-3':    'Vi visar inga annonser och delar ingen data med annonsörer.',
+      'footer-disclaimer':   'Decenniet ger allmän information, inte personlig rådgivning. Kontakta en licensierad rådgivare för beslut om din ekonomi.',
+    },
+    en: {
+      'page-title':          'Decenniet – Fee cost',
+      'nav-home':            'Investing',
+      'nav-housing':         'Housing',
+      'nav-fees':            'Fees',
+      'hero-label':          'Fund fees',
+      'hero-title':          'What do fees actually cost you?',
+      'hero-sub':            'A small fee difference looks harmless — but compounding turns it into an enormous drag on your long-term wealth.',
+      'calc-title':          'Calculate your fee cost',
+      'calc-sub':            'Adjust amounts and fees — watch the gap grow.',
+      'lbl-section-savings': 'Your savings',
+      'lbl-section-fees':    'Fees to compare',
+      'lbl-start':           'Initial amount',
+      'lbl-monthly':         'Monthly savings',
+      'lbl-years':           'Time horizon',
+      'lbl-return':          'Annual return',
+      'lbl-fee-a':           'Fee A – Actively managed',
+      'lbl-fee-b':           'Fee B – Index fund',
+      'res-diff-label':      'Cost of fees (difference in final value)',
+      'res-with-a':          'With fee A',
+      'res-with-b':          'With fee B',
+      'chart-label-a':       'Actively managed fund',
+      'chart-label-b':       'Index fund',
+      'chart-yr':            'Yr',
+      'meta-invested':       (amt) => `Total invested: ${amt}`,
+      'diff-sub':            (years, feeA, feeB) => `Cost of fee gap (${fmtPct(feeA)} vs ${fmtPct(feeB)}) over ${years} years`,
+      'result-sentence':     (years, diff) => `Over ${years} years, the higher fee costs you roughly ${diff} — money that goes to the fund company instead of you.`,
+      'facts-title':         'What do the numbers say?',
+      'facts-sub':           'Two things worth knowing about fund fees.',
+      'ex3-label':           'Awareness',
+      'ex3-title':           "Half don't know what they pay",
+      'ex3-body':            "Half of Swedish fund investors don't know what they're paying in fees — even though the fee is clearly disclosed in the fund's fact sheet. It doesn't show on your statement; it just quietly compounds in the background. (Source: Finansinspektionen)",
+      'balance-label':       'Perspective',
+      'balance-title':       "Fees aren't always wrong — but rarely worth it",
+      'balance-body':        "A higher fee can be worth it if the fund actually beats its benchmark after fees. But historically, very few actively managed funds manage this consistently over time. The problem is fees that aren't matched by better returns. Always look at return after fees — not just the investment strategy or the fund's name.",
+      'disclaimer':          "Figures are approximate, based on Finansinspektionen's comparison data and public fund reporting. The calculator uses simplified compound growth. Not investment advice.",
+      'footer-about-h':      'About Decenniet',
+      'footer-about':        'Decenniet is an independent site that aims to make personal finance easy to understand — how savings grow, what fees cost, and how interest rates and debt affect ordinary households. All figures are approximate and for illustration, not investment advice.',
+      'footer-privacy-h':    'Your privacy',
+      'footer-privacy-intro':'This site is built entirely as a frontend site. We do not collect, store or sell any personal data about you. There are no accounts, no login and no tracking cookies.',
+      'footer-privacy-1':    'Some of your settings (language, currency, light/dark mode) are saved locally in your own browser, purely for your convenience — they are never sent to us.',
+      'footer-privacy-2':    'The site uses a hosting provider so it can be available online, and like every website the host can see some technical traffic data (e.g. your IP address) at its server level. That is nothing we collect or use.',
+      'footer-privacy-3':    'We show no ads and share no data with advertisers.',
+      'footer-disclaimer':   'Decenniet provides general information, not personal advice. Consult a licensed advisor for decisions about your finances.',
+    }
+  };
+
+  let currentLang = localStorage.getItem('decennium-lang') || 'sv';
+  const CURRENCIES = {
+    SEK: { symbol: 'kr', locale: 'sv-SE', pos: 'after',  monthUnit: 'kr/mån' },
+    USD: { symbol: '$',  locale: 'en-US', pos: 'before', monthUnit: '$/mån'  },
+    EUR: { symbol: '€',  locale: 'de-DE', pos: 'after',  monthUnit: '€/mån'  },
+    GBP: { symbol: '£',  locale: 'en-GB', pos: 'before', monthUnit: '£/mån'  },
+    NOK: { symbol: 'kr', locale: 'nb-NO', pos: 'after',  monthUnit: 'kr/mån' },
+    DKK: { symbol: 'kr', locale: 'da-DK', pos: 'after',  monthUnit: 'kr/mån' },
+  };
+  let currentCurrency = 'SEK';
+  try { currentCurrency = localStorage.getItem('decennium-curr') || 'SEK'; } catch(e) {}
+  let feeChartInst = null;
+
+  // ── i18n ──────────────────────────────────────────────────────────
+  function T(key, ...args) {
+    const v = STRINGS[currentLang][key];
+    return typeof v === 'function' ? v(...args) : (v ?? key);
+  }
+  function applyLang() {
+    document.documentElement.lang = currentLang;
+    document.title = T('page-title');
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const k = el.dataset.i18n;
+      const v = STRINGS[currentLang][k];
+      if (typeof v === 'string') el.textContent = v;
+    });
+    updateFeeCalc();
+  }
+
+  // ── Format ────────────────────────────────────────────────────────
+  function fmtAmt(n) {
+    const cur = CURRENCIES[currentCurrency];
+    const s = Math.round(n).toLocaleString(cur.locale);
+    return cur.pos === 'before' ? cur.symbol + s : s + ' ' + cur.symbol;
+  }
+  function fmtAmtShort(n) {
+    const cur = CURRENCIES[currentCurrency];
+    const sfx = cur.pos === 'after';
+    const fmt = (v, abbr) => sfx ? v + abbr + ' ' + cur.symbol : cur.symbol + v + abbr;
+    if (n >= 1e6) return fmt((n / 1e6).toLocaleString(cur.locale, {maximumFractionDigits: 1}), currentLang === 'sv' ? ' mkr' : 'M');
+    if (n >= 1e3) return fmt((n / 1e3).toLocaleString(cur.locale, {maximumFractionDigits: 0}), currentLang === 'sv' ? ' tkr' : 'k');
+    return fmtAmt(n);
+  }
+  function tagAmt(v) { return fmtAmt(v); }
+  function tagAmtMo(v) {
+    const cur = CURRENCIES[currentCurrency];
+    const s = Math.round(v).toLocaleString(cur.locale);
+    return cur.pos === 'before' ? cur.symbol + s : s + ' ' + cur.monthUnit;
+  }
+  function fmtPct(v) {
+    return (+v).toLocaleString('sv-SE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' %';
+  }
+
+  // ── Simulation ────────────────────────────────────────────────────
+  function calcFeeScenario(start, monthly, years, annualReturn, annualFee) {
+    const net = (annualReturn - annualFee) / 100;
+    const mr = Math.pow(1 + net, 1 / 12) - 1;
+    let v = start;
+    const snaps = [v];
+    for (let y = 1; y <= years; y++) {
+      for (let m = 0; m < 12; m++) v = v * (1 + mr) + monthly;
+      snaps.push(v);
+    }
+    return snaps;
+  }
+
+  // ── Sliders — home page approach: --pct on runnable-track ─────────
+  function updateTrack(slider) {
+    const pct = ((+slider.value - +slider.min) / (+slider.max - +slider.min)) * 100;
+    slider.style.setProperty('--pct', pct + '%');
+  }
+  function bindPair(sliderId, numId, tagId, tagFn, onChange) {
+    const slider = document.getElementById(sliderId);
+    const num    = document.getElementById(numId);
+    const tag    = tagId ? document.getElementById(tagId) : null;
+    const refresh = () => {
+      if (tag) tag.textContent = tagFn(+slider.value);
+      updateTrack(slider);
+      onChange();
+    };
+    slider.addEventListener('input', () => { num.value = slider.value; refresh(); });
+    num.addEventListener('input', () => {
+      let v = parseFloat(num.value);
+      if (isNaN(v)) return;
+      v = Math.min(Math.max(v, +slider.min), +slider.max);
+      num.value = v; slider.value = v; refresh();
+    });
+    num.addEventListener('change', () => {
+      let v = parseFloat(num.value);
+      if (isNaN(v)) return;
+      v = Math.min(Math.max(v, +slider.min), +slider.max);
+      num.value = v; slider.value = v; refresh();
+    });
+    updateTrack(slider);
+    if (tag) tag.textContent = tagFn(+slider.value);
+  }
+
+  // ── Update calc ───────────────────────────────────────────────────
+  function updateFeeCalc() {
+    const start   = Math.max(0, +document.getElementById('fcStart').value   || 0);
+    const monthly = Math.max(0, +document.getElementById('fcMonthly').value || 0);
+    const years   = Math.max(1, +document.getElementById('fcYears').value   || 1);
+    const ret     = Math.max(0, +document.getElementById('fcReturn').value  || 0);
+    const feeA    = Math.max(0, +document.getElementById('fcFeeA').value    || 0);
+    const feeB    = Math.max(0, +document.getElementById('fcFeeB').value    || 0);
+
+    const vA     = calcFeeScenario(start, monthly, years, ret, feeA);
+    const vB     = calcFeeScenario(start, monthly, years, ret, feeB);
+    const finalA = vA[years];
+    const finalB = vB[years];
+    const diff   = finalB - finalA;
+    const totalIn = start + monthly * 12 * years;
+
+    document.getElementById('fcResA').textContent = fmtAmt(finalA);
+    document.getElementById('fcResB').textContent = fmtAmt(finalB);
+    document.getElementById('fcDiff').textContent = fmtAmt(Math.max(0, diff));
+    document.getElementById('fcDiffSub').textContent = T('diff-sub', years, feeA, feeB);
+    document.getElementById('fcMetaInvested').textContent = T('meta-invested', fmtAmt(totalIn));
+    document.getElementById('fcSentence').textContent = T('result-sentence', years, fmtAmt(Math.max(0, diff)));
+
+    renderFeeChart(vA, vB, years, feeA, feeB);
+  }
+
+  // ── Chart — transparent canvas on page background ─────────────────
+  function renderFeeChart(vA, vB, years, feeA, feeB) {
+    const isDark   = document.documentElement.getAttribute('data-theme') === 'dark';
+    const gridClr  = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(13,59,56,0.07)';
+    const tickClr  = isDark ? '#9ea3ac' : '#8a9b9b';
+    const colorA   = isDark ? '#e05c4a' : '#c0392b';
+    const colorB   = isDark ? '#5cc8c0' : '#0d3b38';
+    const fillA    = isDark ? 'rgba(224,92,74,0.10)' : 'rgba(192,57,43,0.07)';
+    const fillAbove= isDark ? 'rgba(224,92,74,0.12)' : 'rgba(192,57,43,0.08)';
+
+    const step   = Math.ceil(years / Math.min(years, 10));
+    const labels = [];
+    for (let y = 1; y <= years; y++) {
+      labels.push(y % step === 0 || y === years ? T('chart-yr') + ' ' + y : '');
+    }
+
+    const dataA  = vA.slice(1);
+    const dataB  = vB.slice(1);
+    const labelA = T('chart-label-a') + ' (' + fmtPct(feeA) + ')';
+    const labelB = T('chart-label-b') + ' (' + fmtPct(feeB) + ')';
+
+    const canvas = document.getElementById('feeChartCanvas');
+    if (!canvas) return;
+
+    // Patch the SAME chart instance in place — never destroy/recreate, so the
+    // line animates smoothly between values instead of re-growing from the x-axis.
+    if (feeChartInst) {
+      const oldLen = feeChartInst.data.labels.length;
+      feeChartInst.data.labels = labels;
+      const dsA = feeChartInst.data.datasets[0];
+      const dsB = feeChartInst.data.datasets[1];
+      dsA.data = dataA;
+      dsA.label = labelA;
+      dsA.borderColor = colorA;
+      dsA.backgroundColor = fillA;
+      dsA.fill = { target: 1, above: fillAbove, below: 'transparent' };
+      dsB.data = dataB;
+      dsB.label = labelB;
+      dsB.borderColor = colorB;
+      const opt = feeChartInst.options;
+      opt.plugins.legend.labels.color = tickClr;
+      opt.plugins.tooltip.backgroundColor = isDark ? '#363a3f' : '#fff';
+      opt.plugins.tooltip.borderColor     = isDark ? '#474c53' : '#dde8e7';
+      opt.plugins.tooltip.titleColor      = isDark ? '#e8e9eb' : '#1a2e2e';
+      opt.plugins.tooltip.bodyColor       = isDark ? '#9ea3ac' : '#7a8b8b';
+      opt.scales.x.grid.color  = gridClr;
+      opt.scales.x.ticks.color = tickClr;
+      opt.scales.y.grid.color  = gridClr;
+      opt.scales.y.ticks.color = tickClr;
+      // Skip animation when the point count changes (Time horizon) to avoid a
+      // glitch; otherwise animate smoothly (interpolates, never dips to zero).
+      feeChartInst.update(oldLen !== labels.length ? 'none' : undefined);
+      return;
+    }
+
+    feeChartInst = new Chart(canvas.getContext('2d'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: labelA,
+            data: dataA,
+            borderColor: colorA,
+            backgroundColor: fillA,
+            fill: {
+              target: 1,
+              above: fillAbove,
+              below: 'transparent'
+            },
+            borderWidth: 2,
+            tension: 0.35,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+          },
+          {
+            label: labelB,
+            data: dataB,
+            borderColor: colorB,
+            backgroundColor: 'transparent',
+            fill: false,
+            borderWidth: 2.5,
+            tension: 0.35,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 180 },
+        plugins: {
+          legend: {
+            display: true,
+            labels: {
+              color: tickClr,
+              boxWidth: 14,
+              padding: 14,
+              usePointStyle: true,
+              pointStyleWidth: 14,
+              font: { family: '"DM Sans", "Nunito", sans-serif', size: 12 }
+            }
+          },
+          tooltip: {
+            backgroundColor: isDark ? '#363a3f' : '#fff',
+            borderColor: isDark ? '#474c53' : '#dde8e7',
+            borderWidth: 1,
+            titleColor: isDark ? '#e8e9eb' : '#1a2e2e',
+            bodyColor: isDark ? '#9ea3ac' : '#7a8b8b',
+            callbacks: {
+              label: (ctx) => '  ' + ctx.dataset.label.split(' (')[0] + ': ' + fmtAmt(ctx.parsed.y)
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: gridClr },
+            border: { display: false },
+            ticks: { color: tickClr, maxRotation: 0, font: { size: 11, family: '"DM Sans",sans-serif' } }
+          },
+          y: {
+            grid: { color: gridClr },
+            border: { display: false },
+            ticks: {
+              color: tickClr,
+              font: { size: 11, family: '"DM Sans",sans-serif' },
+              callback: (v) => fmtAmtShort(v)
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // ── Dark mode ─────────────────────────────────────────────────────
+  const themeToggle = document.getElementById('themeToggle');
+  const savedTheme  = localStorage.getItem('decennium-theme');
+  if (savedTheme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    themeToggle.setAttribute('aria-checked', 'true');
+  }
+  themeToggle.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('decennium-theme', 'light');
+      themeToggle.setAttribute('aria-checked', 'false');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('decennium-theme', 'dark');
+      themeToggle.setAttribute('aria-checked', 'true');
+    }
+    // Redraw chart with new colors
+    const start   = Math.max(0, +document.getElementById('fcStart').value   || 0);
+    const monthly = Math.max(0, +document.getElementById('fcMonthly').value || 0);
+    const years   = Math.max(1, +document.getElementById('fcYears').value   || 1);
+    const ret     = Math.max(0, +document.getElementById('fcReturn').value  || 0);
+    const feeA    = Math.max(0, +document.getElementById('fcFeeA').value    || 0);
+    const feeB    = Math.max(0, +document.getElementById('fcFeeB').value    || 0);
+    renderFeeChart(
+      calcFeeScenario(start, monthly, years, ret, feeA),
+      calcFeeScenario(start, monthly, years, ret, feeB),
+      years, feeA, feeB
+    );
+  });
+
+  // ── Language dropdown ─────────────────────────────────────────────
+  const langDdBtn   = document.getElementById('langDdBtn');
+  const langDdMenu  = document.getElementById('langDdMenu');
+  const langDdLabel = document.getElementById('langDdLabel');
+  langDdLabel.textContent = currentLang.toUpperCase();
+  langDdMenu.querySelectorAll('[data-lang]').forEach(btn => {
+    btn.setAttribute('aria-selected', btn.dataset.lang === currentLang ? 'true' : 'false');
+  });
+  langDdBtn.addEventListener('click', () => {
+    const open = langDdBtn.getAttribute('aria-expanded') === 'true';
+    langDdBtn.setAttribute('aria-expanded', String(!open));
+    langDdMenu.hidden = open;
+  });
+  langDdMenu.querySelectorAll('[data-lang]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentLang = btn.dataset.lang;
+      localStorage.setItem('decennium-lang', currentLang);
+      langDdLabel.textContent = currentLang.toUpperCase();
+      langDdMenu.querySelectorAll('[data-lang]').forEach(b =>
+        b.setAttribute('aria-selected', b === btn ? 'true' : 'false'));
+      langDdBtn.setAttribute('aria-expanded', 'false');
+      langDdMenu.hidden = true;
+      applyLang();
+    });
+  });
+  document.addEventListener('click', e => {
+    if (!document.getElementById('langDd').contains(e.target)) {
+      langDdBtn.setAttribute('aria-expanded', 'false');
+      langDdMenu.hidden = true;
+    }
+  });
+
+  // ── Currency dropdown ─────────────────────────────────────────────
+  function updateCurrDropdown(curr) {
+    const label = document.getElementById('currDdLabel');
+    if (label) label.textContent = curr;
+    const menu = document.getElementById('currDdMenu');
+    if (menu) menu.querySelectorAll('[data-curr]').forEach(b =>
+      b.setAttribute('aria-selected', b.dataset.curr === curr ? 'true' : 'false'));
+  }
+  (function initCurrDropdown() {
+    const btn  = document.getElementById('currDdBtn');
+    const menu = document.getElementById('currDdMenu');
+    if (!btn || !menu) return;
+    updateCurrDropdown(currentCurrency);
+    btn.addEventListener('click', () => {
+      const open = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!open));
+      menu.hidden = open;
+    });
+    menu.querySelectorAll('[data-curr]').forEach(item => {
+      item.addEventListener('click', () => {
+        currentCurrency = item.dataset.curr;
+        try { localStorage.setItem('decennium-curr', currentCurrency); } catch(e) {}
+        updateCurrDropdown(currentCurrency);
+        btn.setAttribute('aria-expanded', 'false');
+        menu.hidden = true;
+        updateFeeCalc();
+        // Re-trigger slider tag displays
+        ['fcStartSlider','fcMonthlySlider'].forEach(id => {
+          const sl = document.getElementById(id);
+          if (sl) sl.dispatchEvent(new Event('input'));
+        });
+      });
+    });
+    document.addEventListener('click', e => {
+      if (!document.getElementById('currDd').contains(e.target)) {
+        btn.setAttribute('aria-expanded', 'false');
+        menu.hidden = true;
+      }
+    });
+  })();
+
+  // ── Animated gradient blobs (same approach as home page) ──────────
+  (function initBlobs() {
+    const layer = document.getElementById('blobLayer');
+    if (!layer) return;
+    const configs = [
+      { color: '#164563', size: 520, top: '5%',  left: '10%', dur: 22 },
+      { color: '#f8c8d8', size: 480, top: '40%', left: '55%', dur: 27 },
+      { color: '#F3EADB', size: 560, top: '60%', left: '5%',  dur: 19 },
+      { color: '#a03253', size: 340, top: '10%', left: '65%', dur: 31 },
+      { color: '#e6ded2', size: 450, top: '70%', left: '45%', dur: 24 },
+    ];
+    configs.forEach(cfg => {
+      const el = document.createElement('div');
+      el.className = 'blob';
+      el.style.cssText =
+        'width:' + cfg.size + 'px;height:' + cfg.size + 'px;' +
+        'top:' + cfg.top + ';left:' + cfg.left + ';' +
+        'background:' + cfg.color + ';' +
+        'animation-duration:' + cfg.dur + 's;' +
+        'animation-delay:-' + (Math.floor(Math.random() * cfg.dur * 10) / 10) + 's;';
+      el.style.setProperty('--tx1', (Math.random() * 2 - 1).toFixed(3));
+      el.style.setProperty('--ty1', (Math.random() * 2 - 1).toFixed(3));
+      el.style.setProperty('--tx2', (Math.random() * 2 - 1).toFixed(3));
+      el.style.setProperty('--ty2', (Math.random() * 2 - 1).toFixed(3));
+      el.style.setProperty('--tx3', (Math.random() * 2 - 1).toFixed(3));
+      el.style.setProperty('--ty3', (Math.random() * 2 - 1).toFixed(3));
+      el.style.setProperty('--tx4', (Math.random() * 2 - 1).toFixed(3));
+      el.style.setProperty('--ty4', (Math.random() * 2 - 1).toFixed(3));
+      layer.appendChild(el);
+    });
+  })();
+
+  // ── Navigate with fade ────────────────────────────────────────────
+  function navigateTo(url) {
+    document.body.style.transition = 'opacity 0.3s ease';
+    document.body.style.opacity = '0';
+    setTimeout(() => { window.location.href = url; }, 300);
+  }
+
+  // ── Bind all sliders ──────────────────────────────────────────────
+  bindPair('fcStartSlider',   'fcStart',   'fcStartTag',   tagAmt,   updateFeeCalc);
+  bindPair('fcMonthlySlider', 'fcMonthly', 'fcMonthlyTag', tagAmtMo, updateFeeCalc);
+  bindPair('fcYearsSlider',   'fcYears',   'fcYearsTag',
+    v => v + (currentLang === 'sv' ? ' år' : ' yr'), updateFeeCalc);
+  bindPair('fcReturnSlider',  'fcReturn',  'fcReturnTag',
+    v => fmtPct(+v), updateFeeCalc);
+  bindPair('fcFeeASlider',    'fcFeeA',    'fcFeeATag',
+    v => fmtPct(+v), updateFeeCalc);
+  bindPair('fcFeeBSlider',    'fcFeeB',    'fcFeeBTag',
+    v => fmtPct(+v), updateFeeCalc);
+
+  // ── Init ──────────────────────────────────────────────────────────
+  window.addEventListener('load', () => document.body.classList.add('page-loaded'));
+  applyLang();
+  </script>
+</body>
+</html>

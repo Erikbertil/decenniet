@@ -1,0 +1,10 @@
+# Development screenshots (not part of the site)
+screenshot-*.png
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+*.swp

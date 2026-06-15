@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decenniet – Hur sårbara är svenskarna?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* ── Variables ── */
+    :root {
+      --rt-text-color:#1a2e2e; --rt-blue:#0d3b38; --rt-blue-mid:#1a5c58;
+      --rt-white:#ffffff; --rt-red:#5a3d7a;
+      --rt-beige-main:#f9f9f7; --rt-beige-contrast:#dde8e7;
+      --rt-muted:#7a8b8b; --rt-gold:#b89a3c; --rt-sapphire:#2d5fa0;
+      --rt-section-div:#e0e8e7;
+      --p2-accent:#e57373; /* subtle red accent — Housing page identity */
+    }
+    [data-theme="dark"] {
+      --rt-text-color:#e8e9eb; --rt-blue:#5cc8c0; --rt-blue-mid:#3ab5ac;
+      --rt-white:#363a3f; --rt-red:#b79fe0;
+      --rt-beige-main:#3d4147; --rt-beige-contrast:#474c53;
+      --rt-muted:#9ea3ac; --rt-gold:#d4b96a; --rt-sapphire:#6c9fd4;
+      --rt-section-div:#4e535b;
+    }
+    *,::before,::after { box-sizing:border-box; margin:0; padding:0; }
+    html { background:var(--rt-beige-main); }
+    body {
+      font-family:"DM Sans","Nunito",sans-serif;
+      font-size:clamp(0.9rem,0.85rem + 0.25vw,1.1rem);
+      color:var(--rt-text-color); background:var(--rt-beige-main);
+      line-height:1.6; min-height:100vh; overflow-x:hidden;
+      opacity:0; position:relative;
+    }
+    body.page-loaded { opacity:1; transition:opacity 0.38s ease; }
+    [data-theme="dark"] html { background:#2d3035; }
+    [data-theme="dark"] body { background:#2d3035 !important; color:#e8e9eb; }
+
+    /* (light theme — no vignette) */
+
+    /* ── Site header ── */
+    .site-header {
+      width:100%; position:relative; z-index:50;
+      padding:0.95rem 1.75rem;
+      background:var(--rt-beige-main);
+      border-bottom:1px solid var(--rt-beige-contrast);
+    }
+    [data-theme="dark"] .site-header { background:#22252a; border-bottom-color:#3a3f46; }
+    .site-header-inner {
+      max-width:1180px; margin:0 auto;
+      display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:1rem;
+    }
+    .sh-brand {
+      justify-self:start; display:flex; align-items:center; gap:0.5rem;
+      font-family:"DM Serif Display",serif; font-size:1.15rem;
+      color:var(--rt-blue); letter-spacing:0.01em;
+      text-decoration:none; cursor:pointer; transition:opacity 0.15s;
+    }
+    .sh-brand:hover { opacity:0.68; }
+    [data-theme="dark"] .sh-brand { color:#5cc8c0; }
+    .sh-brand-icon { width:19px; height:19px; color:inherit; flex-shrink:0; }
+    .sh-nav { justify-self:center; display:flex; }
+    .sh-nav-pill {
+      display:inline-flex; align-items:center; gap:0.3rem;
+      background:var(--rt-white);
+      border:1px solid var(--rt-beige-contrast);
+      border-radius:0; padding:0.25rem;
+    }
+    [data-theme="dark"] .sh-nav-pill { background:#2d3035; border-color:#474c53; }
+    .sh-nav-link {
+      font-family:"DM Sans",sans-serif; font-size:0.9rem; font-weight:500;
+      color:var(--rt-text-color); background:none; border:none;
+      padding:0.5rem 1.25rem; border-radius:0; cursor:pointer;
+      transition:background 0.15s,color 0.15s; white-space:nowrap; outline:none;
+      display:inline-flex; align-items:center; letter-spacing:0.01em;
+    }
+    .sh-nav-link:hover { background:var(--rt-beige-contrast); }
+    [data-theme="dark"] .sh-nav-link { color:#e8e9eb; }
+    [data-theme="dark"] .sh-nav-link:hover { background:#3d4147; }
+    .sh-nav-link.sh-nav-active { background:var(--p2-accent); color:#1a0203; font-weight:600; }
+    [data-theme="dark"] .sh-nav-link.sh-nav-active { background:var(--p2-accent); color:#1a0203; }
+    .sh-controls { justify-self:end; display:flex; align-items:center; gap:0.4rem; }
+    @media (max-width:720px) {
+      .site-header { padding:0.8rem 1rem; }
+      .site-header-inner { grid-template-columns:1fr 1fr; row-gap:0.75rem; }
+      .sh-nav { grid-column:1 / -1; grid-row:2; }
+      .sh-nav-pill { flex-wrap:wrap; justify-content:center; }
+      .sh-nav-link { font-size:0.85rem; padding:0.45rem 0.85rem; }
+    }
+    @media (max-width:360px) { .sh-brand-text { display:none; } }
+
+    /* ── Dropdown ── */
+    .fh-dd { position:relative; }
+    .fh-dd-btn {
+      display:flex; align-items:center; gap:0.3rem;
+      font-family:"DM Sans",sans-serif; font-size:0.77rem; font-weight:600;
+      color:var(--rt-blue); background:var(--rt-white);
+      border:1.5px solid var(--rt-beige-contrast); border-radius:999px;
+      padding:0.28rem 0.55rem 0.28rem 0.75rem; cursor:pointer;
+      white-space:nowrap; transition:border-color 0.15s,box-shadow 0.15s;
+      outline:none; user-select:none;
+    }
+    .fh-dd-btn:hover { border-color:var(--rt-blue); }
+    .fh-dd-btn[aria-expanded="true"] { border-color:var(--rt-blue); box-shadow:0 0 0 3px rgba(22,69,99,0.10); }
+    [data-theme="dark"] .fh-dd-btn { background:#3d4147; border-color:#474c53; color:#5cc8c0; }
+    [data-theme="dark"] .fh-dd-btn:hover { border-color:#5cc8c0; }
+    [data-theme="dark"] .fh-dd-btn[aria-expanded="true"] { border-color:#5cc8c0; box-shadow:0 0 0 3px rgba(92,200,192,0.12); }
+    .fh-chevron { width:11px; height:11px; opacity:0.6; transition:transform 0.18s; flex-shrink:0; }
+    .fh-dd-btn[aria-expanded="true"] .fh-chevron { transform:rotate(180deg); }
+    .fh-dd-menu {
+      position:absolute; top:calc(100% + 0.4rem); right:0; min-width:150px;
+      background:var(--rt-white); border:1.5px solid var(--rt-beige-contrast);
+      border-radius:12px; padding:0.3rem;
+      box-shadow:0 8px 30px rgba(22,69,99,0.13),0 2px 8px rgba(22,69,99,0.07);
+      z-index:200; animation:fhMenuIn 0.14s ease; transform-origin:top right;
+    }
+    .fh-dd-menu[hidden] { display:none; }
+    [data-theme="dark"] .fh-dd-menu { background:#3d4147; border-color:#474c53; box-shadow:0 8px 30px rgba(0,0,0,0.35); }
+    @keyframes fhMenuIn { from{opacity:0;transform:scale(0.95) translateY(-4px)} to{opacity:1;transform:scale(1) translateY(0)} }
+    .fh-dd-item {
+      display:flex; align-items:center; justify-content:space-between; gap:0.5rem;
+      font-family:"DM Sans",sans-serif; font-size:0.79rem; font-weight:500;
+      color:var(--rt-text-color); padding:0.42rem 0.6rem; border-radius:8px;
+      cursor:pointer; transition:background 0.1s; border:none;
+      background:transparent; width:100%; text-align:left; outline:none;
+    }
+    .fh-dd-item:hover { background:var(--rt-beige-contrast); }
+    [data-theme="dark"] .fh-dd-item:hover { background:#474c53; }
+    .fh-dd-item[aria-selected="true"] { font-weight:700; color:var(--rt-blue); }
+    [data-theme="dark"] .fh-dd-item[aria-selected="true"] { color:#5cc8c0; }
+    .fh-check { width:12px; height:12px; flex-shrink:0; visibility:hidden; color:var(--rt-blue); }
+    [data-theme="dark"] .fh-check { color:#5cc8c0; }
+    .fh-dd-item[aria-selected="true"] .fh-check { visibility:visible; }
+    .fh-dd-sep { height:1px; background:var(--rt-beige-contrast); margin:0.22rem 0.3rem; }
+    [data-theme="dark"] .fh-dd-sep { background:#474c53; }
+
+    /* ── Theme pill ── */
+    .theme-pill {
+      display:flex; align-items:center; width:52px; height:28px;
+      background:var(--rt-beige-contrast); border:none; border-radius:999px;
+      padding:3px; cursor:pointer; transition:background 0.3s ease;
+      flex-shrink:0; outline:none; position:relative;
+    }
+    .theme-pill:focus-visible { outline:2px solid #e57373; outline-offset:2px; }
+    .theme-pill[aria-checked="true"] { background:var(--rt-blue); }
+    .theme-pill-knob {
+      width:22px; height:22px; background:#fff; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); transform:translateX(0);
+      box-shadow:0 1px 4px rgba(0,0,0,0.18); flex-shrink:0; position:relative;
+    }
+    .theme-pill[aria-checked="true"] .theme-pill-knob { transform:translateX(24px); }
+    .icon-sun,.icon-moon { position:absolute; width:13px; height:13px; transition:opacity 0.2s ease,transform 0.3s ease; }
+    .icon-sun  { color:#b89a3c; }
+    .icon-moon { color:#5a7a78; }
+    .theme-pill[aria-checked="false"] .icon-sun  { opacity:1; transform:scale(1); }
+    .theme-pill[aria-checked="false"] .icon-moon { opacity:0; transform:scale(0.7); }
+    .theme-pill[aria-checked="true"]  .icon-sun  { opacity:0; transform:scale(0.7); }
+    .theme-pill[aria-checked="true"]  .icon-moon { opacity:1; transform:scale(1); }
+    [data-theme="dark"] .theme-pill-knob { background:#2d3035; }
+    [data-theme="dark"] .icon-moon { color:#5cc8c0; }
+
+    /* ── Wrapper / content area ── */
+    .wrapper {
+      max-width:1100px; margin:0 auto; position:relative; z-index:1;
+      padding:0 1.5rem 4rem;
+    }
+
+    /* ── Range sliders ── */
+    input[type="range"] {
+      flex:1; -webkit-appearance:none; appearance:none;
+      height:20px; background:transparent; outline:none; cursor:pointer;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      height:4px; border-radius:999px;
+      background:linear-gradient(to right,var(--sl-fill,var(--rt-blue)) var(--pct,0%),var(--sl-track,var(--rt-beige-contrast)) var(--pct,0%));
+    }
+    input[type="range"]::-moz-range-track { height:4px; border-radius:999px; background:var(--sl-track,var(--rt-beige-contrast)); border:none; }
+    input[type="range"]::-moz-range-progress { height:4px; border-radius:999px; background:var(--sl-fill,var(--rt-blue)); }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance:none; width:20px; height:20px; border-radius:50%;
+      background:var(--rt-white); border:2px solid var(--rt-blue);
+      cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,0.12);
+      transition:transform 0.12s,box-shadow 0.12s; margin-top:-8px;
+    }
+    input[type="range"]:active::-webkit-slider-thumb { transform:scale(1.12); }
+    input[type="range"]::-moz-range-thumb {
+      width:20px; height:20px; border-radius:50%; background:white;
+      border:2px solid var(--rt-blue); box-shadow:0 1px 4px rgba(0,0,0,0.12); cursor:pointer;
+    }
+    [data-theme="dark"] input[type="range"] { --sl-fill:#5cc8c0; --sl-track:#474c53; }
+    [data-theme="dark"] input[type="range"]::-webkit-slider-thumb { background:#3d4147; border-color:#5cc8c0; }
+    [data-theme="dark"] input[type="range"]::-moz-range-thumb { background:#3d4147; border-color:#5cc8c0; }
+    [data-theme="dark"] input[type="range"].rb-lever::-webkit-slider-runnable-track {
+      background:linear-gradient(to right,rgba(92,200,192,0.6) var(--pct,0%),rgba(92,200,192,0.15) var(--pct,0%));
+    }
+    .input-row { display:flex; gap:0.5rem; align-items:center; margin-top:0.25rem; }
+    .input-row input[type="range"] { flex:1; }
+    .input-row input[type="number"] {
+      font-family:"DM Sans","Nunito",sans-serif; font-size:0.82rem;
+      border:1.5px solid var(--rt-beige-contrast); border-radius:6px;
+      padding:0.2rem 0.4rem; background:var(--rt-white); color:var(--rt-blue);
+      width:7rem; text-align:right;
+    }
+    [data-theme="dark"] input[type="number"] { background:#3d4147; color:#e8e9eb; border-color:#474c53; }
+
+    /* ── Slider drag tooltip ── */
+    .slider-tip {
+      position:fixed; pointer-events:none; background:var(--rt-blue); color:#fff;
+      font-size:0.72rem; font-weight:600; font-family:"DM Sans",sans-serif;
+      padding:3px 8px; border-radius:6px; white-space:nowrap; z-index:9999;
+      opacity:0; transition:opacity 0.12s; box-shadow:0 2px 8px rgba(0,0,0,0.2);
+    }
+    .slider-tip.visible { opacity:1; }
+    .slider-tip::after {
+      content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%);
+      border:4px solid transparent; border-top-color:var(--rt-blue);
+    }
+    .slider-tip.lever-tip::after { top:50%; left:100%; transform:translateY(-50%); border-top-color:transparent; border-left-color:var(--rt-blue); }
+    [data-theme="dark"] .slider-tip { background:#5cc8c0; color:#2d3035; }
+    [data-theme="dark"] .slider-tip::after { border-top-color:#5cc8c0; }
+    [data-theme="dark"] .slider-tip.lever-tip::after { border-top-color:transparent; border-left-color:#5cc8c0; }
+
+    /* ── House section (copied from index.html) ── */
+    .house-section { margin:0 0 1.75rem; }
+    .house-card {
+      background: var(--rt-white);
+      border-radius: 0;
+      box-shadow: none;
+      border: none;
+      border-top: 1.5px solid var(--rt-section-div);
+      padding: 3.5rem 0;
+    }
+    .house-title {
+      font-family: "DM Serif Display", serif; font-weight: 400;
+      font-size: clamp(1.8rem, 1.5rem + 1.2vw, 2.6rem);
+      line-height: 1.15; letter-spacing: -0.01em; color: var(--rt-blue);
+      margin: 0 0 1.5rem;
+    }
+    .house-charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 1.5rem; }
+    .house-chart-label {
+      font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--rt-muted); margin-bottom: 0.4rem;
+    }
+    .house-chart-caption {
+      font-size: 0.77rem; color: var(--rt-muted); line-height: 1.5;
+      margin: 0 0 0.65rem; font-weight: 500;
+    }
+    .house-chart-wrap { position: relative; height: 200px; }
+    .house-chart-wrap canvas { position: absolute; inset: 0; }
+    .house-stat-row { display: flex; gap: 0.6rem; margin: 0 0 0.7rem; }
+    .house-stat-card {
+      flex: 1; background: var(--rt-beige-main); border: 1.5px solid var(--rt-beige-contrast);
+      border-radius: 8px; padding: 0.5rem 0.75rem; text-align: center;
+    }
+    .house-stat-card.hl { border-color: var(--rt-blue); background: rgba(22,69,99,0.06); }
+    .house-stat-year {
+      display: block; font-size: 0.68rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--rt-muted); margin-bottom: 0.1rem;
+    }
+    .house-stat-val { display: block; font-size: 0.95rem; font-weight: 900; color: var(--rt-blue); }
+    .house-disclaimer {
+      font-size: 0.71rem; color: var(--rt-muted); line-height: 1.55;
+      border-top: 1.5px solid var(--rt-beige-contrast); padding-top: 0.85rem; margin: 0;
+    }
+    @media (max-width: 720px) {
+      .house-charts-row { grid-template-columns: 1fr; gap: 1.25rem; }
+    }
+    /* house dark mode */
+    [data-theme="dark"] .house-stat-card { background:#3d4147; border-color:#474c53; }
+    [data-theme="dark"] .house-stat-card.hl { background:rgba(92,200,192,0.1); border-color:#5cc8c0; }
+    [data-theme="dark"] .house-disclaimer { border-top-color:#474c53; }
+
+    /* ── Sarb section ── */
+    .sarb-section { margin:0; }
+    .sarb-card {
+      background:var(--rt-white); border-top:1.5px solid var(--rt-section-div);
+      padding:3.5rem 0; border-radius:0; box-shadow:none; border-left:none; border-right:none; border-bottom:none;
+    }
+    .sarb-title {
+      font-family:"DM Serif Display",serif; font-weight:400;
+      font-size:clamp(1.8rem,1.5rem + 1.2vw,2.6rem);
+      line-height:1.15; letter-spacing:-0.01em; color:var(--rt-blue); margin:0 0 0.5rem;
+    }
+    .sarb-subtitle { font-size:0.95rem; color:var(--rt-muted); line-height:1.65; margin:0 0 1.5rem; max-width:680px; }
+    .sarb-part-heading {
+      font-family:"DM Serif Display",serif; font-weight:400; font-size:1.3rem;
+      color:var(--rt-blue); margin:2rem 0 0.75rem; text-transform:none; letter-spacing:0;
+    }
+    .sarb-rate-note,.sarb-disclaimer {
+      font-size:0.75rem; color:var(--rt-muted); line-height:1.55;
+      border-top:1px solid var(--rt-section-div); padding-top:0.85rem; margin-top:1.25rem;
+    }
+    [data-theme="dark"] .sarb-disclaimer { border-top-color:#4e535b; }
+    .sarb-slider-lbl { display:flex; justify-content:space-between; align-items:baseline; font-size:0.77rem; font-weight:700; color:var(--rt-muted); margin-bottom:0.2rem; }
+    .sarb-slider-val { font-size:0.78rem; font-weight:700; color:var(--rt-blue); }
+
+    /* ── Riksbanks-spak ── */
+    .rb-spak-wrap { margin-bottom:0.5rem; }
+    .rb-subheading { font-family:"DM Serif Display",serif; font-weight:400; font-size:1.3rem; color:var(--rt-blue); margin:2rem 0 1.1rem; line-height:1.3; letter-spacing:0; text-transform:none; }
+    .rb-spak-grid { display:grid; grid-template-columns:160px 250px 1fr; gap:1.5rem; align-items:start; }
+    .rb-lever-col { display:flex; flex-direction:column; align-items:center; gap:0.4rem; }
+    .rb-lever-title { font-size:0.67rem; font-weight:800; text-transform:uppercase; letter-spacing:0.07em; color:var(--rt-muted); text-align:center; }
+    .rb-rate-badge { font-size:2.2rem; font-weight:900; color:var(--rt-blue); line-height:1; transition:color 0.5s; font-variant-numeric:tabular-nums; }
+    .rb-lever-frame {
+      position:relative; width:76px; height:250px;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      background:var(--rt-beige-main); border:1.5px solid var(--rt-beige-contrast);
+      border-radius:12px; padding:14px 0; box-shadow:inset 0 1px 5px rgba(0,0,0,0.06);
+    }
+    [data-theme="dark"] .rb-lever-frame { background:#3d4147; border-color:#474c53; }
+    .rb-lever-input-wrap { position:relative; width:44px; height:222px; display:flex; align-items:center; justify-content:center; }
+    input[type="range"].rb-lever {
+      position:absolute; width:222px; height:38px; transform:rotate(-90deg);
+      -webkit-appearance:none; appearance:none; background:transparent; outline:none; cursor:grab; border-radius:3px;
+    }
+    input[type="range"].rb-lever:active { cursor:grabbing; }
+    input[type="range"].rb-lever::-webkit-slider-runnable-track {
+      height:6px; border-radius:999px;
+      background:linear-gradient(to right,rgba(22,69,99,0.55) var(--pct,0%),rgba(22,69,99,0.15) var(--pct,0%));
+    }
+    input[type="range"].rb-lever::-webkit-slider-thumb {
+      -webkit-appearance:none; width:38px; height:38px; border-radius:50%;
+      background:radial-gradient(circle at 38% 35%,#3c74a0,#164563);
+      box-shadow:0 2px 10px rgba(22,69,99,0.45),0 0 0 3px rgba(22,69,99,0.12);
+      cursor:grab; border:none; transition:transform 0.12s,box-shadow 0.12s; margin-top:-16px;
+    }
+    input[type="range"].rb-lever:active::-webkit-slider-thumb { cursor:grabbing; transform:scale(1.1); }
+    input[type="range"].rb-lever::-moz-range-track { height:6px; border-radius:999px; background:rgba(22,69,99,0.15); }
+    input[type="range"].rb-lever::-moz-range-progress { height:6px; border-radius:999px; background:rgba(22,69,99,0.55); }
+    input[type="range"].rb-lever::-moz-range-thumb { width:38px; height:38px; border-radius:50%; background:radial-gradient(circle at 38% 35%,#3c74a0,#164563); box-shadow:0 2px 10px rgba(22,69,99,0.45); border:none; cursor:grab; }
+    .rb-lever-scale { position:absolute; right:5px; top:14px; bottom:14px; display:flex; flex-direction:column-reverse; justify-content:space-between; pointer-events:none; }
+    .rb-lever-tick { font-size:0.56rem; font-weight:700; color:var(--rt-muted); line-height:1; text-align:right; }
+    .rb-metrics-col { display:flex; flex-direction:column; gap:0.6rem; }
+    .rb-metric-card { background:var(--rt-beige-main); border:1.5px solid var(--rt-beige-contrast); border-radius:10px; padding:0.65rem 0.9rem; transition:border-color 0.5s,background 0.5s; }
+    [data-theme="dark"] .rb-metric-card { background:#3d4147; border-color:#474c53; }
+    .rb-metric-card--main { border-width:2px; }
+    .rb-metric-card--main .rb-metric-val { font-size:1.6rem; }
+    .rb-metric-lbl { font-size:0.66rem; font-weight:800; text-transform:uppercase; letter-spacing:0.07em; color:var(--rt-muted); margin-bottom:0.18rem; }
+    .rb-metric-val { font-size:1.25rem; font-weight:900; color:var(--rt-blue); transition:color 0.5s; font-variant-numeric:tabular-nums; }
+    .rb-metric-sub { font-size:0.67rem; color:var(--rt-muted); font-weight:500; margin-top:0.12rem; line-height:1.4; }
+    .rb-share-bar-wrap { margin-top:0.35rem; }
+    .rb-share-bar-track { height:7px; background:var(--rt-beige-contrast); border-radius:4px; overflow:hidden; }
+    [data-theme="dark"] .rb-share-bar-track { background:rgba(92,200,192,0.1); }
+    .rb-share-bar-fill { height:100%; border-radius:4px; width:0%; background:var(--rt-blue); transition:width 0.35s cubic-bezier(.4,0,.2,1),background 0.5s; }
+    .rb-hook { font-size:0.8rem; font-weight:600; line-height:1.5; margin:0.6rem 0 0; color:var(--rt-text-color); }
+    .rb-hook strong { color:var(--rt-red); }
+    .rb-chart-col { display:flex; flex-direction:column; gap:0.55rem; }
+    .rb-chart-wrap { position:relative; height:195px; }
+    .rb-chart-wrap canvas { position:absolute; inset:0; }
+    .rb-chart-caption { font-size:0.71rem; color:var(--rt-muted); line-height:1.5; font-weight:500; margin:0; }
+    .rb-explainer { font-size:0.81rem; font-weight:500; color:var(--rt-text-color); line-height:1.65; background:rgba(22,69,99,0.04); border-left:3px solid var(--rt-blue); border-radius:0 8px 8px 0; padding:0.7rem 1rem; margin-top:1rem; }
+    [data-theme="dark"] .rb-explainer { background:rgba(92,200,192,0.06); border-left-color:#5cc8c0; }
+    .rb-mode-toggle { display:flex; gap:0.4rem; margin-bottom:0.85rem; flex-wrap:wrap; }
+    .rb-mode-btn { font-family:"Nunito",sans-serif; font-size:0.79rem; font-weight:700; color:var(--rt-blue); background:rgba(22,69,99,0.07); border:1.5px solid transparent; border-radius:20px; padding:0.28rem 0.9rem; cursor:pointer; transition:background 0.15s,border-color 0.15s,color 0.15s; }
+    .rb-mode-btn:hover { background:rgba(22,69,99,0.14); }
+    .rb-mode-btn.active { background:var(--rt-blue); color:#fff; border-color:var(--rt-blue); }
+    [data-theme="dark"] .rb-mode-btn { background:rgba(92,200,192,0.1); color:#5cc8c0; }
+    [data-theme="dark"] .rb-mode-btn.active { background:#5cc8c0; color:#2d3035; border-color:#5cc8c0; }
+    .rb-custom-inputs { background:var(--rt-beige-main); border:1.5px solid var(--rt-beige-contrast); border-radius:10px; padding:0.85rem 1rem 0.9rem; margin-bottom:1rem; }
+    [data-theme="dark"] .rb-custom-inputs { background:#3d4147; border-color:#474c53; }
+    .rb-custom-intro { font-size:0.79rem; color:var(--rt-text-color); margin:0 0 0.75rem; line-height:1.5; font-weight:500; }
+    .rb-custom-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    @media (max-width:540px) { .rb-custom-grid { grid-template-columns:1fr; } }
+    @media (max-width:860px) { .rb-spak-grid { grid-template-columns:160px 1fr; } .rb-chart-col { grid-column:1 / -1; } }
+    @media (max-width:540px) {
+      .rb-spak-grid { grid-template-columns:1fr; }
+      .rb-lever-col { flex-direction:row; flex-wrap:wrap; align-items:center; gap:0.75rem; }
+      .rb-lever-frame { width:100%; height:54px; flex-direction:row; padding:0 1rem; border-radius:8px; justify-content:flex-start; gap:0.75rem; }
+      .rb-lever-scale { display:none; }
+      .rb-lever-input-wrap { width:100%; height:40px; flex:1; }
+      input[type="range"].rb-lever { position:static; width:100%; transform:none; }
+    }
+
+    /* ── Footer ── */
+    .site-footer { background:#0d3b38; color:rgba(255,255,255,0.82); padding:2.75rem 1.5rem 2rem; margin-top:2.5rem; position:relative; z-index:1; }
+    [data-theme="dark"] .site-footer { background:#21242a; }
+    .site-footer-inner { max-width:1100px; margin:0 auto; }
+    .site-footer-cols { display:grid; grid-template-columns:1fr 1.35fr; gap:2.5rem; }
+    @media (max-width:680px){ .site-footer-cols{ grid-template-columns:1fr; gap:1.75rem; } }
+    .site-footer-brand { font-family:"DM Serif Display", serif; font-size:1.5rem; font-weight:400; color:#fff; margin-bottom:0.55rem; letter-spacing:0.01em; }
+    .site-footer-h { font-family:"DM Sans", sans-serif; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.09em; color:rgba(255,255,255,0.55); margin:0 0 0.55rem; }
+    .site-footer-text { font-size:0.82rem; line-height:1.65; color:rgba(255,255,255,0.78); margin:0 0 0.75rem; max-width:48ch; }
+    .site-footer-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0.5rem; }
+    .site-footer-list li { font-size:0.78rem; line-height:1.55; color:rgba(255,255,255,0.7); padding-left:1rem; position:relative; max-width:54ch; }
+    .site-footer-list li::before { content:"–"; position:absolute; left:0; color:rgba(255,255,255,0.4); }
+    .site-footer-bottom { border-top:1px solid rgba(255,255,255,0.13); margin-top:1.9rem; padding-top:1.1rem; display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap; }
+    .site-footer-disclaimer { font-size:0.72rem; line-height:1.6; color:rgba(255,255,255,0.5); margin:0; max-width:64ch; }
+    .site-footer-copy { font-size:0.72rem; color:rgba(255,255,255,0.4); margin:0; white-space:nowrap; }
+  </style>
+</head>
+<body>
+
+  <header class="site-header" role="banner">
+    <div class="site-header-inner">
+      <a href="index.html" class="sh-brand" aria-label="Decenniet – till startsidan">
+        <svg class="sh-brand-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M3 4 L3 20.5 L21 20.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.35"/>
+          <path d="M4 19 C11 19 15 13 20.5 4.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+          <circle cx="20.5" cy="4.5" r="1.7" fill="currentColor"/>
+        </svg>
+        <span class="sh-brand-text">Decenniet</span>
+      </a>
+      <nav class="sh-nav" aria-label="Main">
+        <div class="sh-nav-pill">
+          <button class="sh-nav-link" onclick="navigateTo('index.html')" type="button" data-i18n="nav-home">Investera</button>
+          <button class="sh-nav-link sh-nav-active" type="button" data-i18n="nav-housing">Bostad</button>
+          <button class="sh-nav-link" onclick="navigateTo('page3.html')" type="button" data-i18n="nav-fees">Avgifter</button>
+        </div>
+      </nav>
+      <div class="sh-controls">
+        <div class="fh-dd" id="langDd">
+          <button class="fh-dd-btn" id="langDdBtn" aria-expanded="false" aria-haspopup="listbox" aria-label="Language">
+            <span id="langDdLabel">SV</span>
+            <svg class="fh-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="fh-dd-menu" id="langDdMenu" role="listbox" aria-label="Language" hidden>
+            <button class="fh-dd-item" role="option" aria-selected="true"  data-lang="sv">Svenska <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button class="fh-dd-item" role="option" aria-selected="false" data-lang="en">English <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+          </div>
+        </div>
+        <div class="fh-dd" id="currDd">
+          <button class="fh-dd-btn" id="currDdBtn" aria-expanded="false" aria-haspopup="listbox" aria-label="Currency">
+            <span id="currDdLabel">SEK</span>
+            <svg class="fh-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="fh-dd-menu" id="currDdMenu" role="listbox" aria-label="Currency" hidden>
+            <button class="fh-dd-item" role="option" aria-selected="true"  data-curr="SEK">SEK – kr <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button class="fh-dd-item" role="option" aria-selected="false" data-curr="NOK">NOK – kr <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button class="fh-dd-item" role="option" aria-selected="false" data-curr="DKK">DKK – kr <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <div class="fh-dd-sep" role="separator"></div>
+            <button class="fh-dd-item" role="option" aria-selected="false" data-curr="EUR">EUR – € <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button class="fh-dd-item" role="option" aria-selected="false" data-curr="GBP">GBP – £ <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button class="fh-dd-item" role="option" aria-selected="false" data-curr="USD">USD – $ <svg class="fh-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></button>
+          </div>
+        </div>
+        <button class="theme-pill" id="themeToggle" role="switch" aria-checked="false" aria-label="Toggle dark mode">
+          <span class="theme-pill-knob">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="13" height="13"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="13" height="13"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </span>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="wrapper">
+
+    <!-- ─── Hur dyrt är det att köpa hus? (copied from index.html) ── -->
+    <section class="house-section" id="houseSection">
+      <div class="house-card">
+        <h2 class="house-title" data-i18n="house-title">Hur dyrt har det blivit att köpa hus i Sverige?</h2>
+        <div class="house-charts-row">
+
+          <!-- A: Hockey stick -->
+          <div class="house-chart-block">
+            <div class="house-chart-label" data-i18n="house-real-label">Reala huspriser 1920–2025</div>
+            <p class="house-chart-caption" data-i18n="house-real-caption">Realt prisindex — i stort sett platt i ~70 år, sedan kraftig uppgång från mitten av 90-talet.</p>
+            <div class="house-chart-wrap">
+              <canvas id="houseRealChart"></canvas>
+            </div>
+          </div>
+
+          <!-- B: Affordability -->
+          <div class="house-chart-block">
+            <div class="house-chart-label" data-i18n="house-afford-label">Antal årslöner för ett genomsnittligt hus</div>
+            <div class="house-stat-row">
+              <div class="house-stat-card">
+                <span class="house-stat-year">1995</span>
+                <span class="house-stat-val" data-i18n="house-stat-1995">3,5 årslöner</span>
+              </div>
+              <div class="house-stat-card hl">
+                <span class="house-stat-year">2025</span>
+                <span class="house-stat-val" data-i18n="house-stat-2025">~11 årslöner</span>
+              </div>
+            </div>
+            <div class="house-chart-wrap">
+              <canvas id="houseAffordChart"></canvas>
+            </div>
+          </div>
+
+        </div><!-- /house-charts-row -->
+
+        <p class="house-disclaimer" data-i18n="house-disclaimer">Ungefärliga siffror för illustration. Tidiga år är grova uppskattningar. Hockeyklubban visar ett realt, schematiskt index baserat på forskning (bl.a. Edvinsson/Riksbanken), inte exakta priser. Lönedata bygger på genomsnittlig bruttolön. Inte investeringsrådgivning.</p>
+      </div><!-- /house-card -->
+    </section>
+
+    <!-- ─── Hur sårbara är svenskarna? ── -->
+    <section class="sarb-section" id="sarbSection">
+      <div class="sarb-card">
+        <h2 class="sarb-title" data-i18n="sarb-title">Hur sårbara är svenskarna?</h2>
+        <p class="sarb-subtitle" data-i18n="sarb-subtitle">Svenskarna hör till de mest skuldsatta hushållen i världen — och de byggde upp sina rekordskulder under en ovanligt låg ränta. Det gör dem känsliga: även en måttlig räntehöjning slår hårt.</p>
+
+        <p class="rb-subheading" data-i18n="rb-subheading">Dra i Riksbankens spak — hur sårbar är du?</p>
+
+        <div class="rb-spak-wrap">
+          <div class="rb-mode-toggle" id="rbModeToggle">
+            <button class="rb-mode-btn active" data-rbmode="avg" data-i18n="rb-mode-avg">Genomsnittssvensken</button>
+            <button class="rb-mode-btn" data-rbmode="custom" data-i18n="rb-mode-custom">Mitt hushåll</button>
+          </div>
+
+          <div class="rb-custom-inputs" id="rbCustomInputs" style="display:none;">
+            <p class="rb-custom-intro" data-i18n="rb-custom-intro">Alla har det inte likadant — fyll i era egna siffror och se hur räntan slår mot just ert hushåll.</p>
+            <div class="rb-custom-grid">
+              <div>
+                <div class="sarb-slider-lbl">
+                  <span data-i18n="rb-custom-debt">Din skuld (kr)</span>
+                  <span class="sarb-slider-val" id="rbDebtVal">1 000 000 kr</span>
+                </div>
+                <div class="input-row">
+                  <input type="range" id="rbDebtSlider" min="100000" max="10000000" step="50000" value="1000000">
+                  <input type="number" id="rbDebtNum" min="100000" max="10000000" step="50000" value="1000000" style="width:7rem;">
+                </div>
+              </div>
+              <div>
+                <div class="sarb-slider-lbl">
+                  <span data-i18n="rb-custom-inc">Din disponibla inkomst per år (kr)</span>
+                  <span class="sarb-slider-val" id="rbIncVal">360 000 kr</span>
+                </div>
+                <div class="input-row">
+                  <input type="range" id="rbIncSlider" min="100000" max="1500000" step="10000" value="360000">
+                  <input type="number" id="rbIncNum" min="100000" max="1500000" step="10000" value="360000" style="width:7rem;">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rb-spak-grid">
+            <div class="rb-lever-col">
+              <div class="rb-lever-title" data-i18n="rb-lever-lbl">Styrränta</div>
+              <div class="rb-rate-badge" id="rbRateBadge">1,75 %</div>
+              <div class="rb-lever-frame">
+                <div class="rb-lever-input-wrap">
+                  <input type="range" class="rb-lever" id="rbLever" min="0" max="13" step="0.25" value="1.75">
+                </div>
+                <div class="rb-lever-scale" id="rbLeverScale"></div>
+              </div>
+            </div>
+
+            <div class="rb-metrics-col">
+              <div class="rb-metric-card rb-metric-card--main" id="rbCardMonthly">
+                <div class="rb-metric-lbl" data-i18n="rb-metric-monthly">Räntekostnad per månad</div>
+                <div class="rb-metric-val" id="rbMetricMonthly">–</div>
+              </div>
+              <div class="rb-metric-card" id="rbCardYearly">
+                <div class="rb-metric-lbl" data-i18n="rb-metric-yearly">Räntekostnad per år</div>
+                <div class="rb-metric-val" id="rbMetricYearly">–</div>
+                <div class="rb-metric-sub" id="rbMetricSub"></div>
+              </div>
+              <div class="rb-metric-card" id="rbCardShare">
+                <div class="rb-metric-lbl" data-i18n="rb-metric-share">Andel av inkomst</div>
+                <div class="rb-metric-val" id="rbMetricShare">–</div>
+                <div class="rb-share-bar-wrap">
+                  <div class="rb-share-bar-track"><div class="rb-share-bar-fill" id="rbShareBarFill"></div></div>
+                </div>
+              </div>
+              <p class="rb-hook" id="rbHook"></p>
+            </div>
+
+            <div class="rb-chart-col">
+              <div class="rb-chart-wrap"><canvas id="rbHistChart"></canvas></div>
+              <p class="rb-chart-caption" data-i18n="rb-chart-caption">Sedan 1993 styr Riksbanken räntan efter inflationsmålet på 2 %. Räntan föll stadigt mot noll på 2010-talet — ett ovanligt lågt läge — och steg sedan snabbt 2022–2023. Att svenskarna lånade som mest när räntan var som lägst är just det som gör dem sårbara.</p>
+            </div>
+          </div>
+
+          <div class="rb-explainer" data-i18n="rb-explainer">Höjer Riksbanken räntan blir lånen dyrare och hushåll med stora skulder får mindre kvar. Dra i spaken och se hur snabbt kostnaden äter upp inkomsten.</div>
+        </div>
+
+        <p class="sarb-rate-note" data-i18n="rb-disclaimer">Förenklat och ungefärligt för illustration. Genomsnittssvensken bygger på en typisk skuld och inkomst; verkligheten varierar mycket mellan hushåll. Inte investeringsrådgivning.</p>
+
+      </div>
+    </section>
+  </div>
+
+  <button id="langToggle" style="display:none" aria-hidden="true">EN</button>
+  <select id="currencySelect" style="display:none" aria-hidden="true">
+    <option value="SEK" selected>SEK</option><option value="USD">USD</option>
+    <option value="EUR">EUR</option><option value="GBP">GBP</option>
+    <option value="NOK">NOK</option><option value="DKK">DKK</option>
+  </select>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div class="site-footer-cols">
+        <div class="site-footer-col">
+          <div class="site-footer-brand">Decenniet</div>
+          <h2 class="site-footer-h" data-i18n="footer-about-h">Om Decenniet</h2>
+          <p class="site-footer-text" data-i18n="footer-about">Decenniet är en oberoende sida som vill göra privatekonomi begriplig — hur sparande växer, vad avgifter kostar och hur räntor och skulder påverkar vanliga hushåll. Alla siffror är ungefärliga och för illustration, inte investeringsrådgivning.</p>
+        </div>
+        <div class="site-footer-col">
+          <h2 class="site-footer-h" data-i18n="footer-privacy-h">Din integritet</h2>
+          <p class="site-footer-text" data-i18n="footer-privacy-intro">Den här sidan är byggd helt som en frontend-sida. Vi samlar inte in, lagrar eller säljer några personuppgifter om dig. Det finns inga konton, ingen inloggning och inga spårningskakor.</p>
+          <ul class="site-footer-list">
+            <li data-i18n="footer-privacy-1">Vissa av dina inställningar (språk, valuta, ljust/mörkt läge) sparas lokalt i din egen webbläsare, bara för din bekvämlighet — de skickas aldrig till oss.</li>
+            <li data-i18n="footer-privacy-2">Sidan använder en värdtjänst (webbhotell) för att finnas tillgänglig online, och som alla webbplatser kan värdtjänsten se viss teknisk trafikdata (t.ex. IP-adress) på sin servernivå. Det är inget vi samlar in eller använder.</li>
+            <li data-i18n="footer-privacy-3">Vi visar inga annonser och delar ingen data med annonsörer.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="site-footer-bottom">
+        <p class="site-footer-disclaimer" data-i18n="footer-disclaimer">Decenniet ger allmän information, inte personlig rådgivning. Kontakta en licensierad rådgivare för beslut om din ekonomi.</p>
+        <p class="site-footer-copy">© 2026 Decenniet</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  var currentLang = 'sv';
+  try { currentLang = localStorage.getItem('decennium-lang') || 'sv'; } catch(e) {}
+  var currentCurrency = 'SEK';
+  try { currentCurrency = localStorage.getItem('decennium-curr') || 'SEK'; } catch(e) {}
+
+  // ── Currency config (reformat only — matches index.html / page3.html) ──
+  var CURRENCIES = {
+    SEK: { symbol: 'kr', locale: 'sv-SE', pos: 'after'  },
+    USD: { symbol: '$',  locale: 'en-US', pos: 'before' },
+    EUR: { symbol: '€',  locale: 'de-DE', pos: 'after'  },
+    GBP: { symbol: '£',  locale: 'en-GB', pos: 'before' },
+    NOK: { symbol: 'kr', locale: 'nb-NO', pos: 'after'  },
+    DKK: { symbol: 'kr', locale: 'da-DK', pos: 'after'  },
+  };
+  function curC(){ return CURRENCIES[currentCurrency] || CURRENCIES.SEK; }
+  function curSym(){ return curC().symbol; }
+  function fmtNum(n){ return Math.round(n).toLocaleString(curC().locale); }
+  function fmtAmt(n){ var c=curC(), s=fmtNum(n); return c.pos==='before' ? c.symbol+s : s+' '+c.symbol; }
+  function fmtPer(n,svP,enP){ var c=curC(), s=fmtNum(n), p=(currentLang==='sv'?svP:enP); return c.pos==='before' ? c.symbol+s+p : s+' '+c.symbol+p; }
+
+  var STRINGS = {
+    sv: {
+      'page-title':         'Decenniet – Hur sårbara är svenskarna?',
+      'nav-home':           'Investera',
+      'nav-housing':        'Bostad',
+      'nav-fees':           'Avgifter',
+      'sarb-title':         'Hur sårbara är svenskarna?',
+      'sarb-subtitle':      'Svenskarna hör till de mest skuldsatta hushållen i världen — och de byggde upp sina rekordskulder under en ovanligt låg ränta. Det gör dem känsliga: även en måttlig räntehöjning slår hårt.',
+      'rb-subheading':      'Dra i Riksbankens spak — hur sårbar är du?',
+      'rb-lever-lbl':       'Styrränta',
+      'rb-mode-avg':        'Genomsnittssvensken',
+      'rb-mode-custom':     'Mitt hushåll',
+      'rb-custom-intro':    'Alla har det inte likadant — fyll i era egna siffror och se hur räntan slår mot just ert hushåll.',
+      'rb-custom-debt':     function(){return 'Din skuld ('+curSym()+')';},
+      'rb-custom-inc':      function(){return 'Din disponibla inkomst per år ('+curSym()+')';},
+      'rb-hook-base':       'Det här är ungefär dagens räntenivå.',
+      'rb-hook-up':         function(r,x){return 'En höjning från 1,75 % till '+r+' % kostar ungefär <strong>'+x+' mer per månad</strong>.';},
+      'rb-hook-down':       function(r,x){return 'En sänkning från 1,75 % till '+r+' % sparar ungefär <strong>'+x+' per månad</strong>.';},
+      'rb-metric-yearly':   'Räntekostnad per år',
+      'rb-metric-monthly':  'Räntekostnad per månad',
+      'rb-metric-share':    'Andel av inkomst',
+      'rb-metric-sub':      function(debt,inc){return 'Skuld '+debt+', inkomst '+inc+'/år';},
+      'rb-chart-caption':   'Sedan 1993 styr Riksbanken räntan efter inflationsmålet på 2 %. Räntan föll stadigt mot noll på 2010-talet — ett ovanligt lågt läge — och steg sedan snabbt 2022–2023. Att svenskarna lånade som mest när räntan var som lägst är just det som gör dem sårbara.',
+      'rb-explainer':       'Höjer Riksbanken räntan blir lånen dyrare och hushåll med stora skulder får mindre kvar. Dra i spaken och se hur snabbt kostnaden äter upp inkomsten.',
+      'rb-disclaimer':      'Förenklat och ungefärligt för illustration. Genomsnittssvensken bygger på en typisk skuld och inkomst; verkligheten varierar mycket mellan hushåll. Inte investeringsrådgivning.',
+      'rb-yr-suffix':       ' kr/år',
+      'rb-mo-suffix':       ' kr/mån',
+      'rb-chart-lbl':       'Styrränta (%)',
+      'rb-refline-lbl':     'Vald nivå',
+      'yr-pfx':                'År ',
+      'house-title':        'Hur dyrt har det blivit att köpa hus i Sverige?',
+      'house-real-label':   'Reala huspriser 1920–2025',
+      'house-real-caption': 'Realt prisindex — i stort sett platt i ~70 år, sedan kraftig uppgång från mitten av 90-talet.',
+      'house-afford-label': 'Antal årslöner för ett genomsnittligt hus',
+      'house-stat-1995':    '3,5 årslöner',
+      'house-stat-2025':    '~11 årslöner',
+      'house-disclaimer':   'Ungefärliga siffror för illustration. Tidiga år är grova uppskattningar. Hockeyklubban visar ett realt, schematiskt index baserat på forskning (bl.a. Edvinsson/Riksbanken), inte exakta priser. Lönedata bygger på genomsnittlig bruttolön. Inte investeringsrådgivning.',
+      'afford-tooltip': function(v) { return ' '+v.toFixed(1)+' årslöner'; },
+      'footer-about-h':      'Om Decenniet',
+      'footer-about':        'Decenniet är en oberoende sida som vill göra privatekonomi begriplig — hur sparande växer, vad avgifter kostar och hur räntor och skulder påverkar vanliga hushåll. Alla siffror är ungefärliga och för illustration, inte investeringsrådgivning.',
+      'footer-privacy-h':    'Din integritet',
+      'footer-privacy-intro':'Den här sidan är byggd helt som en frontend-sida. Vi samlar inte in, lagrar eller säljer några personuppgifter om dig. Det finns inga konton, ingen inloggning och inga spårningskakor.',
+      'footer-privacy-1':    'Vissa av dina inställningar (språk, valuta, ljust/mörkt läge) sparas lokalt i din egen webbläsare, bara för din bekvämlighet — de skickas aldrig till oss.',
+      'footer-privacy-2':    'Sidan använder en värdtjänst (webbhotell) för att finnas tillgänglig online, och som alla webbplatser kan värdtjänsten se viss teknisk trafikdata (t.ex. IP-adress) på sin servernivå. Det är inget vi samlar in eller använder.',
+      'footer-privacy-3':    'Vi visar inga annonser och delar ingen data med annonsörer.',
+      'footer-disclaimer':   'Decenniet ger allmän information, inte personlig rådgivning. Kontakta en licensierad rådgivare för beslut om din ekonomi.',
+    },
+    en: {
+      'page-title':         'Decenniet – How vulnerable are Swedes?',
+      'nav-home':           'Investing',
+      'nav-housing':        'Housing',
+      'nav-fees':           'Fees',
+      'sarb-title':         'How vulnerable are Swedes?',
+      'sarb-subtitle':      "Swedes are among the world's most indebted households — and they built up record debt during an unusually low interest rate era. That makes them vulnerable: even a moderate rate rise hits hard.",
+      'rb-subheading':      "Pull the Riksbank's lever — how vulnerable are you?",
+      'rb-lever-lbl':       'Policy rate',
+      'rb-mode-avg':        'The average Swede',
+      'rb-mode-custom':     'My household',
+      'rb-custom-intro':    "Everyone's situation is different — enter your own figures and see how rates affect your household.",
+      'rb-custom-debt':     function(){return 'Your debt ('+curSym()+')';},
+      'rb-custom-inc':      function(){return 'Your disposable income per year ('+curSym()+')';},
+      'rb-hook-base':       "This is approximately today's rate level.",
+      'rb-hook-up':         function(r,x){return 'A rise from 1.75% to '+r+'% costs roughly <strong>'+x+' more per month</strong>.';},
+      'rb-hook-down':       function(r,x){return 'A cut from 1.75% to '+r+'% saves roughly <strong>'+x+' per month</strong>.';},
+      'rb-metric-yearly':   'Yearly interest cost',
+      'rb-metric-monthly':  'Monthly interest cost',
+      'rb-metric-share':    'Share of income',
+      'rb-metric-sub':      function(debt,inc){return 'Debt '+debt+', income '+inc+'/yr';},
+      'rb-chart-caption':   'Since 1993 the Riksbank has steered rates toward its 2% inflation target. Rates fell steadily toward zero in the 2010s — an unusually low period — before rising sharply in 2022–2023. The fact that Swedes borrowed most when rates were lowest is exactly what makes them vulnerable.',
+      'rb-explainer':       'When the Riksbank raises rates, loans become more expensive and heavily indebted households have less left over. Pull the lever and see how quickly the cost eats into income.',
+      'rb-disclaimer':      'Simplified and approximate for illustration. The average Swede is based on a typical debt and income; reality varies greatly between households. Not investment advice.',
+      'rb-yr-suffix':       ' SEK/yr',
+      'rb-mo-suffix':       ' SEK/mo',
+      'rb-chart-lbl':       'Policy rate (%)',
+      'rb-refline-lbl':     'Selected level',
+      'yr-pfx':                'Year ',
+      'house-title':        'How expensive has it become to buy a house in Sweden?',
+      'house-real-label':   'Real house prices 1920–2025',
+      'house-real-caption': 'Real price index — roughly flat for ~70 years, then sharp rise from the mid-90s.',
+      'house-afford-label': 'Annual salaries for an average house',
+      'house-stat-1995':    '3.5 annual salaries',
+      'house-stat-2025':    '~11 annual salaries',
+      'house-disclaimer':   "Approximate figures for illustration. Early years are rough estimates. The hockey stick shows a real, schematic index based on research (incl. Edvinsson/Riksbank), not exact prices. Wage data based on average gross salary. Not investment advice.",
+      'afford-tooltip': function(v) { return ' '+v.toFixed(1)+' annual salaries'; },
+      'footer-about-h':      'About Decenniet',
+      'footer-about':        'Decenniet is an independent site that aims to make personal finance easy to understand — how savings grow, what fees cost, and how interest rates and debt affect ordinary households. All figures are approximate and for illustration, not investment advice.',
+      'footer-privacy-h':    'Your privacy',
+      'footer-privacy-intro':'This site is built entirely as a frontend site. We do not collect, store or sell any personal data about you. There are no accounts, no login and no tracking cookies.',
+      'footer-privacy-1':    'Some of your settings (language, currency, light/dark mode) are saved locally in your own browser, purely for your convenience — they are never sent to us.',
+      'footer-privacy-2':    'The site uses a hosting provider so it can be available online, and like every website the host can see some technical traffic data (e.g. your IP address) at its server level. That is nothing we collect or use.',
+      'footer-privacy-3':    'We show no ads and share no data with advertisers.',
+      'footer-disclaimer':   'Decenniet provides general information, not personal advice. Consult a licensed advisor for decisions about your finances.',
+    }
+  };
+
+  function T(key){ var v=STRINGS[currentLang][key]; return typeof v==='function'?v.apply(null,Array.prototype.slice.call(arguments,1)):v; }
+
+  function updateTrack(slider) {
+    var pct=(parseFloat(slider.value)-parseFloat(slider.min))/(parseFloat(slider.max)-parseFloat(slider.min))*100;
+    slider.style.setProperty('--pct',pct.toFixed(2)+'%');
+  }
+
+  // ── RB constants ──
+  var RB_AVG_DEBT=1000000, RB_AVG_INCOME=360000;
+  var RB_RATE_HISTORY={1993:8,1994:7,1995:8.5,1996:5,1997:4,1998:4,1999:3,2000:4,2001:4,2002:4,2003:3,2004:2,2005:1.5,2006:3,2007:4,2008:2,2009:0.5,2010:1.25,2011:1.75,2012:1,2013:0.75,2014:0,2015:-0.35,2016:-0.5,2017:-0.5,2018:-0.25,2019:0,2020:0,2021:0,2022:2.5,2023:4,2024:2.75,2025:1.75};
+  var rbHistChartInst=null, rbCurrentRate=1.75, rbMode='avg';
+
+  function rbGetDebt(){if(rbMode==='custom'){var v=parseFloat(document.getElementById('rbDebtNum').value);return isNaN(v)?RB_AVG_DEBT:v;}return RB_AVG_DEBT;}
+  function rbGetIncome(){if(rbMode==='custom'){var v=parseFloat(document.getElementById('rbIncNum').value);return isNaN(v)?RB_AVG_INCOME:v;}return RB_AVG_INCOME;}
+  function rbZone(r){if(r<=1)return'low';if(Math.abs(r-1.75)<0.2)return'today';if(r>=3&&r<=4.5)return'y2023';if(r>=5&&r<10)return'normal';if(r>=10)return'crisis';return'mid';}
+  function lerpHex(a,b,t){var ah=parseInt(a.slice(1),16),bh=parseInt(b.slice(1),16),ar=(ah>>16)&255,ag=(ah>>8)&255,ab=ah&255,br=(bh>>16)&255,bg=(bh>>8)&255,bb=bh&255,r=Math.round(ar+(br-ar)*t),g=Math.round(ag+(bg-ag)*t),bv=Math.round(ab+(bb-ab)*t);return'#'+[r,g,bv].map(function(x){return x.toString(16).padStart(2,'0');}).join('');}
+  function shareColor(s){if(s<=10)return'#164563';if(s<=20)return lerpHex('#164563','#b07800',(s-10)/10);if(s<=30)return lerpHex('#b07800','#c44000',(s-20)/10);return lerpHex('#c44000','#a03253',Math.min(1,(s-30)/10));}
+
+  var _rbAnimState={};
+  function rbAnimate(id,target,fmt){
+    var el=document.getElementById(id); if(!el)return;
+    var s=_rbAnimState[id]||{cur:0,raf:null}; _rbAnimState[id]=s;
+    if(s.raf){cancelAnimationFrame(s.raf);s.raf=null;}
+    var from=s.cur,dur=340,t0=performance.now();
+    function step(now){var p=Math.min(1,(now-t0)/dur),e=1-(1-p)*(1-p);s.cur=from+(target-from)*e;el.textContent=fmt(s.cur);if(p<1){s.raf=requestAnimationFrame(step);}else{s.cur=target;el.textContent=fmt(target);s.raf=null;}}
+    s.raf=requestAnimationFrame(step);
+  }
+
+  function rbBuildScale(){
+    var el=document.getElementById('rbLeverScale'); if(!el)return; el.innerHTML='';
+    [0,2,4,6,8,10,13].forEach(function(v){var t=document.createElement('div');t.className='rb-lever-tick';t.textContent=v+'%';el.appendChild(t);});
+  }
+
+  function rbRenderHistChart(){
+    var ctx=document.getElementById('rbHistChart').getContext('2d');
+    var years=Object.keys(RB_RATE_HISTORY).map(Number), rates=Object.values(RB_RATE_HISTORY);
+    var refData=years.map(function(){return rbCurrentRate;});
+    if(rbHistChartInst){rbHistChartInst.data.datasets[1].data=refData;rbHistChartInst.data.datasets[1].label=T('rb-refline-lbl');rbHistChartInst.data.datasets[0].label=T('rb-chart-lbl');rbHistChartInst.update('none');return;}
+    rbHistChartInst=new Chart(ctx,{type:'line',data:{labels:years,datasets:[{label:T('rb-chart-lbl'),data:rates,borderColor:'#164563',backgroundColor:'rgba(22,69,99,0.08)',borderWidth:2,fill:true,tension:0.3,pointRadius:0,pointHoverRadius:5},{label:T('rb-refline-lbl'),data:refData,borderColor:'#a03253',borderWidth:1.5,borderDash:[5,4],pointRadius:0,fill:false,tension:0}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:0},plugins:{legend:{display:true,labels:{font:{family:'"DM Sans",sans-serif',size:10},color:'#aaa',boxWidth:18,padding:8}},tooltip:{backgroundColor:'rgba(22,69,99,0.93)',titleFont:{family:'"DM Sans",sans-serif',weight:'700',size:12},bodyFont:{family:'"DM Sans",sans-serif',size:11},padding:10,filter:function(item){return item.datasetIndex===0;},callbacks:{title:function(items){return T('yr-pfx')+items[0].label;},label:function(item){return' '+item.raw+' %';}}}},scales:{x:{grid:{color:'#f0ede8'},border:{display:false},ticks:{font:{family:'"DM Sans",sans-serif',size:10},color:'#aaa',maxTicksLimit:8}},y:{grid:{color:'#f0ede8'},border:{display:false},suggestedMin:-1,ticks:{font:{family:'"DM Sans",sans-serif',size:10},color:'#aaa',maxTicksLimit:7,callback:function(v){return v+' %';}}}}}});
+  }
+
+  function rbUpdate(){
+    var rate=parseFloat(document.getElementById('rbLever').value)||0;
+    rbCurrentRate=rate;
+    var debt=rbGetDebt(), income=rbGetIncome();
+    var rateFmt=rate.toLocaleString('sv-SE',{minimumFractionDigits:2,maximumFractionDigits:2});
+    document.getElementById('rbRateBadge').textContent=rateFmt+' %';
+    var yearly=debt*(rate/100), monthly=yearly/12, share=income>0?(yearly/income)*100:0;
+    rbAnimate('rbMetricYearly',yearly,function(n){return fmtPer(n,'/år','/yr');});
+    rbAnimate('rbMetricMonthly',monthly,function(n){return fmtPer(n,'/mån','/mo');});
+    rbAnimate('rbMetricShare',share,function(n){return n.toFixed(1).replace('.',',')+' %';});
+    var subEl=document.getElementById('rbMetricSub');
+    if(subEl)subEl.textContent=T('rb-metric-sub',fmtAmt(debt),fmtAmt(income));
+    var dv=document.getElementById('rbDebtVal'); if(dv)dv.textContent=fmtAmt(debt);
+    var iv=document.getElementById('rbIncVal'); if(iv)iv.textContent=fmtAmt(income);
+    var BASE_RATE=1.75, baseMonthly=debt*(BASE_RATE/100)/12, extra=Math.round(monthly-baseMonthly);
+    var hookEl=document.getElementById('rbHook');
+    if(hookEl){if(Math.abs(rate-BASE_RATE)<0.13){hookEl.innerHTML=T('rb-hook-base');}else if(extra>0){hookEl.innerHTML=T('rb-hook-up',rateFmt,fmtAmt(extra));}else{hookEl.innerHTML=T('rb-hook-down',rateFmt,fmtAmt(-extra));}}
+    var barFill=document.getElementById('rbShareBarFill');
+    if(barFill){barFill.style.width=Math.min(share*2,100)+'%';}
+    if(rbHistChartInst){var n=rbHistChartInst.data.datasets[1].data.length;rbHistChartInst.data.datasets[1].data=Array(n).fill(rbCurrentRate);rbHistChartInst.update('none');}
+  }
+
+
+  function sarbUpdate(){ rbUpdate(); }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // HUSPRIS-SEKTION (copied from index.html)
+  // ═══════════════════════════════════════════════════════════════════════════
+  var HOUSE_REAL_INDEX = {
+    1920:95,  1930:110, 1940:90,  1950:100, 1960:105, 1970:100, 1980:95,
+    1985:100, 1990:130, 1993:95,  1995:100, 2000:150, 2005:210, 2010:250,
+    2015:310, 2018:360, 2021:400, 2023:350, 2025:360,
+  };
+  var HOUSE_ANCHORS = [
+    { year:1957, pris:30000,   lon:11000  },
+    { year:1960, pris:45000,   lon:13000  },
+    { year:1965, pris:70000,   lon:18000  },
+    { year:1970, pris:130000,  lon:28000  },
+    { year:1975, pris:220000,  lon:48000  },
+    { year:1980, pris:350000,  lon:72000  },
+    { year:1985, pris:480000,  lon:105000 },
+    { year:1990, pris:660000,  lon:160000 },
+    { year:1995, pris:700000,  lon:200000 },
+    { year:2000, pris:1050000, lon:245000 },
+    { year:2005, pris:1700000, lon:290000 },
+    { year:2010, pris:2100000, lon:340000 },
+    { year:2015, pris:2600000, lon:390000 },
+    { year:2020, pris:3300000, lon:430000 },
+    { year:2025, pris:4800000, lon:444000 },
+  ];
+  var HOUSE_YEARLY = (function() {
+    var r = {};
+    for (var i = 0; i < HOUSE_ANCHORS.length - 1; i++) {
+      var a = HOUSE_ANCHORS[i], b = HOUSE_ANCHORS[i + 1];
+      var steps = b.year - a.year;
+      for (var dy = 0; dy < steps; dy++) {
+        var t = dy / steps;
+        r[a.year + dy] = {
+          pris: Math.round(a.pris + (b.pris - a.pris) * t),
+          lon:  Math.round(a.lon  + (b.lon  - a.lon)  * t),
+        };
+      }
+    }
+    var last = HOUSE_ANCHORS[HOUSE_ANCHORS.length - 1];
+    r[last.year] = { pris: last.pris, lon: last.lon };
+    return r;
+  })();
+  function houseChartOpts(tipCbs, yTickCb) {
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    var grid = dark ? 'rgba(255,255,255,0.10)' : '#f0ede8', tick = dark ? '#9ea3ac' : '#aaa';
+    return {
+      responsive: true, maintainAspectRatio: false,
+      animation: { duration: 0 }, interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(22,69,99,0.93)',
+          titleFont: { family: '"DM Sans",sans-serif', weight: '700', size: 12 },
+          bodyFont:  { family: '"DM Sans",sans-serif', size: 11 },
+          padding: 10, displayColors: false, callbacks: tipCbs,
+        }
+      },
+      scales: {
+        x: { grid: { color: grid }, border: { display: false },
+             ticks: { font: { family: '"DM Sans",sans-serif', size: 10 }, color: tick, maxTicksLimit: 9 } },
+        y: { grid: { color: grid }, border: { display: false },
+             ticks: { font: { family: '"DM Sans",sans-serif', size: 10 }, color: tick, maxTicksLimit: 5, callback: yTickCb } }
+      }
+    };
+  }
+  var houseRealChartInst = null;
+  function houseRenderRealChart() {
+    if (houseRealChartInst) return;
+    var years = Object.keys(HOUSE_REAL_INDEX).map(Number).sort(function(a,b){return a-b;});
+    var vals  = years.map(function(y){return HOUSE_REAL_INDEX[y];});
+    houseRealChartInst = new Chart(
+      document.getElementById('houseRealChart').getContext('2d'),
+      { type: 'line',
+        data: { labels: years, datasets: [{
+          data: vals, borderColor: '#a03253', backgroundColor: 'rgba(160,50,83,0.10)',
+          borderWidth: 2.5, fill: true, tension: 0.35,
+          pointRadius: 3, pointHoverRadius: 6,
+          pointBackgroundColor: '#a03253', pointBorderColor: '#fff', pointBorderWidth: 1.5,
+        }] },
+        options: houseChartOpts(
+          { title: function(items){return T('yr-pfx') + items[0].label;}, label: function(item){return ' Index: ' + item.raw;} },
+          function(v){return v;}
+        )
+      }
+    );
+  }
+  var houseAffordChartInst = null;
+  function houseRenderAffordChart() {
+    if (houseAffordChartInst) return;
+    var years  = Object.keys(HOUSE_YEARLY).map(Number).sort(function(a,b){return a-b;});
+    var ratios = years.map(function(y){return parseFloat((HOUSE_YEARLY[y].pris / HOUSE_YEARLY[y].lon).toFixed(2));});
+    houseAffordChartInst = new Chart(
+      document.getElementById('houseAffordChart').getContext('2d'),
+      { type: 'line',
+        data: { labels: years, datasets: [{
+          data: ratios, borderColor: '#164563', backgroundColor: 'rgba(22,69,99,0.09)',
+          borderWidth: 2.5, fill: true, tension: 0.3, pointRadius: 0, pointHoverRadius: 5,
+        }] },
+        options: houseChartOpts(
+          { title: function(items){return T('yr-pfx') + items[0].label;}, label: function(item){return T('afford-tooltip', item.raw);} },
+          function(v){return v.toFixed(1) + 'x';}
+        )
+      }
+    );
+  }
+  function houseRecolorCharts() {
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    var grid = dark ? 'rgba(255,255,255,0.10)' : '#f0ede8', tick = dark ? '#9ea3ac' : '#aaa';
+    [houseRealChartInst, houseAffordChartInst].forEach(function(ch){
+      if (!ch) return;
+      ['x','y'].forEach(function(ax){
+        if (ch.options.scales[ax]) {
+          if (ch.options.scales[ax].ticks) ch.options.scales[ax].ticks.color = tick;
+          if (ch.options.scales[ax].grid)  ch.options.scales[ax].grid.color  = grid;
+        }
+      });
+      ch.update('none');
+    });
+  }
+
+  // ── Event bindings ──
+  document.getElementById('rbLever').addEventListener('input',function(){updateTrack(this);rbUpdate();});
+
+  document.getElementById('rbModeToggle').addEventListener('click',function(e){
+    var btn=e.target.closest('.rb-mode-btn'); if(!btn)return;
+    document.querySelectorAll('.rb-mode-btn').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active'); rbMode=btn.dataset.rbmode;
+    var el=document.getElementById('rbCustomInputs'); if(el)el.style.display=rbMode==='custom'?'':'none';
+    rbUpdate();
+  });
+
+  (function(){
+    function syncPair(sid,nid){
+      var s=document.getElementById(sid),n=document.getElementById(nid); if(!s||!n)return;
+      function fromS(){n.value=s.value;updateTrack(s);rbUpdate();}
+      function fromN(){var v=parseFloat(n.value);if(isNaN(v))return;v=Math.min(Math.max(v,parseFloat(s.min)),parseFloat(s.max));n.value=v;s.value=v;updateTrack(s);rbUpdate();}
+      s.addEventListener('input',fromS);n.addEventListener('input',fromN);n.addEventListener('change',fromN);updateTrack(s);
+    }
+    syncPair('rbDebtSlider','rbDebtNum');syncPair('rbIncSlider','rbIncNum');
+  })();
+
+
+  // ── Slider tips ──
+  var _slTip=null;
+  function getSlTip(){if(!_slTip){_slTip=document.createElement('span');_slTip.className='slider-tip';document.body.appendChild(_slTip);}return _slTip;}
+  function fmtTipKr(v){return fmtAmt(parseFloat(v)||0);}
+  var SLIDER_TIP_FMT={
+    rbDebtSlider:function(s){return fmtTipKr(s.value);},
+    rbIncSlider:function(s){return fmtTipKr(s.value);},
+    rbLever:function(s){var v=parseFloat(s.value);return(Number.isInteger(v)?v:v.toFixed(2).replace(/0+$/,''))+' %';}
+  };
+  function showSlTip(slider){
+    var fmt=SLIDER_TIP_FMT[slider.id]; if(!fmt)return;
+    var tip=getSlTip(); tip.textContent=fmt(slider);
+    var pct=(parseFloat(slider.value)-parseFloat(slider.min))/(parseFloat(slider.max)-parseFloat(slider.min));
+    var rect=slider.getBoundingClientRect(), isLever=slider.classList.contains('rb-lever');
+    if(isLever){var thumbH=38,trackH=rect.height,thumbCY=rect.bottom-thumbH/2-pct*(trackH-thumbH);tip.classList.add('lever-tip');tip.style.left=(rect.right+8)+'px';tip.style.top=(thumbCY-10)+'px';tip.style.transform='none';}
+    else{var thumbW=20,trackW=rect.width,thumbCX=rect.left+thumbW/2+pct*(trackW-thumbW);tip.classList.remove('lever-tip');tip.style.left=thumbCX+'px';tip.style.top=(rect.top-34)+'px';tip.style.transform='translateX(-50%)';}
+    tip.classList.add('visible');
+  }
+  function hideSlTip(){if(_slTip)_slTip.classList.remove('visible');}
+  document.querySelectorAll('input[type="range"]').forEach(function(s){
+    s.addEventListener('pointerdown',function(){showSlTip(s);});
+    s.addEventListener('input',function(){showSlTip(s);});
+    s.addEventListener('pointerup',hideSlTip);
+    s.addEventListener('pointercancel',hideSlTip);
+  });
+  document.querySelectorAll('input[type="range"]').forEach(updateTrack);
+
+  // ── Dropdowns ──
+  function closeAllDropdowns(){document.querySelectorAll('.fh-dd-menu').forEach(function(m){m.hidden=true;});document.querySelectorAll('.fh-dd-btn').forEach(function(b){b.setAttribute('aria-expanded','false');});}
+  function updateLangDropdown(lang){var lbl=document.getElementById('langDdLabel');if(lbl)lbl.textContent=lang==='sv'?'SV':'EN';document.querySelectorAll('#langDdMenu .fh-dd-item').forEach(function(i){i.setAttribute('aria-selected',i.dataset.lang===lang?'true':'false');});}
+  function updateCurrDropdown(curr){var lbl=document.getElementById('currDdLabel');if(lbl)lbl.textContent=curr;document.querySelectorAll('#currDdMenu .fh-dd-item').forEach(function(i){i.setAttribute('aria-selected',i.dataset.curr===curr?'true':'false');});}
+
+  (function(){
+    var lb=document.getElementById('langDdBtn'),lm=document.getElementById('langDdMenu');
+    if(lb&&lm){lb.addEventListener('click',function(e){e.stopPropagation();var o=!lm.hidden;closeAllDropdowns();if(!o){lm.hidden=false;lb.setAttribute('aria-expanded','true');}});lm.querySelectorAll('.fh-dd-item').forEach(function(i){i.addEventListener('click',function(){currentLang=i.dataset.lang;try{localStorage.setItem('decennium-lang',currentLang);}catch(e){}applyLang();closeAllDropdowns();});});}
+    var cb=document.getElementById('currDdBtn'),cm=document.getElementById('currDdMenu');
+    if(cb&&cm){cb.addEventListener('click',function(e){e.stopPropagation();var o=!cm.hidden;closeAllDropdowns();if(!o){cm.hidden=false;cb.setAttribute('aria-expanded','true');}});cm.querySelectorAll('.fh-dd-item').forEach(function(i){i.addEventListener('click',function(){currentCurrency=i.dataset.curr;try{localStorage.setItem('decennium-curr',currentCurrency);}catch(e){}updateCurrDropdown(currentCurrency);applyCurrency();closeAllDropdowns();});});}
+    document.addEventListener('click',closeAllDropdowns);
+    document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAllDropdowns();});
+  })();
+
+  // ── Lang + dark mode ──
+  var _langChanging=false;
+  function applyLang(){
+    _langChanging=true;
+    document.documentElement.lang=currentLang;
+    updateLangDropdown(currentLang);
+    document.title=T('page-title');
+    document.querySelectorAll('[data-i18n]').forEach(function(el){el.textContent=T(el.dataset.i18n);});
+    sarbUpdate();
+    _langChanging=false;
+  }
+  // Re-render all currency-dependent text/amounts (labels + metrics) after a currency change
+  function applyCurrency(){ applyLang(); }
+
+  var _darkMode=false;
+  function setDarkMode(dark){
+    _darkMode=dark;
+    document.documentElement.setAttribute('data-theme',dark?'dark':'light');
+    var btn=document.getElementById('themeToggle');if(btn)btn.setAttribute('aria-checked',dark?'true':'false');
+    try{localStorage.setItem('decennium-theme',dark?'dark':'light');}catch(e){}
+    houseRecolorCharts();
+    if(rbHistChartInst){
+      var dark2=dark,grid=dark2?'rgba(255,255,255,0.10)':'#f0ede8',tick=dark2?'#9ea3ac':'#aaa';
+      var opts=rbHistChartInst.options;
+      ['x','y'].forEach(function(ax){if(opts.scales&&opts.scales[ax]){if(opts.scales[ax].ticks)opts.scales[ax].ticks.color=tick;if(opts.scales[ax].grid)opts.scales[ax].grid.color=grid;}});
+      rbHistChartInst.update('none');
+    }
+  }
+  document.getElementById('themeToggle').addEventListener('click',function(){setDarkMode(!_darkMode);});
+  (function(){var s='';try{s=localStorage.getItem('decennium-theme')||'';}catch(e){}if(s==='dark'||(s===''&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)){setDarkMode(true);}})();
+
+  // ── Init ──
+  rbBuildScale();
+  rbRenderHistChart();
+  houseRenderRealChart();
+  houseRenderAffordChart();
+  updateCurrDropdown(currentCurrency);
+  applyLang();
+
+  // ── Page transitions ──
+  function navigateTo(url){document.body.style.transition='opacity 0.3s ease';document.body.style.opacity='0';setTimeout(function(){window.location.href=url;},310);}
+  window.addEventListener('load',function(){document.body.classList.add('page-loaded');});
+  </script>
+</body>
+</html>
