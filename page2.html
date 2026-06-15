@@ -207,7 +207,7 @@
       padding:0.2rem 0.4rem; background:var(--rt-white); color:var(--rt-blue);
       width:7rem; text-align:right;
     }
-    [data-theme="dark"] input[type="number"] { background:#3d4147; color:#e8e9eb; border-color:#474c53; }
+    [data-theme="dark"] input[type="number"] { background:#3d4147; color:#e8e9eb; border-color:#474c53; color-scheme:dark; }
 
     /* ── Slider drag tooltip ── */
     .slider-tip {
@@ -339,6 +339,10 @@
     .rb-metrics-col { display:flex; flex-direction:column; gap:0.6rem; }
     .rb-metric-card { background:var(--rt-beige-main); border:1.5px solid var(--rt-beige-contrast); border-radius:10px; padding:0.65rem 0.9rem; transition:border-color 0.5s,background 0.5s; }
     [data-theme="dark"] .rb-metric-card { background:#3d4147; border-color:#474c53; }
+    /* Dark mode: chart-containing cards blend into the page (like light mode,
+       where they are white = the white page). Inner panels keep their tint. */
+    [data-theme="dark"] .house-card,
+    [data-theme="dark"] .sarb-card { background:#2d3035 !important; }
     .rb-metric-card--main { border-width:2px; }
     .rb-metric-card--main .rb-metric-val { font-size:1.6rem; }
     .rb-metric-lbl { font-size:0.66rem; font-weight:800; text-transform:uppercase; letter-spacing:0.07em; color:var(--rt-muted); margin-bottom:0.18rem; }

@@ -545,6 +545,7 @@
       background: #3d4147;
       border-color: #474c53;
       color: var(--rt-text-color);
+      color-scheme: dark;   /* native spinner renders dark — no light box behind arrows */
     }
 
     /* Divider inside inputs card */
@@ -696,6 +697,36 @@
     .site-footer-bottom { border-top:1px solid rgba(255,255,255,0.13); margin-top:1.9rem; padding-top:1.1rem; display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap; }
     .site-footer-disclaimer { font-size:0.72rem; line-height:1.6; color:rgba(255,255,255,0.5); margin:0; max-width:64ch; }
     .site-footer-copy { font-size:0.72rem; color:rgba(255,255,255,0.4); margin:0; white-space:nowrap; }
+
+    /* ── Share link ─────────────────────────────────────────────── */
+    .share-row { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; margin-top: 1.1rem; }
+    .share-btn {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      font-family: "DM Sans", "Nunito", sans-serif; font-size: 0.82rem; font-weight: 600;
+      color: #fff; background: var(--rt-blue); border: none; border-radius: 999px;
+      padding: 0.5rem 1.05rem; cursor: pointer; outline: none;
+      transition: opacity 0.15s, transform 0.08s, box-shadow 0.15s;
+    }
+    .share-btn:hover { opacity: 0.92; box-shadow: 0 3px 12px rgba(13,59,56,0.18); }
+    .share-btn:active { transform: scale(0.97); }
+    .share-btn:focus-visible { outline: 2px solid var(--rt-blue); outline-offset: 2px; }
+    .share-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+    [data-theme="dark"] .share-btn { color: #10302e; }
+    [data-theme="dark"] .share-btn:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.4); }
+    .share-confirm {
+      font-size: 0.8rem; font-weight: 600; color: var(--rt-blue);
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .share-confirm.show { opacity: 1; }
+    .share-hint { font-size: 0.72rem; color: var(--rt-muted); margin: 0.45rem 0 0; line-height: 1.5; max-width: 46ch; }
+    .share-field {
+      width: 100%; max-width: 440px; margin-top: 0.5rem;
+      font-family: "DM Sans", sans-serif; font-size: 0.78rem;
+      padding: 0.5rem 0.65rem; border: 1.5px solid var(--rt-beige-contrast);
+      border-radius: 8px; background: var(--rt-white); color: var(--rt-text-color);
+      outline: none;
+    }
+    .share-field:focus { border-color: var(--rt-blue); }
   </style>
 </head>
 <body>
@@ -888,6 +919,16 @@
 
           <p class="fee-sentence" id="fcSentence"></p>
 
+          <div class="share-row">
+            <button type="button" class="share-btn" id="fcShareBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              <span data-i18n="share-btn">Dela din avgiftsuträkning</span>
+            </button>
+            <span class="share-confirm" id="fcShareConfirm" data-i18n="share-copied" hidden>Länk kopierad!</span>
+          </div>
+          <p class="share-hint" data-i18n="share-hint">Skapar en länk som visar exakt den här uträkningen — bra att dela med en vän eller på ett forum.</p>
+          <input type="text" class="share-field" id="fcShareField" readonly hidden aria-label="Delningslänk">
+
         </div><!-- /fee-chart-area -->
       </div><!-- /fee-calc-layout -->
     </section>
@@ -968,6 +1009,9 @@
       'meta-invested':       (amt) => `Totalt inbetalat: ${amt}`,
       'diff-sub':            (years, feeA, feeB) => `Kostnaden för avgiftsskillnaden (${fmtPct(feeA)} vs ${fmtPct(feeB)}) under ${years} år`,
       'result-sentence':     (years, diff) => `Med ${years} års sparande kostar den högre avgiften dig ungefär ${diff} — pengar som hamnar hos fondbolaget i stället för hos dig.`,
+      'share-btn':           'Dela din avgiftsuträkning',
+      'share-hint':          'Skapar en länk som visar exakt den här uträkningen — bra att dela med en vän eller på ett forum.',
+      'share-copied':        'Länk till din uträkning kopierad! Klistra in den var du vill dela.',
       'facts-title':         'Vad säger siffrorna?',
       'facts-sub':           'Två saker värda att veta om fondavgifter.',
       'ex3-label':           'Medvetenhet',
@@ -1011,6 +1055,9 @@
       'meta-invested':       (amt) => `Total invested: ${amt}`,
       'diff-sub':            (years, feeA, feeB) => `Cost of fee gap (${fmtPct(feeA)} vs ${fmtPct(feeB)}) over ${years} years`,
       'result-sentence':     (years, diff) => `Over ${years} years, the higher fee costs you roughly ${diff} — money that goes to the fund company instead of you.`,
+      'share-btn':           'Share your fee calculation',
+      'share-hint':          'Creates a link that shows exactly this calculation — handy to share with a friend or on a forum.',
+      'share-copied':        'Link to your calculation copied! Paste it wherever you want to share.',
       'facts-title':         'What do the numbers say?',
       'facts-sub':           'Two things worth knowing about fund fees.',
       'ex3-label':           'Awareness',
@@ -1092,6 +1139,21 @@
       snaps.push(v);
     }
     return snaps;
+  }
+
+  // Monthly points (incl. start at x=0) for a smooth chart line, in {x: years, y}.
+  // Guarantees >= 2 points for any horizon >= 1 year, so the chart is never blank.
+  function calcFeeMonthly(start, monthly, years, annualReturn, annualFee) {
+    const net = (annualReturn - annualFee) / 100;
+    const mr = Math.pow(1 + net, 1 / 12) - 1;
+    const months = Math.max(1, Math.round(years * 12));
+    let v = start;
+    const pts = [{ x: 0, y: v }];
+    for (let m = 1; m <= months; m++) {
+      v = v * (1 + mr) + monthly;
+      pts.push({ x: m / 12, y: v });
+    }
+    return pts;
   }
 
   // ── Sliders — home page approach: --pct on runnable-track ─────────
@@ -1200,11 +1262,11 @@
     document.getElementById('fcMetaInvested').textContent = T('meta-invested', fmtAmt(totalIn));
     document.getElementById('fcSentence').textContent = T('result-sentence', years, fmtAmt(Math.max(0, diff)));
 
-    renderFeeChart(vA, vB, years, feeA, feeB);
+    renderFeeChart(start, monthly, years, ret, feeA, feeB);
   }
 
   // ── Chart — transparent canvas on page background ─────────────────
-  function renderFeeChart(vA, vB, years, feeA, feeB) {
+  function renderFeeChart(start, monthly, years, ret, feeA, feeB) {
     const isDark   = document.documentElement.getAttribute('data-theme') === 'dark';
     const gridClr  = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(13,59,56,0.07)';
     const tickClr  = isDark ? '#9ea3ac' : '#8a9b9b';
@@ -1213,16 +1275,20 @@
     const fillA    = isDark ? 'rgba(224,92,74,0.10)' : 'rgba(192,57,43,0.07)';
     const fillAbove= isDark ? 'rgba(224,92,74,0.12)' : 'rgba(192,57,43,0.08)';
 
-    const step   = Math.ceil(years / Math.min(years, 10));
-    const labels = [];
-    for (let y = 1; y <= years; y++) {
-      labels.push(y % step === 0 || y === years ? T('chart-yr') + ' ' + y : '');
-    }
-
-    const dataA  = vA.slice(1);
-    const dataB  = vB.slice(1);
-    const labelA = T('chart-label-a') + ' (' + fmtPct(feeA) + ')';
-    const labelB = T('chart-label-b') + ' (' + fmtPct(feeB) + ')';
+    // Monthly {x: years, y} points incl. the start (x=0). Guarantees >= 2 points
+    // for any horizon >= 1 year, so the line is never blank, and gives a smooth
+    // curve even at 1 year. A linear x-axis keeps year ticks clean independent
+    // of how many data points there are.
+    const dataA    = calcFeeMonthly(start, monthly, years, ret, feeA);
+    const dataB    = calcFeeMonthly(start, monthly, years, ret, feeB);
+    const tickStep = Math.max(1, Math.ceil(years / 10));
+    const labelA   = T('chart-label-a') + ' (' + fmtPct(feeA) + ')';
+    const labelB   = T('chart-label-b') + ' (' + fmtPct(feeB) + ')';
+    const fmtTime  = (xY) => {
+      const totalM = Math.round(xY * 12), y = Math.floor(totalM / 12), mo = totalM % 12;
+      const moLbl = currentLang === 'sv' ? ' mån' : ' mo';
+      return mo === 0 ? T('chart-yr') + ' ' + y : T('chart-yr') + ' ' + y + ' ' + mo + moLbl;
+    };
 
     const canvas = document.getElementById('feeChartCanvas');
     if (!canvas) return;
@@ -1230,8 +1296,7 @@
     // Patch the SAME chart instance in place — never destroy/recreate, so the
     // line animates smoothly between values instead of re-growing from the x-axis.
     if (feeChartInst) {
-      const oldLen = feeChartInst.data.labels.length;
-      feeChartInst.data.labels = labels;
+      const oldLen = feeChartInst.data.datasets[0].data.length;
       const dsA = feeChartInst.data.datasets[0];
       const dsB = feeChartInst.data.datasets[1];
       dsA.data = dataA;
@@ -1248,20 +1313,22 @@
       opt.plugins.tooltip.borderColor     = isDark ? '#474c53' : '#dde8e7';
       opt.plugins.tooltip.titleColor      = isDark ? '#e8e9eb' : '#1a2e2e';
       opt.plugins.tooltip.bodyColor       = isDark ? '#9ea3ac' : '#7a8b8b';
+      opt.scales.x.min = 0;
+      opt.scales.x.max = years;
+      opt.scales.x.ticks.stepSize = tickStep;
       opt.scales.x.grid.color  = gridClr;
       opt.scales.x.ticks.color = tickClr;
       opt.scales.y.grid.color  = gridClr;
       opt.scales.y.ticks.color = tickClr;
       // Skip animation when the point count changes (Time horizon) to avoid a
       // glitch; otherwise animate smoothly (interpolates, never dips to zero).
-      feeChartInst.update(oldLen !== labels.length ? 'none' : undefined);
+      feeChartInst.update(oldLen !== dataA.length ? 'none' : undefined);
       return;
     }
 
     feeChartInst = new Chart(canvas.getContext('2d'), {
       type: 'line',
       data: {
-        labels,
         datasets: [
           {
             label: labelA,
@@ -1314,15 +1381,26 @@
             titleColor: isDark ? '#e8e9eb' : '#1a2e2e',
             bodyColor: isDark ? '#9ea3ac' : '#7a8b8b',
             callbacks: {
+              title: (items) => items.length ? fmtTime(items[0].parsed.x) : '',
               label: (ctx) => '  ' + ctx.dataset.label.split(' (')[0] + ': ' + fmtAmt(ctx.parsed.y)
             }
           }
         },
         scales: {
           x: {
+            type: 'linear',
+            min: 0,
+            max: years,
             grid: { color: gridClr },
             border: { display: false },
-            ticks: { color: tickClr, maxRotation: 0, font: { size: 11, family: '"DM Sans",sans-serif' } }
+            ticks: {
+              color: tickClr,
+              maxRotation: 0,
+              stepSize: tickStep,
+              precision: 0,
+              font: { size: 11, family: '"DM Sans",sans-serif' },
+              callback: (v) => (v === 0 ? '0' : T('chart-yr') + ' ' + v)
+            }
           },
           y: {
             grid: { color: gridClr },
@@ -1494,8 +1572,75 @@
   bindPair('fcFeeBSlider',    'fcFeeB',    'fcFeeBTag',
     v => fmtPct(+v), updateFeeCalc);
 
+  // ── Shareable link ────────────────────────────────────────────────
+  function fcBuildShareUrl() {
+    const p = new URLSearchParams();
+    p.set('start',   document.getElementById('fcStart').value);
+    p.set('monthly', document.getElementById('fcMonthly').value);
+    p.set('years',   document.getElementById('fcYears').value);
+    p.set('ret',     document.getElementById('fcReturn').value);
+    p.set('feeA',    document.getElementById('fcFeeA').value);
+    p.set('feeB',    document.getElementById('fcFeeB').value);
+    p.set('cur',     currentCurrency);
+    return location.origin + location.pathname + '?' + p.toString();
+  }
+  function fcApplyShareParams() {
+    const p = new URLSearchParams(location.search);
+    if (![...p.keys()].length) return;
+    // Currency first so amounts/tags format in the shared currency
+    if (p.has('cur') && CURRENCIES[p.get('cur')]) {
+      currentCurrency = p.get('cur');
+      try { localStorage.setItem('decennium-curr', currentCurrency); } catch (e) {}
+      updateCurrDropdown(currentCurrency);
+    }
+    // Each input: set the number field + dispatch 'input' so the binding
+    // repositions the slider, refreshes the tag and recalculates.
+    [['start','fcStart'], ['monthly','fcMonthly'], ['years','fcYears'],
+     ['ret','fcReturn'], ['feeA','fcFeeA'], ['feeB','fcFeeB']].forEach(([param, id]) => {
+      if (!p.has(param)) return;
+      const v = parseFloat(p.get(param));
+      if (!isFinite(v)) return;          // missing/invalid → keep default
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.value = v;
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  }
+  (function bindFeeShare() {
+    const btn     = document.getElementById('fcShareBtn');
+    const confirm = document.getElementById('fcShareConfirm');
+    const field   = document.getElementById('fcShareField');
+    if (!btn) return;
+    let tmr = null;
+    function flash() {
+      confirm.hidden = false;
+      confirm.classList.add('show');
+      clearTimeout(tmr);
+      tmr = setTimeout(() => {
+        confirm.classList.remove('show');
+        setTimeout(() => { confirm.hidden = true; }, 220);
+      }, 2600);
+    }
+    function reveal(url) {
+      field.hidden = false;
+      field.value = url;
+      field.focus();
+      field.select();
+    }
+    btn.addEventListener('click', async () => {
+      const url = fcBuildShareUrl();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try { await navigator.clipboard.writeText(url); flash(); return; }
+        catch (e) { /* fall through to manual */ }
+      }
+      reveal(url);
+      try { if (document.execCommand('copy')) flash(); } catch (e) {}
+    });
+  })();
+
   // ── Init ──────────────────────────────────────────────────────────
   window.addEventListener('load', () => document.body.classList.add('page-loaded'));
+  fcApplyShareParams();
   applyLang();
   </script>
 <script>

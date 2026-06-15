@@ -614,6 +614,7 @@
       background: #3d4147;
       border-color: #474c53;
       color: var(--rt-text-color);
+      color-scheme: dark;   /* native spinner renders dark — no light box behind arrows */
     }
 
     .fee-inputs-divider {
@@ -785,8 +786,9 @@
       opacity:0; transition:opacity 0.2s;
     }
     .share-confirm.show { opacity:1; }
+    .share-hint { font-size:0.72rem; color:var(--rt-muted); margin:0.45rem 0 0; line-height:1.5; max-width:46ch; }
     .share-field {
-      width:100%; max-width:440px; margin-top:0.1rem;
+      width:100%; max-width:440px; margin-top:0.5rem;
       font-family:"DM Sans",sans-serif; font-size:0.78rem;
       padding:0.5rem 0.65rem; border:1.5px solid var(--rt-beige-contrast);
       border-radius:8px; background:var(--rt-white); color:var(--rt-text-color);
@@ -1012,10 +1014,11 @@
           <div class="share-row">
             <button type="button" class="share-btn" id="fireShareBtn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-              <span data-i18n="share-btn">Dela</span>
+              <span data-i18n="share-btn">Dela din FIRE-plan</span>
             </button>
-            <span class="share-confirm" id="fireShareConfirm" data-i18n="share-copied" hidden>Länken kopierad!</span>
+            <span class="share-confirm" id="fireShareConfirm" data-i18n="share-copied" hidden>Länk kopierad!</span>
           </div>
+          <p class="share-hint" data-i18n="share-hint">Skapar en länk som visar exakt den här uträkningen — bra att dela med en vän eller på ett forum.</p>
           <input type="text" class="share-field" id="fireShareField" readonly hidden aria-label="Delningslänk">
 
         </div><!-- /fee-chart-area -->
@@ -1100,8 +1103,9 @@
       'res-target-label':    'Ditt FIRE-mål',
       'res-realreturn-label':'Realavkastning / år',
       'chart-note':          'Värden i dagens penningvärde (realt, inflationsjusterat).',
-      'share-btn':           'Dela',
-      'share-copied':        'Länken kopierad!',
+      'share-btn':           'Dela din FIRE-plan',
+      'share-hint':          'Skapar en länk som visar exakt den här uträkningen — bra att dela med en vän eller på ett forum.',
+      'share-copied':        'Länk till din uträkning kopierad! Klistra in den var du vill dela.',
       'chart-portfolio':     'Ditt kapital',
       'chart-target':        'FIRE-mål',
       'chart-age':           'Ålder',
@@ -1157,8 +1161,9 @@
       'res-target-label':    'Your FIRE target',
       'res-realreturn-label':'Real return / year',
       'chart-note':          "Values in today's money (real, inflation-adjusted).",
-      'share-btn':           'Share',
-      'share-copied':        'Link copied!',
+      'share-btn':           'Share your FIRE plan',
+      'share-hint':          'Creates a link that shows exactly this calculation — handy to share with a friend or on a forum.',
+      'share-copied':        'Link to your calculation copied! Paste it wherever you want to share.',
       'chart-portfolio':     'Your capital',
       'chart-target':        'FIRE target',
       'chart-age':           'Age',

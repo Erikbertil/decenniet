@@ -870,6 +870,41 @@
     .savtbl-caption { margin-top:0.9rem; font-size:0.72rem; color:var(--rt-muted); line-height:1.5; }
     .bilj-section { margin-top: 1.75rem; }
     .savings-section { margin-top: 1.75rem; }
+    /* ── Bridging transition into the billionaires section ── */
+    .section-bridge {
+      max-width: 660px;
+      margin: 2.75rem auto 1.85rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.7rem;
+    }
+    .section-bridge::before {
+      content: '';
+      width: 1.5px;
+      height: 38px;
+      background: linear-gradient(to bottom, transparent, var(--rt-blue));
+      opacity: 0.35;
+    }
+    .section-bridge-eyebrow {
+      font-family: "Nunito", sans-serif;
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--rt-blue);
+      opacity: 0.78;
+    }
+    .section-bridge-lead {
+      font-family: "DM Serif Display", serif;
+      font-size: clamp(1.18rem, 1rem + 0.75vw, 1.55rem);
+      font-weight: 400;
+      line-height: 1.45;
+      color: var(--rt-text-color);
+      margin: 0;
+    }
+    [data-theme="dark"] .section-bridge-eyebrow { color: #5cc8c0; }
     .bilj-card {
       background: var(--rt-white);
       border-radius: 14px;
@@ -1204,6 +1239,16 @@
     /* ── Dark mode: controls column ───────────────────────── */
     [data-theme="dark"] .controls-col { background: #3d4147 !important; }
 
+    /* ── Dark mode: chart-containing cards blend into the page ──────
+       In light mode these cards are white = the white page, so charts
+       blend seamlessly. Mirror that in dark mode by matching the page
+       background, so no chart sits in a lighter box. Inner panels
+       (controls-col, stat/table sub-cards) keep their own tint. */
+    [data-theme="dark"] .calculator,
+    [data-theme="dark"] .history-card,
+    [data-theme="dark"] .savings-card,
+    [data-theme="dark"] .bilj-card { background: #2d3035 !important; }
+
     /* ── Dark mode: all select/input controls ─────────────── */
     [data-theme="dark"] .currency-select,
     [data-theme="dark"] .h-select,
@@ -1217,6 +1262,7 @@
     }
     [data-theme="dark"] input[type="number"] {
       background: #3d4147; color: #e8e9eb; border-color: #474c53;
+      color-scheme: dark;   /* native spinner renders dark — no light box behind arrows */
     }
     [data-theme="dark"] option { background: #3d4147; }
 
@@ -1512,8 +1558,9 @@
       opacity: 0; transition: opacity 0.2s;
     }
     .share-confirm.show { opacity: 1; }
+    .share-hint { font-size: 0.72rem; color: var(--rt-muted); margin: 0.45rem 0 0; line-height: 1.5; max-width: 46ch; }
     .share-field {
-      width: 100%; max-width: 440px; margin-top: 0.1rem;
+      width: 100%; max-width: 440px; margin-top: 0.5rem;
       font-family: "DM Sans", sans-serif; font-size: 0.78rem;
       padding: 0.5rem 0.65rem; border: 1.5px solid var(--rt-beige-contrast);
       border-radius: 8px; background: var(--rt-white); color: var(--rt-text-color);
@@ -1811,10 +1858,11 @@
             <div class="share-row">
               <button type="button" class="share-btn" id="histShareBtn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                <span data-i18n="share-btn">Dela</span>
+                <span data-i18n="share-btn">Dela din jämförelse</span>
               </button>
-              <span class="share-confirm" id="histShareConfirm" data-i18n="share-copied" hidden>Länken kopierad!</span>
+              <span class="share-confirm" id="histShareConfirm" data-i18n="share-copied" hidden>Länk kopierad!</span>
             </div>
+            <p class="share-hint" data-i18n="share-hint">Skapar en länk som visar exakt den här jämförelsen — bra att dela med en vän eller på ett forum.</p>
             <input type="text" class="share-field" id="histShareField" readonly hidden aria-label="Delningslänk">
           </div>
 
@@ -1896,6 +1944,10 @@
 
     <!-- ─── Miljardärernas Sverige ─────────────────────── -->
     <section class="bilj-section" id="biljSection">
+      <div class="section-bridge">
+        <span class="section-bridge-eyebrow" data-i18n="bridge-eyebrow">Från medianen till toppen</span>
+        <p class="section-bridge-lead" data-i18n="bridge-lead">Genomsnittet drogs upp av de rikaste, sa vi. Här är de rikaste.</p>
+      </div>
       <div class="bilj-card">
         <h2 class="bilj-title" data-i18n="bilj-title">Miljard&#228;rernas Sverige</h2>
         <p class="bilj-subtitle" data-i18n="bilj-subtitle">S&#229; har f&#246;rm&#246;genheterna koncentrerats till toppen</p>
@@ -1920,7 +1972,7 @@
         <!-- C: Stat callout cards -->
         <div class="bilj-stat-grid">
           <div class="bilj-stat-card">
-            <span class="bilj-stat-num" data-i18n="bilj-stat1-num">0,05 &#8240;</span>
+            <span class="bilj-stat-num" data-i18n="bilj-stat1-num">0,005 %</span>
             <span class="bilj-stat-label" data-i18n="bilj-stat1-lbl">av befolkningen</span>
           </div>
           <div class="bilj-stat-card hl">
@@ -2046,8 +2098,9 @@
       'hist-startar-label': 'Startår',
       'hist-amount-label':  'Belopp',
       'hist-currency-label':'Valuta',
-      'share-btn':          'Dela',
-      'share-copied':       'Länken kopierad!',
+      'share-btn':          'Dela din jämförelse',
+      'share-hint':         'Skapar en länk som visar exakt den här jämförelsen — bra att dela med en vän eller på ett forum.',
+      'share-copied':       'Länk till din jämförelse kopierad! Klistra in den var du vill dela.',
       'hist-disclaimer':    'Ungefärliga historiska värden, endast för illustration. Aktuella värden per juni 2026. Aktieindex exkluderar utdelningar. Koppar och olja är råvarupriser utan löpande avkastning. Värden före 2000 är grova uppskattningar. Valutaeffekter ignoreras. Inte investeringsrådgivning.',
       'page-title':         'Decenniet – Avkastning över tid',
       'monthly-label':      (mu) => `Månadssparande (${mu})`,
@@ -2086,6 +2139,8 @@
         `Jämför <strong>${n} tillgångar</strong> från år <strong>${yr}</strong> med ett startbelopp på <strong>${amt}</strong>.`,
       'mdr-suffix': ' Mdr',
       'bn-suffix':  ' Bn',
+      'bridge-eyebrow':    'Från medianen till toppen',
+      'bridge-lead':       'Genomsnittet drogs upp av de rikaste, sa vi. Här är de rikaste.',
       'bilj-title':        'Miljärdärernas Sverige',
       'bilj-subtitle':     'Så har förmögenheterna koncentrerats till toppen',
       'sarb-d-heading':        'Vad har svenskarna sparat?',
@@ -2116,7 +2171,7 @@
       'sarb-disclaimer':               'Kapital: börskapital (aktier/fonder) för hela befolkningen, ungefärligt, källa SCB. Månadssparande: Avanza-kunder (exkl. pension), inte representativt för snittsvensken. Median visar ett typiskt fall; genomsnitt dras upp av de rikaste. För illustration. Inte investeringsrådgivning.',
       'bilj-count-label':  'Antal miljärdärer i Sverige',
       'bilj-gdp-label':    'Miljärdärernas förmögenhet som andel av BNP',
-      'bilj-stat1-num':    '0,05 ‰',
+      'bilj-stat1-num':    '0,005 %',
       'bilj-stat1-lbl':    'av befolkningen',
       'bilj-stat2-num':    '68 %',
       'bilj-stat2-lbl':    'av BNP i samlade tillgångar',
@@ -2177,8 +2232,9 @@
       'hist-startar-label': 'Start year',
       'hist-amount-label':  'Amount',
       'hist-currency-label':'Currency',
-      'share-btn':          'Share',
-      'share-copied':       'Link copied!',
+      'share-btn':          'Share your comparison',
+      'share-hint':         'Creates a link that shows exactly this comparison — handy to share with a friend or on a forum.',
+      'share-copied':       'Link to your comparison copied! Paste it wherever you want to share.',
       'hist-disclaimer':    "Approximate historical values for illustration only. Current values as of June 2026. Stock indices exclude dividends. Copper and oil are commodity spot prices with no yield. Pre-2000 figures are rough estimates. Currency effects ignored. Not investment advice.",
       'page-title':         'Decenniet – Return over time',
       'monthly-label':      (mu) => `Monthly savings (${mu})`,
@@ -2217,6 +2273,8 @@
         `Comparing <strong>${n} assets</strong> from <strong>${yr}</strong> with an initial amount of <strong>${amt}</strong>.`,
       'mdr-suffix': ' bn',
       'bn-suffix':  ' tn',
+      'bridge-eyebrow':    'From the median to the top',
+      'bridge-lead':       'The average was pulled up by the wealthiest, we said. Here are the wealthiest.',
       'bilj-title':        'Sweden of the Billionaires',
       'bilj-subtitle':     'How wealth has concentrated at the very top',
       'sarb-d-heading':        'What have Swedes saved?',
@@ -3030,6 +3088,30 @@
       prices: { 1990:8, 2000:45, 2010:62, 2015:120, 2020:200, 2023:240, 2025:300 }
     },
   };
+
+  // ── Fill in missing years between anchor points (linear interpolation) ──
+  // Some assets (individual stocks, Nikkei, MSCI EM) only define a few anchor
+  // years. Densify each series so EVERY year from its first to its last anchor
+  // has a value — giving continuous lines that start at the chosen start year
+  // instead of jumping in mid-chart. Assets that already have every year are
+  // unaffected (interpolating between consecutive years returns the same value).
+  // Approximate / for illustration, as noted in the disclaimer.
+  function densifyYearly(prices) {
+    const years = Object.keys(prices).map(Number).sort((a, b) => a - b);
+    if (years.length < 2) return Object.assign({}, prices);
+    const out = {};
+    for (let i = 0; i < years.length - 1; i++) {
+      const y0 = years[i], y1 = years[i + 1], p0 = prices[y0], p1 = prices[y1];
+      for (let y = y0; y < y1; y++) {
+        out[y] = p0 + (p1 - p0) * (y - y0) / (y1 - y0);
+      }
+    }
+    out[years[years.length - 1]] = prices[years[years.length - 1]];
+    return out;
+  }
+  Object.keys(HIST_DATA).forEach(function (k) {
+    HIST_DATA[k].prices = densifyYearly(HIST_DATA[k].prices);
+  });
 
   // ── Formattering ──────────────────────────────────────────────────────
   const HIST_COLORS = {
