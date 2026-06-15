@@ -593,6 +593,33 @@
     .h-asset-btn[data-asset="bitcoin"].active   { background: #f7931a; border-color: #f7931a; color: #fff; }
     .h-asset-btn[data-asset="koppar"].active    { background: #b87333; border-color: #b87333; color: #fff; }
     .h-asset-btn[data-asset="olja"].active      { background: #475569; border-color: #475569; color: #fff; }
+    .h-asset-btn[data-asset="nikkei"].active    { background: #bc002d; border-color: #bc002d; color: #fff; }
+    .h-asset-btn[data-asset="msciem"].active    { background: #0d9488; border-color: #0d9488; color: #fff; }
+    .h-asset-btn[data-asset="apple"].active     { background: #555555; border-color: #555555; color: #fff; }
+    .h-asset-btn[data-asset="tesla"].active     { background: #e31937; border-color: #e31937; color: #fff; }
+    .h-asset-btn[data-asset="nvidia"].active    { background: #76b900; border-color: #76b900; color: #fff; }
+    .h-asset-btn[data-asset="volvob"].active    { background: #1f4e79; border-color: #1f4e79; color: #fff; }
+    .h-asset-btn[data-asset="investorb"].active { background: #9a6700; border-color: #9a6700; color: #fff; }
+    /* Show-more expander */
+    .h-more-toggle {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      align-self: flex-start;
+      font-family: "Nunito", sans-serif; font-size: 0.72rem; font-weight: 700;
+      color: var(--rt-blue); background: transparent; border: none;
+      padding: 0.1rem 0; cursor: pointer; outline: none;
+    }
+    .h-more-toggle:hover { text-decoration: underline; }
+    .h-more-toggle:focus-visible { outline: 2px solid var(--rt-blue); outline-offset: 2px; border-radius: 4px; }
+    .h-more-chevron { width: 12px; height: 12px; transition: transform 0.2s ease; }
+    .h-more-toggle[aria-expanded="true"] .h-more-chevron { transform: rotate(180deg); }
+    [data-theme="dark"] .h-more-toggle { color: #5cc8c0; }
+    [data-theme="dark"] .h-more-toggle:focus-visible { outline-color: #5cc8c0; }
+    .h-more-assets { display: flex; flex-direction: column; gap: 0.65rem; }
+    .h-more-assets[hidden] { display: none; }
+    .h-stocks-note {
+      font-size: 0.66rem; line-height: 1.5; color: var(--rt-muted);
+      margin-top: 0.3rem; max-width: 46ch;
+    }
     /* Currency row */
     .h-currency-row {
       display: flex;
@@ -767,11 +794,18 @@
       .history-inputs {
         border-right: none;
         padding-right: 0;
+      }
+      /* Mobile: show the chart/results first, controls below */
+      .history-result {
+        order: -1;
+        display: flex;
+        flex-direction: column;
+        padding-left: 0;
         border-bottom: 1px solid var(--rt-beige-contrast);
-        padding-bottom: 1rem;
+        padding-bottom: 1.25rem;
         margin-bottom: 1.25rem;
       }
-      .history-result { padding-left: 0; }
+      .history-result .h-chart-outer { order: -1; }
     }
 
     /* ─── Miljardärssektion ───────────────────────────────── */
@@ -1329,8 +1363,8 @@
     }
     .sh-nav-link:hover { background: var(--rt-beige-contrast); }
     [data-theme="dark"] .sh-nav-link:hover { background: #3d4147; }
-    .sh-nav-link.sh-nav-active { background: var(--rt-blue); color: #fff; font-weight: 600; }
-    [data-theme="dark"] .sh-nav-link.sh-nav-active { background: #5cc8c0; color: #22252a; }
+    .sh-nav-link.sh-nav-active { background: #37614f; color: #fff; font-weight: 600; }
+    [data-theme="dark"] .sh-nav-link.sh-nav-active { background: #549675; color: #fff; }
     /* Controls (right) */
     .sh-controls {
       justify-self: end;
@@ -1454,6 +1488,35 @@
       margin: 0.22rem 0.3rem;
     }
     [data-theme="dark"] .fh-dd-sep { background: #474c53; }
+
+    /* ── Share link ─────────────────────────────────────────────── */
+    .share-row { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; margin-top: 1.1rem; }
+    .share-btn {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      font-family: "DM Sans", "Nunito", sans-serif; font-size: 0.82rem; font-weight: 600;
+      color: #fff; background: var(--rt-blue); border: none; border-radius: 999px;
+      padding: 0.5rem 1.05rem; cursor: pointer; outline: none;
+      transition: opacity 0.15s, transform 0.08s, box-shadow 0.15s;
+    }
+    .share-btn:hover { opacity: 0.92; box-shadow: 0 3px 12px rgba(13,59,56,0.18); }
+    .share-btn:active { transform: scale(0.97); }
+    .share-btn:focus-visible { outline: 2px solid var(--rt-blue); outline-offset: 2px; }
+    .share-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+    [data-theme="dark"] .share-btn { color: #10302e; }
+    [data-theme="dark"] .share-btn:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.4); }
+    .share-confirm {
+      font-size: 0.8rem; font-weight: 600; color: var(--rt-blue);
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .share-confirm.show { opacity: 1; }
+    .share-field {
+      width: 100%; max-width: 440px; margin-top: 0.1rem;
+      font-family: "DM Sans", sans-serif; font-size: 0.78rem;
+      padding: 0.5rem 0.65rem; border: 1.5px solid var(--rt-beige-contrast);
+      border-radius: 8px; background: var(--rt-white); color: var(--rt-text-color);
+      outline: none;
+    }
+    .share-field:focus { border-color: var(--rt-blue); }
   </style>
 </head>
 <body>
@@ -1478,9 +1541,10 @@
       <!-- Centered pill nav -->
       <nav class="sh-nav" aria-label="Main">
         <div class="sh-nav-pill">
-          <button class="sh-nav-link sh-nav-active" onclick="navigateTo('index.html')" type="button" data-i18n="nav-home">Investera</button>
+          <button class="sh-nav-link sh-nav-active" onclick="navigateTo('index.html')" type="button" data-i18n="nav-home">Investering</button>
           <button class="sh-nav-link" onclick="navigateTo('page2.html')" type="button" data-i18n="nav-housing">Bostad</button>
           <button class="sh-nav-link" onclick="navigateTo('page3.html')" type="button" data-i18n="nav-fees">Avgifter</button>
+          <button class="sh-nav-link" onclick="navigateTo('page4.html')" type="button" data-i18n="nav-fire">FIRE</button>
         </div>
       </nav>
       <!-- Controls (right) -->
@@ -1569,11 +1633,11 @@
         <div class="input-group">
           <div class="input-label-row">
             <span class="input-label" id="startLabel">Startbelopp (kr)</span>
-            <span class="input-value-tag" id="startTag">10 000 kr</span>
+            <span class="input-value-tag" id="startTag">100 000 kr</span>
           </div>
           <div class="input-row">
-            <input type="range" id="startSlider" min="0" max="1000" step="1" value="333">
-            <input type="number" id="startNum" min="0" max="1000000" step="1000" value="10000">
+            <input type="range" id="startSlider" min="0" max="1000" step="1" value="500">
+            <input type="number" id="startNum" min="0" max="100000000" step="1000" value="100000">
           </div>
         </div>
 
@@ -1656,26 +1720,50 @@
               <div class="input-label-row">
                 <span class="input-label" data-i18n="hist-assets-label">Välj tillgångar</span>
               </div>
-                                          <div class="h-asset-chips" id="hAssetToggles">
-                <div class="h-chip-group">
-                  <span class="h-chip-group-label" data-i18n="chip-group-indices">Aktieindex</span>
-                  <div class="h-chips-row">
-                    <button class="h-asset-btn active" data-asset="sp500">S&amp;P 500</button>
-                    <button class="h-asset-btn" data-asset="omxs30" data-i18n="asset-omxs30">OMXS30</button>
-                    <button class="h-asset-btn" data-asset="nasdaq100" data-i18n="asset-nasdaq100">Nasdaq 100</button>
-                    <button class="h-asset-btn" data-asset="msciworld" data-i18n="asset-msciworld">MSCI World</button>
-                    <button class="h-asset-btn" data-asset="dax" data-i18n="asset-dax">DAX</button>
-                    <button class="h-asset-btn" data-asset="ftse100" data-i18n="asset-ftse100">FTSE 100</button>
-                  </div>
+              <div class="h-asset-chips" id="hAssetToggles">
+                <!-- Featured quick-pick row -->
+                <div class="h-chips-row h-featured-row">
+                  <button class="h-asset-btn active" data-asset="sp500">S&amp;P 500</button>
+                  <button class="h-asset-btn" data-asset="omxs30" data-i18n="asset-omxs30">OMXS30</button>
+                  <button class="h-asset-btn" data-asset="nasdaq100" data-i18n="asset-nasdaq100">Nasdaq 100</button>
+                  <button class="h-asset-btn" data-asset="msciworld" data-i18n="asset-msciworld">MSCI World</button>
+                  <button class="h-asset-btn" data-asset="dax" data-i18n="asset-dax">DAX</button>
+                  <button class="h-asset-btn active" data-asset="guld" data-i18n="asset-guld">Guld</button>
+                  <button class="h-asset-btn" data-asset="bitcoin">Bitcoin</button>
                 </div>
-                <div class="h-chip-group">
-                  <span class="h-chip-group-label" data-i18n="chip-group-annat">Annat</span>
-                  <div class="h-chips-row">
-                    <button class="h-asset-btn" data-asset="bitcoin">Bitcoin</button>
-                    <button class="h-asset-btn active" data-asset="guld" data-i18n="asset-guld">Guld</button>
-                    <button class="h-asset-btn active" data-asset="silver">Silver</button>
-                    <button class="h-asset-btn" data-asset="koppar" data-i18n="asset-koppar">Koppar</button>
-                    <button class="h-asset-btn" data-asset="olja" data-i18n="asset-olja">Olja</button>
+
+                <button type="button" class="h-more-toggle" id="hMoreToggle" aria-expanded="false" aria-controls="hMoreAssets">
+                  <span data-i18n="hist-show-more">Visa fler tillgångar</span>
+                  <svg class="h-more-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+
+                <div class="h-more-assets" id="hMoreAssets" hidden>
+                  <div class="h-chip-group">
+                    <span class="h-chip-group-label" data-i18n="chip-group-indices">Aktieindex</span>
+                    <div class="h-chips-row">
+                      <button class="h-asset-btn" data-asset="ftse100" data-i18n="asset-ftse100">FTSE 100</button>
+                      <button class="h-asset-btn" data-asset="nikkei" data-i18n="asset-nikkei">Nikkei 225</button>
+                      <button class="h-asset-btn" data-asset="msciem" data-i18n="asset-msciem">MSCI EM</button>
+                    </div>
+                  </div>
+                  <div class="h-chip-group">
+                    <span class="h-chip-group-label" data-i18n="chip-group-stocks">Enskilda aktier</span>
+                    <div class="h-chips-row">
+                      <button class="h-asset-btn" data-asset="apple">Apple</button>
+                      <button class="h-asset-btn" data-asset="tesla">Tesla</button>
+                      <button class="h-asset-btn" data-asset="nvidia">Nvidia</button>
+                      <button class="h-asset-btn" data-asset="volvob" data-i18n="asset-volvob">Volvo B</button>
+                      <button class="h-asset-btn" data-asset="investorb" data-i18n="asset-investorb">Investor B</button>
+                    </div>
+                    <p class="h-stocks-note" data-i18n="hist-stocks-note">Enskilda aktier är mycket mer riskfyllda än breda index. Här syns bara välkända bolag som klarade sig — för varje vinnare finns många som föll eller försvann (s.k. survivorship bias). Historisk avkastning är ingen garanti. Aktiekurser är ungefärliga och split-justerade, för illustration.</p>
+                  </div>
+                  <div class="h-chip-group">
+                    <span class="h-chip-group-label" data-i18n="chip-group-annat">Annat</span>
+                    <div class="h-chips-row">
+                      <button class="h-asset-btn" data-asset="silver">Silver</button>
+                      <button class="h-asset-btn" data-asset="koppar" data-i18n="asset-koppar">Koppar</button>
+                      <button class="h-asset-btn" data-asset="olja" data-i18n="asset-olja">Olja</button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1717,6 +1805,14 @@
               </select>
             </div>
             <p class="h-sentence" id="hSentence"></p>
+            <div class="share-row">
+              <button type="button" class="share-btn" id="histShareBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                <span data-i18n="share-btn">Dela</span>
+              </button>
+              <span class="share-confirm" id="histShareConfirm" data-i18n="share-copied" hidden>Länken kopierad!</span>
+            </div>
+            <input type="text" class="share-field" id="histShareField" readonly hidden aria-label="Delningslänk">
           </div>
 
           <!-- RIGHT: comparison + chart -->
@@ -1932,14 +2028,24 @@
       'asset-msciworld':    'MSCI World',
       'asset-dax':          'DAX',
       'asset-ftse100':      'FTSE 100',
+      'asset-nikkei':       'Nikkei 225',
+      'asset-msciem':       'MSCI EM',
+      'asset-volvob':       'Volvo B',
+      'asset-investorb':    'Investor B',
       'chip-group-indices': 'Aktieindex',
+      'chip-group-stocks':  'Enskilda aktier',
       'chip-group-annat':   'Annat',
       'asset-koppar':       'Koppar',
       'asset-olja':         'Olja',
+      'hist-show-more':     'Visa fler tillgångar',
+      'hist-show-less':     'Visa färre',
+      'hist-stocks-note':   'Enskilda aktier är mycket mer riskfyllda än breda index. Här syns bara välkända bolag som klarade sig — för varje vinnare finns många som föll eller försvann (s.k. survivorship bias). Historisk avkastning är ingen garanti. Aktiekurser är ungefärliga och split-justerade, för illustration.',
       'hist-startar-label': 'Startår',
       'hist-amount-label':  'Belopp',
       'hist-currency-label':'Valuta',
-      'hist-disclaimer':    'Ungefärliga historiska värden, endast för illustration. Aktieindex exkluderar utdelningar. Koppar och olja är råvarupriser utan löpande avkastning. Värden före 2000 är grova uppskattningar. Valutaeffekter ignoreras. Inte investeringsrådgivning.',
+      'share-btn':          'Dela',
+      'share-copied':       'Länken kopierad!',
+      'hist-disclaimer':    'Ungefärliga historiska värden, endast för illustration. Aktuella värden per juni 2026. Aktieindex exkluderar utdelningar. Koppar och olja är råvarupriser utan löpande avkastning. Värden före 2000 är grova uppskattningar. Valutaeffekter ignoreras. Inte investeringsrådgivning.',
       'page-title':         'Decenniet – Avkastning över tid',
       'monthly-label':      (mu) => `Månadssparande (${mu})`,
       'start-label':        (u)  => `Startbelopp (${u})`,
@@ -2025,9 +2131,10 @@
       'footer-privacy-h':    'Din integritet',
       'footer-privacy-intro':'Vi använder cookie-fri, anonym besöksstatistik (via vår värdtjänst Vercel) för att se hur många som besöker sidan. Den kan inte identifiera dig personligen, använder inga cookies och kräver därför ingen cookie-banner. Vi samlar inte in, lagrar eller säljer några personuppgifter, och visar inga annonser. Dina inställningar (språk, valuta, ljust/mörkt läge) sparas lokalt i din webbläsare för din bekvämlighet.',
       'footer-disclaimer':   'Decenniet ger allmän information, inte personlig rådgivning. Kontakta en licensierad rådgivare för beslut om din ekonomi.',
-      'nav-home':          'Investera',
+      'nav-home':          'Investering',
       'nav-housing':       'Bostad',
       'nav-fees':          'Avgifter',
+      'nav-fire':          'FIRE',
     },
     en: {
       'rate-label':         'Annual return (%)',
@@ -2052,14 +2159,24 @@
       'asset-msciworld':    'MSCI World',
       'asset-dax':          'DAX',
       'asset-ftse100':      'FTSE 100',
+      'asset-nikkei':       'Nikkei 225',
+      'asset-msciem':       'MSCI EM',
+      'asset-volvob':       'Volvo B',
+      'asset-investorb':    'Investor B',
       'chip-group-indices': 'Stock indices',
+      'chip-group-stocks':  'Individual stocks',
       'chip-group-annat':   'Other',
       'asset-koppar':       'Copper',
       'asset-olja':         'Oil',
+      'hist-show-more':     'Show more assets',
+      'hist-show-less':     'Show fewer',
+      'hist-stocks-note':   'Individual stocks are far riskier than broad indices. You only see well-known companies that survived — for every winner, many fell or vanished (so-called survivorship bias). Past returns are no guarantee. Stock prices are approximate and split-adjusted, for illustration.',
       'hist-startar-label': 'Start year',
       'hist-amount-label':  'Amount',
       'hist-currency-label':'Currency',
-      'hist-disclaimer':    "Approximate historical values for illustration only. Stock indices exclude dividends. Copper and oil are commodity spot prices with no yield. Pre-2000 figures are rough estimates. Currency effects ignored. Not investment advice.",
+      'share-btn':          'Share',
+      'share-copied':       'Link copied!',
+      'hist-disclaimer':    "Approximate historical values for illustration only. Current values as of June 2026. Stock indices exclude dividends. Copper and oil are commodity spot prices with no yield. Pre-2000 figures are rough estimates. Currency effects ignored. Not investment advice.",
       'page-title':         'Decenniet – Return over time',
       'monthly-label':      (mu) => `Monthly savings (${mu})`,
       'start-label':        (u)  => `Initial amount (${u})`,
@@ -2148,6 +2265,7 @@
       'nav-home':          'Investing',
       'nav-housing':       'Housing',
       'nav-fees':          'Fees',
+      'nav-fire':          'FIRE',
     }
   };
 
@@ -2158,8 +2276,8 @@
 
   function getAssetName(key) {
     const names = {
-      sv: { guld: 'Guld', silver: 'Silver', sp500: 'S&P 500', bitcoin: 'Bitcoin', omxs30: 'OMXS30 (svenska börsen)', nasdaq100: 'Nasdaq 100 (USA tech)', msciworld: 'MSCI World (global)', dax: 'DAX (Tyskland)', ftse100: 'FTSE 100 (Storbritannien)', koppar: 'Koppar', olja: 'Olja' },
-      en: { guld: 'Gold', silver: 'Silver', sp500: 'S&P 500', bitcoin: 'Bitcoin', omxs30: 'OMXS30 (Swedish stocks)', nasdaq100: 'Nasdaq 100 (USA tech)', msciworld: 'MSCI World (global)', dax: 'DAX (Germany)', ftse100: 'FTSE 100 (UK)', koppar: 'Copper', olja: 'Oil' }
+      sv: { guld: 'Guld', silver: 'Silver', sp500: 'S&P 500', bitcoin: 'Bitcoin', omxs30: 'OMXS30 (svenska börsen)', nasdaq100: 'Nasdaq 100 (USA tech)', msciworld: 'MSCI World (global)', dax: 'DAX (Tyskland)', ftse100: 'FTSE 100 (Storbritannien)', koppar: 'Koppar', olja: 'Olja', nikkei: 'Nikkei 225 (Japan)', msciem: 'MSCI Emerging Markets (tillväxtmarknader)', apple: 'Apple', tesla: 'Tesla', nvidia: 'Nvidia', volvob: 'Volvo B', investorb: 'Investor B' },
+      en: { guld: 'Gold', silver: 'Silver', sp500: 'S&P 500', bitcoin: 'Bitcoin', omxs30: 'OMXS30 (Swedish stocks)', nasdaq100: 'Nasdaq 100 (USA tech)', msciworld: 'MSCI World (global)', dax: 'DAX (Germany)', ftse100: 'FTSE 100 (UK)', koppar: 'Copper', olja: 'Oil', nikkei: 'Nikkei 225 (Japan)', msciem: 'MSCI Emerging Markets', apple: 'Apple', tesla: 'Tesla', nvidia: 'Nvidia', volvob: 'Volvo B', investorb: 'Investor B' }
     };
     return (names[currentLang] || names.sv)[key] || key;
   }
@@ -2603,12 +2721,13 @@
   }
 
   // ── Logarithmic slider + number field pair ─────────────────
-  function bindLogPair(sliderId, numId, maxVal, minLog) {
-    const slider  = document.getElementById(sliderId);
-    const num     = document.getElementById(numId);
-    const logMin  = Math.log10(minLog);
-    const logMax  = Math.log10(maxVal);
-    const L_STEPS = 1000;
+  function bindLogPair(sliderId, numId, maxVal, minLog, numMax) {
+    const slider    = document.getElementById(sliderId);
+    const num       = document.getElementById(numId);
+    const logMin    = Math.log10(minLog);
+    const logMax    = Math.log10(maxVal);
+    const L_STEPS   = 1000;
+    const numMaxVal = numMax != null ? numMax : maxVal;
 
     function sliderToValue(pos) {
       if (pos <= 0) return 0;
@@ -2629,7 +2748,7 @@
     function fromNum() {
       let v = parseFloat(num.value);
       if (isNaN(v)) return;
-      v = Math.min(maxVal, Math.max(0, v));
+      v = Math.min(numMaxVal, Math.max(0, v));
       num.value = v;
       slider.value = valueToSlider(v);
       updateTrack(slider);
@@ -2642,7 +2761,7 @@
 
   bindPair('rateSlider',  'rateNum');
   bindLogPair('monthlySlider', 'monthlyNum', 1000000, 500);
-  bindLogPair('startSlider',   'startNum',   1000000, 1000);
+  bindLogPair('startSlider',   'startNum',   10000000, 1000, 100000000);
   bindPair('yearsSlider', 'yearsNum');
 
   // ── Mode toggle ───────────────────────────────────────────
@@ -2711,19 +2830,26 @@
   // HISTORISK JÄMFÖRELSE
   // ════════════════════════════════════════════════════════════════
 
-  // ── Redigera dessa för att uppdatera priser ──────────────────
+  // ── Redigera dessa för att uppdatera priser (aktuella värden, juni 2026) ──
   const HIST_CURRENT = {
-    guld:     4200,    // USD/oz
-    silver:   64,      // USD/oz
-    sp500:    7440,    // index
-    bitcoin:  68000,   // USD
-    omxs30:    2930,    // OMXS30 price index
-    nasdaq100: 23500,   // Nasdaq 100 index
-    msciworld: 4050,    // MSCI World index
-    dax:       24700,   // DAX index
-    ftse100:   10600,   // FTSE 100 index
-    koppar:    6.40,    // USD per pound
-    olja:      82,      // USD per barrel
+    guld:      4800,    // USD/oz       — juni 2026
+    silver:    85,      // USD/oz       — juni 2026
+    sp500:     7430,    // index        — juni 2026
+    bitcoin:   75000,   // USD          — juni 2026
+    omxs30:    2750,    // OMXS30 index — juni 2026
+    nasdaq100: 29600,   // Nasdaq 100   — juni 2026
+    msciworld: 4450,    // MSCI World   — juni 2026
+    dax:       24635,   // DAX index    — juni 2026
+    ftse100:   10470,   // FTSE 100     — juni 2026
+    koppar:    5.20,    // USD/pound    — juni 2026
+    olja:      70,      // USD/barrel   — juni 2026
+    nikkei:    68800,   // Nikkei 225 index      — juni 2026
+    msciem:    1300,    // MSCI EM index         — juni 2026
+    apple:     255,     // USD, split-just.      — juni 2026
+    tesla:     440,     // USD, split-just.      — juni 2026
+    nvidia:    205,     // USD, split-just.      — juni 2026
+    volvob:    300,     // SEK, split-just.      — juni 2026
+    investorb: 320,     // SEK, split-just.      — juni 2026
   };
 
   const HIST_DATA = {
@@ -2870,6 +2996,36 @@
         2020:48,  2021:75,  2022:80,  2023:72,  2024:74,  2025:70,
       }
     },
+    // ── Approximate anchor-year values (illustration). Years without a
+    //    value show "Ingen data". Individual stocks are rough/split-adjusted. ──
+    nikkei: {
+      name: 'Nikkei 225',
+      prices: { 1970:2000, 1980:7000, 1989:38900, 2000:13800, 2010:10200, 2020:27400, 2023:33400, 2025:39000 }
+    },
+    msciem: {
+      name: 'MSCI Emerging Markets',
+      prices: { 1988:100, 2000:330, 2007:1340, 2010:1150, 2020:1290, 2023:990, 2025:1200 }
+    },
+    apple: {
+      name: 'Apple',
+      prices: { 1990:0.3, 2000:1.0, 2010:11, 2015:26, 2020:132, 2022:129, 2025:250 }
+    },
+    tesla: {
+      name: 'Tesla',
+      prices: { 2010:1.6, 2013:10, 2015:16, 2019:28, 2020:235, 2022:123, 2025:420 }
+    },
+    nvidia: {
+      name: 'Nvidia',
+      prices: { 1999:0.4, 2010:3.7, 2015:8, 2020:52, 2022:14.6, 2025:186 }
+    },
+    volvob: {
+      name: 'Volvo B',
+      prices: { 1990:15, 2000:35, 2010:95, 2015:85, 2020:200, 2023:240, 2025:290 }
+    },
+    investorb: {
+      name: 'Investor B',
+      prices: { 1990:8, 2000:45, 2010:62, 2015:120, 2020:200, 2023:240, 2025:300 }
+    },
   };
 
   // ── Formattering ──────────────────────────────────────────────────────
@@ -2885,6 +3041,13 @@
     ftse100:   { line: '#1a7a4a', fill: 'rgba(26,122,74,0.10)'   },
     koppar:    { line: '#b87333', fill: 'rgba(184,115,51,0.10)'  },
     olja:      { line: '#475569', fill: 'rgba(71,85,105,0.10)'   },
+    nikkei:    { line: '#bc002d', fill: 'rgba(188,0,45,0.10)'    },
+    msciem:    { line: '#0d9488', fill: 'rgba(13,148,136,0.10)'  },
+    apple:     { line: '#555555', fill: 'rgba(85,85,85,0.10)'    },
+    tesla:     { line: '#e31937', fill: 'rgba(227,25,55,0.10)'   },
+    nvidia:    { line: '#76b900', fill: 'rgba(118,185,0,0.10)'   },
+    volvob:    { line: '#1f4e79', fill: 'rgba(31,78,121,0.10)'   },
+    investorb: { line: '#9a6700', fill: 'rgba(154,103,0,0.10)'   },
   };
 
 
@@ -3003,6 +3166,13 @@
         const years    = allYears.filter(y => y >= startYear);
         const startP   = prices[startYear];
         const series   = years.map(y => amount * (prices[y] / startP));
+        // Append current year (2026) as final data point using HIST_CURRENT
+        const currY = new Date().getFullYear();
+        const currP = HIST_CURRENT[key];
+        if (currY > (years[years.length - 1] || 0) && currP) {
+          years.push(currY);
+          series.push(amount * (currP / startP));
+        }
         datasets.push({
           label: getAssetName(key),
           _years: years,
@@ -3088,17 +3258,17 @@
     });
   }
 
-  // ── Fyll år-dropdown (statisk 1970–2025) ───────────────────────────────
+  // ── Fyll år-dropdown (statisk 1970–2026) ───────────────────────────────
   function histPopulateYears() {
     const sel  = document.getElementById('hYear');
     const prev = parseInt(sel.value) || 2000;
     sel.innerHTML = '';
-    for (let y = 1970; y <= 2025; y++) {
+    for (let y = 1970; y <= 2026; y++) {
       const opt = document.createElement('option');
       opt.value = y; opt.textContent = y;
       sel.appendChild(opt);
     }
-    sel.value = (prev >= 1970 && prev <= 2025) ? prev : 2000;
+    sel.value = (prev >= 1970 && prev <= 2026) ? prev : 2000;
   }
 
   // ── Hämta valda tillgångar ──────────────────────────────────────────────────
@@ -3235,6 +3405,29 @@
     histUpdate();
   });
 
+  // Show more / fewer assets expander
+  (function bindHistMore() {
+    const toggle = document.getElementById('hMoreToggle');
+    const panel  = document.getElementById('hMoreAssets');
+    if (!toggle || !panel) return;
+    const lbl = toggle.querySelector('[data-i18n]');
+    function setOpen(open) {
+      panel.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      if (lbl) { lbl.dataset.i18n = open ? 'hist-show-less' : 'hist-show-more'; lbl.textContent = T(lbl.dataset.i18n); }
+    }
+    toggle.addEventListener('click', () => setOpen(panel.hidden));
+    // Expose so it can auto-open when a hidden asset is active (e.g. shared link)
+    window._histSetMoreOpen = setOpen;
+  })();
+  // Auto-expand the "more" list if any asset inside it is active
+  function histSyncMoreExpanded() {
+    const panel = document.getElementById('hMoreAssets');
+    if (!panel || !window._histSetMoreOpen) return;
+    const hasActive = !!panel.querySelector('.h-asset-btn.active');
+    if (hasActive) window._histSetMoreOpen(true);
+  }
+
   document.getElementById('hModeToggle').addEventListener('click', e => {
     const btn = e.target.closest('.h-asset-btn');
     if (!btn) return;
@@ -3265,6 +3458,92 @@
     num.addEventListener('input',     fromNum);
     num.addEventListener('change',    fromNum);
     updateTrack(slider);
+  })();
+
+  // ── Shareable link (asset comparison) ──────────────────────────────
+  const HIST_VALID_ASSETS = ['sp500','omxs30','nasdaq100','msciworld','dax','ftse100','bitcoin','guld','silver','koppar','olja','nikkei','msciem','apple','tesla','nvidia','volvob','investorb'];
+  function histBuildShareUrl() {
+    const p = new URLSearchParams();
+    const assets = histSelectedAssets();
+    if (assets.length) p.set('assets', assets.join(','));
+    p.set('start',  document.getElementById('hYear').value);
+    p.set('mode',   histMode);
+    p.set('amount', String(Math.max(0, parseFloat(document.getElementById('hAmountNum').value) || 0)));
+    p.set('cur',    histCurrency);
+    return location.origin + location.pathname + '?' + p.toString();
+  }
+  function histApplyShareParams() {
+    const p = new URLSearchParams(location.search);
+    if (![...p.keys()].length) return;
+    // Assets
+    if (p.has('assets')) {
+      const want = p.get('assets').split(',').map(s => s.trim()).filter(a => HIST_VALID_ASSETS.includes(a));
+      if (want.length) {
+        document.querySelectorAll('#hAssetToggles .h-asset-btn').forEach(b =>
+          b.classList.toggle('active', want.includes(b.dataset.asset)));
+      }
+    }
+    // Start year
+    if (p.has('start')) {
+      const y   = parseInt(p.get('start'), 10);
+      const sel = document.getElementById('hYear');
+      if (!isNaN(y) && sel.querySelector('option[value="' + y + '"]')) sel.value = String(y);
+    }
+    // Mode
+    if (p.has('mode')) {
+      const m = p.get('mode');
+      if (m === 'lump' || m === 'dca') {
+        histMode = m;
+        document.querySelectorAll('#hModeToggle .h-asset-btn').forEach(b =>
+          b.classList.toggle('active', b.dataset.hmode === m));
+      }
+    }
+    // Amount
+    if (p.has('amount')) {
+      const a = parseFloat(p.get('amount'));
+      if (isFinite(a) && a >= 0) {
+        const num = document.getElementById('hAmountNum');
+        const sl  = document.getElementById('hAmountSlider');
+        const clamped = Math.min(Math.max(a, +sl.min), +sl.max);
+        num.value = clamped; sl.value = clamped; updateTrack(sl);
+      }
+    }
+    // Currency (asset tool's own currency)
+    if (p.has('cur') && CURRENCIES[p.get('cur')]) {
+      histCurrency = p.get('cur');
+      document.getElementById('hCurrency').value = histCurrency;
+    }
+  }
+  (function bindHistShare() {
+    const btn     = document.getElementById('histShareBtn');
+    const confirm = document.getElementById('histShareConfirm');
+    const field   = document.getElementById('histShareField');
+    if (!btn) return;
+    let tmr = null;
+    function flash() {
+      confirm.hidden = false;
+      confirm.classList.add('show');
+      clearTimeout(tmr);
+      tmr = setTimeout(() => {
+        confirm.classList.remove('show');
+        setTimeout(() => { confirm.hidden = true; }, 220);
+      }, 2200);
+    }
+    function reveal(url) {
+      field.hidden = false;
+      field.value = url;
+      field.focus();
+      field.select();
+    }
+    btn.addEventListener('click', async () => {
+      const url = histBuildShareUrl();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try { await navigator.clipboard.writeText(url); flash(); return; }
+        catch (e) { /* fall through to manual */ }
+      }
+      reveal(url);
+      try { if (document.execCommand('copy')) flash(); } catch (e) {}
+    });
   })();
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -3735,6 +4014,8 @@
   });
 
     histPopulateYears();
+  histApplyShareParams();
+  histSyncMoreExpanded();
   biljRenderCountChart();
   biljRenderGdpChart();
   applyLang();

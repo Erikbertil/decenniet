@@ -19,7 +19,7 @@
       --rt-beige-main:#f9f9f7; --rt-beige-contrast:#dde8e7;
       --rt-muted:#7a8b8b; --rt-gold:#b89a3c; --rt-sapphire:#2d5fa0;
       --rt-section-div:#e0e8e7;
-      --p2-accent:#e57373; /* subtle red accent — Housing page identity */
+      --p2-accent:#b71c1c; /* deep crimson accent — Housing page identity */
     }
     [data-theme="dark"] {
       --rt-text-color:#e8e9eb; --rt-blue:#5cc8c0; --rt-blue-mid:#3ab5ac;
@@ -82,8 +82,8 @@
     .sh-nav-link:hover { background:var(--rt-beige-contrast); }
     [data-theme="dark"] .sh-nav-link { color:#e8e9eb; }
     [data-theme="dark"] .sh-nav-link:hover { background:#3d4147; }
-    .sh-nav-link.sh-nav-active { background:var(--p2-accent); color:#1a0203; font-weight:600; }
-    [data-theme="dark"] .sh-nav-link.sh-nav-active { background:var(--p2-accent); color:#1a0203; }
+    .sh-nav-link.sh-nav-active { background:var(--p2-accent); color:#ffffff; font-weight:600; }
+    [data-theme="dark"] .sh-nav-link.sh-nav-active { background:var(--p2-accent); color:#ffffff; }
     .sh-controls { justify-self:end; display:flex; align-items:center; gap:0.4rem; }
     @media (max-width:720px) {
       .site-header { padding:0.8rem 1rem; }
@@ -146,7 +146,7 @@
       padding:3px; cursor:pointer; transition:background 0.3s ease;
       flex-shrink:0; outline:none; position:relative;
     }
-    .theme-pill:focus-visible { outline:2px solid #e57373; outline-offset:2px; }
+    .theme-pill:focus-visible { outline:2px solid var(--p2-accent); outline-offset:2px; }
     .theme-pill[aria-checked="true"] { background:var(--rt-blue); }
     .theme-pill-knob {
       width:22px; height:22px; background:#fff; border-radius:50%;
@@ -367,7 +367,7 @@
     .rb-custom-intro { font-size:0.79rem; color:var(--rt-text-color); margin:0 0 0.75rem; line-height:1.5; font-weight:500; }
     .rb-custom-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
     @media (max-width:540px) { .rb-custom-grid { grid-template-columns:1fr; } }
-    @media (max-width:860px) { .rb-spak-grid { grid-template-columns:160px 1fr; } .rb-chart-col { grid-column:1 / -1; } }
+    @media (max-width:860px) { .rb-spak-grid { grid-template-columns:160px 1fr; } .rb-chart-col { grid-column:1 / -1; order:-1; } }
     @media (max-width:540px) {
       .rb-spak-grid { grid-template-columns:1fr; }
       .rb-lever-col { flex-direction:row; flex-wrap:wrap; align-items:center; gap:0.75rem; }
@@ -408,9 +408,10 @@
       </a>
       <nav class="sh-nav" aria-label="Main">
         <div class="sh-nav-pill">
-          <button class="sh-nav-link" onclick="navigateTo('index.html')" type="button" data-i18n="nav-home">Investera</button>
+          <button class="sh-nav-link" onclick="navigateTo('index.html')" type="button" data-i18n="nav-home">Investering</button>
           <button class="sh-nav-link sh-nav-active" type="button" data-i18n="nav-housing">Bostad</button>
           <button class="sh-nav-link" onclick="navigateTo('page3.html')" type="button" data-i18n="nav-fees">Avgifter</button>
+          <button class="sh-nav-link" onclick="navigateTo('page4.html')" type="button" data-i18n="nav-fire">FIRE</button>
         </div>
       </nav>
       <div class="sh-controls">
@@ -627,9 +628,10 @@
   var STRINGS = {
     sv: {
       'page-title':         'Decenniet – Hur sårbara är svenskarna?',
-      'nav-home':           'Investera',
+      'nav-home':           'Investering',
       'nav-housing':        'Bostad',
       'nav-fees':           'Avgifter',
+      'nav-fire':           'FIRE',
       'sarb-title':         'Hur sårbara är svenskarna?',
       'sarb-subtitle':      'Svenskarna hör till de mest skuldsatta hushållen i världen — och de byggde upp sina rekordskulder under en ovanligt låg ränta. Det gör dem känsliga: även en måttlig räntehöjning slår hårt.',
       'rb-subheading':      'Dra i Riksbankens spak — hur sårbar är du?',
@@ -673,6 +675,7 @@
       'nav-home':           'Investing',
       'nav-housing':        'Housing',
       'nav-fees':           'Fees',
+      'nav-fire':           'FIRE',
       'sarb-title':         'How vulnerable are Swedes?',
       'sarb-subtitle':      "Swedes are among the world's most indebted households — and they built up record debt during an unusually low interest rate era. That makes them vulnerable: even a moderate rate rise hits hard.",
       'rb-subheading':      "Pull the Riksbank's lever — how vulnerable are you?",

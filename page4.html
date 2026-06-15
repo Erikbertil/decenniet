@@ -6,7 +6,7 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <title>Decenniet – Avgiftskostnad</title>
+  <title>Decenniet – FIRE</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -22,12 +22,13 @@
       --rt-beige-contrast:#dde8e7;
       --rt-muted:         #7a8b8b;
       --rt-section-div:   #e0e8e7;
-      /* Deep mustard — nav active pill ONLY (white text legible) */
-      --page-accent:      #8a6d1a;
-      --page-accent-bg:   rgba(138,109,26,0.10);
-      /* Fee chart semantic colors */
-      --fee-a:            #c0392b;
-      --fee-b:            #0d3b38;
+      /* Light-blue — this page's identity (nav pill + hero) */
+      --page-accent:      #2e7fb0;
+      --page-accent-bg:   rgba(46,127,176,0.08);
+      /* Hero light-blue panel */
+      --hero-tint:        #eaf4fb;
+      --hero-border:      #cfe6f4;
+      --hero-accent:      #1d6c9b;
     }
     [data-theme="dark"] {
       --rt-text-color:    #e8e9eb;
@@ -38,10 +39,11 @@
       --rt-beige-contrast:#474c53;
       --rt-muted:         #9ea3ac;
       --rt-section-div:   #4e535b;
-      --page-accent:      #8a6d1a;
-      --page-accent-bg:   rgba(138,109,26,0.16);
-      --fee-a:            #e05c4a;
-      --fee-b:            #5cc8c0;
+      --page-accent:      #3f8fc4;
+      --page-accent-bg:   rgba(63,143,196,0.12);
+      --hero-tint:        rgba(63,143,196,0.10);
+      --hero-border:      rgba(99,169,214,0.24);
+      --hero-accent:      #7bc0e8;
     }
 
     *, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -70,31 +72,9 @@
       background: var(--rt-beige-main);
       overflow: hidden;
       pointer-events: none;
-      /* Match home page exactly: animated blobs hidden, flat white background */
       display: none;
     }
     [data-theme="dark"] .gradient-bg { background: #22252a; }
-    .gradient-blur {
-      position: absolute;
-      inset: -20%;
-      filter: blur(90px);
-      overflow: hidden;
-    }
-    .blob {
-      position: absolute;
-      border-radius: 50%;
-      opacity: 0.38;
-      animation: blobDrift linear infinite;
-      will-change: transform;
-    }
-    [data-theme="dark"] .blob { display: none; }
-    @keyframes blobDrift {
-      0%,100% { transform: translate(0, 0); }
-      20%  { transform: translate(calc(var(--tx1,0.3) * 200px), calc(var(--ty1,0.2) * 200px)); }
-      40%  { transform: translate(calc(var(--tx2,-0.4) * 200px), calc(var(--ty2,0.5) * 200px)); }
-      60%  { transform: translate(calc(var(--tx3,0.2) * 200px), calc(var(--ty3,-0.3) * 200px)); }
-      80%  { transform: translate(calc(var(--tx4,-0.2) * 200px), calc(var(--ty4,-0.4) * 200px)); }
-    }
 
     /* ── Header ─────────────────────────────────────────────────── */
     .site-header {
@@ -162,7 +142,7 @@
     }
     .sh-nav-link:hover { background: var(--rt-beige-contrast); }
     [data-theme="dark"] .sh-nav-link:hover { background: #3d4147; }
-    /* Mustard active state — this page's identity */
+    /* Light-blue active state — this page's identity */
     .sh-nav-link.sh-nav-active {
       background: var(--page-accent);
       color: #fff;
@@ -182,7 +162,7 @@
     }
     @media (max-width: 360px) { .sh-brand-text { display: none; } }
 
-    /* ── Language dropdown ──────────────────────────────────────── */
+    /* ── Language / currency dropdown ───────────────────────────── */
     .fh-dd { position: relative; }
     .fh-dd-btn {
       display: flex;
@@ -291,43 +271,48 @@
       z-index: 1;
     }
 
-    /* ── Hero ───────────────────────────────────────────────────── */
+    /* ── Hero — light-blue panel (this page's accent) ───────────── */
     .hero-section {
-      padding: 3rem 1.5rem 2.25rem;
       max-width: 1100px;
-      margin: 0 auto;
+      margin: 1.75rem auto 2rem;
+      padding: 2.5rem 2rem;
       position: relative;
       z-index: 1;
+      background: var(--hero-tint);
+      border: 1px solid var(--hero-border);
+      border-radius: 18px;
+    }
+    @media (max-width: 720px) {
+      .hero-section { margin: 1.25rem 1rem 1.5rem; padding: 2rem 1.4rem; border-radius: 14px; }
     }
     .hero-label {
       font-family: "Nunito", sans-serif;
       font-size: 0.72rem;
       font-weight: 800;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--rt-muted);
+      color: var(--hero-accent);
       margin-bottom: 0.75rem;
     }
     .hero-title {
-      /* Match home page "Avkastning över tid" heading (.chart-title) */
       font-family: "DM Serif Display", serif;
-      font-size: clamp(1.3rem, 1.1rem + 0.8vw, 1.9rem);
+      font-size: clamp(1.4rem, 1.1rem + 0.95vw, 2.05rem);
       font-weight: 400;
-      line-height: 1.35;
-      color: var(--rt-blue);
+      line-height: 1.3;
+      color: var(--hero-accent);
       margin-bottom: 0.9rem;
     }
     .hero-sub {
-      /* Match home page subtitle "Se hur sparandet växer..." (.chart-subtitle) */
       font-family: "DM Sans", sans-serif;
       font-size: 0.95rem;
       font-weight: 400;
-      color: var(--rt-muted);
-      max-width: 540px;
-      line-height: 1.65;
+      color: var(--rt-text-color);
+      opacity: 0.82;
+      max-width: 620px;
+      line-height: 1.7;
     }
 
-    /* ── Section headings — match home page heading style (editorial serif) ───── */
+    /* ── Section headings (editorial serif, like home page) ─────── */
     .section-title {
       font-family: "DM Serif Display", serif;
       font-weight: 400;
@@ -344,13 +329,11 @@
       font-weight: 500;
     }
 
-    /* ── Fee Calculator ─────────────────────────────────────────── */
+    /* ── Calculator layout ──────────────────────────────────────── */
     .fee-calc-section { margin-bottom: 2rem; }
-
-    /* Two-column layout: white card left, transparent chart area right */
     .fee-calc-layout {
       display: grid;
-      grid-template-columns: 310px 1fr;
+      grid-template-columns: 330px 1fr;
       gap: 2rem;
       align-items: start;
     }
@@ -373,7 +356,7 @@
       box-shadow: 0 2px 28px rgba(0,0,0,0.25);
     }
 
-    /* Right — chart area: no card background, chart floats on page bg */
+    /* Right — chart area floats on page background */
     .fee-chart-area {
       display: flex;
       flex-direction: column;
@@ -382,17 +365,13 @@
     }
     .fee-chart-wrap {
       position: relative;
-      height: 260px;
+      height: 280px;
     }
-    .fee-chart-wrap canvas {
-      position: absolute;
-      inset: 0;
-    }
+    .fee-chart-wrap canvas { position: absolute; inset: 0; }
 
     /* ── Input groups ───────────────────────────────────────────── */
     .fee-inputs { display: flex; flex-direction: column; gap: 0; }
     .fee-input-section { margin-bottom: 1.1rem; }
-
     .fee-input-section-label {
       font-size: 0.72rem;
       font-weight: 800;
@@ -405,12 +384,12 @@
     }
     .fee-input-group { margin-bottom: 0.8rem; }
     .fee-input-group:last-child { margin-bottom: 0; }
-
     .fee-input-label-row {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
       margin-bottom: 0.25rem;
+      gap: 0.5rem;
     }
     .fee-input-lbl {
       font-size: 0.75rem;
@@ -419,7 +398,6 @@
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
-    /* Home page style: blue pill tag for current value */
     .fee-input-tag {
       font-size: 0.82rem;
       font-weight: 700;
@@ -433,22 +411,124 @@
       color: #5cc8c0;
       background: rgba(92,200,192,0.10);
     }
-    .fee-a-accent .fee-input-tag {
-      color: var(--fee-a);
-      background: rgba(192,57,43,0.08);
-    }
-    [data-theme="dark"] .fee-a-accent .fee-input-tag {
-      color: var(--fee-a);
-      background: rgba(224,92,74,0.10);
-    }
-    .fee-b-accent .fee-input-tag {
-      color: var(--rt-blue);
-      background: rgba(13,59,56,0.07);
-    }
-
     .slider-num-row { display: flex; align-items: center; gap: 0.6rem; }
 
-    /* ── Range slider — home page style ─────────────────────────── */
+    /* ── Annual-expenses preset chips ───────────────────────────── */
+    .fire-preset-block { margin-top: 0.6rem; }
+    .fire-preset-prompt {
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--rt-muted);
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .fire-preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .fire-preset-chip {
+      font-family: "DM Sans", "Nunito", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--rt-text-color);
+      background: var(--rt-white);
+      border: 1.5px solid var(--rt-beige-contrast);
+      border-radius: 999px;
+      padding: 0.34rem 0.8rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      outline: none;
+    }
+    .fire-preset-chip:hover {
+      border-color: var(--page-accent);
+      color: var(--page-accent);
+    }
+    .fire-preset-chip:focus-visible {
+      outline: 2px solid var(--page-accent);
+      outline-offset: 2px;
+    }
+    .fire-preset-chip.is-active {
+      background: var(--page-accent);
+      border-color: var(--page-accent);
+      color: #ffffff;
+    }
+    [data-theme="dark"] .fire-preset-chip { background: var(--rt-white); border-color: var(--rt-beige-contrast); }
+    [data-theme="dark"] .fire-preset-chip.is-active { color: #ffffff; }
+    /* ── Info icon + tooltip (annual-expenses note) ─────────────── */
+    .fire-info {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .fire-info-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 15px;
+      height: 15px;
+      padding: 0;
+      border-radius: 50%;
+      border: 1.4px solid var(--rt-muted);
+      background: transparent;
+      color: var(--rt-muted);
+      font-family: "DM Serif Display", Georgia, serif;
+      font-style: italic;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      outline: none;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+    .fire-info-btn:hover,
+    .fire-info-btn:focus-visible {
+      color: var(--page-accent);
+      border-color: var(--page-accent);
+    }
+    .fire-tooltip {
+      position: absolute;
+      top: calc(100% + 7px);
+      left: 0;
+      width: max-content;
+      max-width: 250px;
+      background: var(--rt-blue);
+      color: #ffffff;
+      font-family: "DM Sans", "Nunito", sans-serif;
+      font-size: 0.7rem;
+      font-weight: 500;
+      font-style: normal;
+      line-height: 1.45;
+      text-align: left;
+      padding: 0.55rem 0.7rem;
+      border-radius: 8px;
+      box-shadow: 0 6px 22px rgba(13,59,56,0.22);
+      z-index: 120;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.15s ease, visibility 0.15s ease;
+    }
+    .fire-info:hover .fire-tooltip,
+    .fire-info:focus-within .fire-tooltip,
+    .fire-info.is-open .fire-tooltip {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    [data-theme="dark"] .fire-info-btn { border-color: var(--rt-muted); color: var(--rt-muted); }
+    [data-theme="dark"] .fire-tooltip {
+      background: #11161b;
+      color: #e8e9eb;
+      border: 1px solid #3a3f46;
+      box-shadow: 0 6px 22px rgba(0,0,0,0.5);
+    }
+
+    /* ── Range slider (home page style) ─────────────────────────── */
     input[type="range"] {
       flex: 1;
       -webkit-appearance: none;
@@ -510,22 +590,11 @@
     [data-theme="dark"] input[type="range"]:hover::-webkit-slider-thumb {
       box-shadow: 0 0 0 5px rgba(92,200,192,0.15);
     }
-    [data-theme="dark"] input[type="range"]::-moz-range-thumb {
-      background: #2d3035;
-    }
+    [data-theme="dark"] input[type="range"]::-moz-range-thumb { background: #2d3035; }
 
-    /* Fee A/B — colored slider fills */
-    .fee-a-accent input[type="range"] { --sl-fill: var(--fee-a); }
-    .fee-b-accent input[type="range"] { --sl-fill: var(--fee-b); }
-    .fee-b-accent input[type="range"]:hover::-webkit-slider-thumb {
-      box-shadow: 0 0 0 5px rgba(13,59,56,0.10);
-    }
-    [data-theme="dark"] .fee-a-accent input[type="range"] { --sl-fill: var(--fee-a); }
-    [data-theme="dark"] .fee-b-accent input[type="range"] { --sl-fill: var(--fee-b); }
-
-    /* Number input — home page style */
+    /* Number input (home page style) */
     input[type="number"] {
-      width: 90px;
+      width: 96px;
       padding: 0.28rem 0.45rem;
       border: 2px solid var(--rt-beige-contrast);
       border-radius: 7px;
@@ -547,15 +616,48 @@
       color: var(--rt-text-color);
     }
 
-    /* Divider inside inputs card */
     .fee-inputs-divider {
       height: 1px;
       background: var(--rt-beige-contrast);
       margin: 0.9rem 0 1rem;
     }
 
-    /* ── Result cards (on transparent area) ─────────────────────── */
+    /* ── FIRE headline card (big age) ───────────────────────────── */
+    .fire-headline-card {
+      background: linear-gradient(135deg, #2e7fb0, #1d6c9b);
+      border-radius: 14px;
+      padding: 1.15rem 1.4rem 1.25rem;
+      box-shadow: 0 2px 18px rgba(29,108,155,0.28);
+    }
+    [data-theme="dark"] .fire-headline-card {
+      background: linear-gradient(135deg, #2f6f96, #234f6e);
+      box-shadow: 0 2px 18px rgba(0,0,0,0.35);
+    }
+    .fire-headline-lbl {
+      font-family: "Nunito", sans-serif;
+      font-size: 0.67rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.78);
+    }
+    .fire-headline-num {
+      font-family: "DM Serif Display", serif;
+      font-size: clamp(2.6rem, 2rem + 2.5vw, 3.6rem);
+      font-weight: 400;
+      color: #fff;
+      line-height: 1.05;
+      margin: 0.1rem 0 0.05rem;
+    }
+    .fire-headline-sub {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.82);
+      line-height: 1.4;
+    }
+
+    /* ── Result cards ───────────────────────────────────────────── */
     .fee-result-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+    @media (max-width: 420px) { .fee-result-row { grid-template-columns: 1fr; } }
     .fee-res-card {
       background: var(--rt-white);
       border: 1px solid var(--rt-beige-contrast);
@@ -575,61 +677,32 @@
     .fee-res-val {
       font-family: "DM Sans", "Nunito", sans-serif;
       font-size: clamp(1rem, 0.85rem + 0.5vw, 1.2rem);
+      font-weight: 700;
       color: var(--rt-text-color);
       line-height: 1.2;
     }
-    .fee-res-card.accent-a .fee-res-lbl { color: var(--fee-a); }
-    .fee-res-card.accent-b .fee-res-lbl { color: var(--rt-blue); }
-    .fee-res-card.accent-a .fee-res-val { color: var(--fee-a); }
-    .fee-res-card.accent-b .fee-res-val { color: var(--rt-blue); }
-
-    /* ── Headline diff card ─────────────────────────────────────── */
-    .fee-diff-card {
-      background: #0d3b38;
-      border-radius: 12px;
-      padding: 1rem 1.4rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.15rem;
-      box-shadow: 0 2px 16px rgba(13,59,56,0.25);
-    }
-    [data-theme="dark"] .fee-diff-card {
-      background: #0d3b38;
-      box-shadow: 0 2px 16px rgba(13,59,56,0.35);
-    }
-    .fee-diff-lbl {
-      font-family: "Nunito", sans-serif;
-      font-size: 0.67rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: rgba(255,255,255,0.72);
-    }
-    .fee-diff-num {
-      font-family: "DM Sans", "Nunito", sans-serif;
-      font-size: clamp(1.4rem, 1.1rem + 1vw, 1.95rem);
-      color: #fff;
-      line-height: 1.1;
-    }
-    .fee-diff-sub {
-      font-size: 0.75rem;
-      color: rgba(255,255,255,0.62);
-      line-height: 1.4;
-      margin-top: 0.1rem;
-    }
+    .fee-res-card.accent-target .fee-res-lbl { color: var(--page-accent); }
+    .fee-res-card.accent-target .fee-res-val { color: var(--page-accent); }
 
     .fee-meta-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .fee-meta-item { font-size: 0.75rem; color: var(--rt-muted); }
+    .fee-meta-item { font-size: 0.74rem; color: var(--rt-muted); }
 
     .fee-sentence {
-      font-size: 0.85rem;
-      color: var(--rt-muted);
-      line-height: 1.6;
-      border-left: 3px solid var(--rt-beige-contrast);
-      padding-left: 0.8rem;
+      font-size: 0.88rem;
+      color: var(--rt-text-color);
+      opacity: 0.92;
+      line-height: 1.65;
+      border-left: 3px solid var(--page-accent);
+      padding-left: 0.85rem;
+    }
+    .fee-sentence.fee-sentence--warn {
+      border-left-color: #c0392b;
+    }
+    [data-theme="dark"] .fee-sentence.fee-sentence--warn {
+      border-left-color: #e05c4a;
     }
 
-    /* ── Facts section ──────────────────────────────────────────── */
+    /* ── Facts / explainer ──────────────────────────────────────── */
     .facts-section { margin-bottom: 2rem; }
     .facts-card {
       background: var(--rt-white);
@@ -643,8 +716,6 @@
       background: #363a3f;
       box-shadow: 0 2px 28px rgba(0,0,0,0.25);
     }
-
-    /* Focus blocks — the two kept takeaways, laid out as twin cards */
     .facts-focus {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -654,11 +725,11 @@
     .focus-card {
       background: var(--rt-beige-main);
       border: 1px solid var(--rt-beige-contrast);
-      border-top: 3px solid var(--rt-blue);
+      border-top: 3px solid var(--page-accent);
       border-radius: 12px;
       padding: 1.5rem 1.5rem 1.4rem;
     }
-    [data-theme="dark"] .focus-card { background: #2d3035; border-color: #474c53; border-top-color: var(--rt-blue); }
+    [data-theme="dark"] .focus-card { background: #2d3035; border-color: #474c53; border-top-color: var(--page-accent); }
     .ex-label {
       font-family: "Nunito", sans-serif;
       font-size: 0.63rem;
@@ -678,7 +749,6 @@
     }
     .focus-text { font-size: 0.9rem; color: var(--rt-muted); line-height: 1.65; }
 
-    /* Disclaimer */
     .p-disclaimer { font-size: 0.73rem; color: var(--rt-muted); opacity: 0.8; line-height: 1.5; }
 
     /* Site footer (shared) */
@@ -696,14 +766,39 @@
     .site-footer-bottom { border-top:1px solid rgba(255,255,255,0.13); margin-top:1.9rem; padding-top:1.1rem; display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap; }
     .site-footer-disclaimer { font-size:0.72rem; line-height:1.6; color:rgba(255,255,255,0.5); margin:0; max-width:64ch; }
     .site-footer-copy { font-size:0.72rem; color:rgba(255,255,255,0.4); margin:0; white-space:nowrap; }
+
+    /* ── Share link ─────────────────────────────────────────────── */
+    .share-row { display:flex; align-items:center; gap:0.7rem; flex-wrap:wrap; margin-top:1.1rem; }
+    .share-btn {
+      display:inline-flex; align-items:center; gap:0.45rem;
+      font-family:"DM Sans","Nunito",sans-serif; font-size:0.82rem; font-weight:600;
+      color:#fff; background:var(--page-accent); border:none; border-radius:999px;
+      padding:0.5rem 1.05rem; cursor:pointer; outline:none;
+      transition:opacity 0.15s, transform 0.08s, box-shadow 0.15s;
+    }
+    .share-btn:hover { opacity:0.92; box-shadow:0 3px 12px var(--page-accent-bg); }
+    .share-btn:active { transform:scale(0.97); }
+    .share-btn:focus-visible { outline:2px solid var(--page-accent); outline-offset:2px; }
+    .share-btn svg { width:15px; height:15px; flex-shrink:0; }
+    .share-confirm {
+      font-size:0.8rem; font-weight:600; color:var(--page-accent);
+      opacity:0; transition:opacity 0.2s;
+    }
+    .share-confirm.show { opacity:1; }
+    .share-field {
+      width:100%; max-width:440px; margin-top:0.1rem;
+      font-family:"DM Sans",sans-serif; font-size:0.78rem;
+      padding:0.5rem 0.65rem; border:1.5px solid var(--rt-beige-contrast);
+      border-radius:8px; background:var(--rt-white); color:var(--rt-text-color);
+      outline:none;
+    }
+    .share-field:focus { border-color:var(--page-accent); }
   </style>
 </head>
 <body>
 
-  <!-- ── Animated gradient background ── -->
-  <div class="gradient-bg">
-    <div class="gradient-blur" id="blobLayer"></div>
-  </div>
+  <!-- ── Background ── -->
+  <div class="gradient-bg"></div>
 
   <!-- ── Site header ── -->
   <header class="site-header" role="banner">
@@ -720,8 +815,8 @@
         <div class="sh-nav-pill">
           <button class="sh-nav-link" onclick="navigateTo('index.html')" type="button" data-i18n="nav-home">Investering</button>
           <button class="sh-nav-link" onclick="navigateTo('page2.html')" type="button" data-i18n="nav-housing">Bostad</button>
-          <button class="sh-nav-link sh-nav-active" type="button" data-i18n="nav-fees">Avgifter</button>
-          <button class="sh-nav-link" onclick="navigateTo('page4.html')" type="button" data-i18n="nav-fire">FIRE</button>
+          <button class="sh-nav-link" onclick="navigateTo('page3.html')" type="button" data-i18n="nav-fees">Avgifter</button>
+          <button class="sh-nav-link sh-nav-active" type="button" data-i18n="nav-fire">FIRE</button>
         </div>
       </nav>
       <div class="sh-controls">
@@ -762,68 +857,83 @@
 
   <!-- ── Hero ── -->
   <div class="hero-section">
-    <p class="hero-label" data-i18n="hero-label">Avgiftskostnad</p>
-    <h1 class="hero-title" data-i18n="hero-title">Vad kostar avgifterna egentligen?</h1>
-    <p class="hero-sub" data-i18n="hero-sub">En liten avgiftsskillnad ser oskyldig ut — men ränte-på-ränta-effekten gör att den slukar enorma belopp ur ditt långsiktiga sparande.</p>
+    <p class="hero-label" data-i18n="hero-label">FIRE</p>
+    <h1 class="hero-title" data-i18n="hero-title">FIRE – när kan du sluta jobba?</h1>
+    <p class="hero-sub" data-i18n="hero-sub">FIRE betyder Financial Independence, Retire Early — att spara och investera tills avkastningen kan täcka dina utgifter, så att du blir ekonomiskt oberoende. Räkna ut när du kan nå dit.</p>
   </div>
 
   <!-- ── Main content ── -->
   <div class="page-wrap">
 
-    <!-- ── Fee Calculator ── -->
-    <section class="fee-calc-section" aria-label="Avgiftskalkylator">
+    <!-- ── FIRE Calculator ── -->
+    <section class="fee-calc-section" aria-label="FIRE-kalkylator">
       <div class="fee-calc-layout">
 
-        <!-- LEFT: inputs card (white, like home page calculator card) -->
+        <!-- LEFT: inputs card -->
         <div class="fee-inputs-card">
-          <h2 class="section-title" data-i18n="calc-title">Räkna på din avgiftskostnad</h2>
-          <p class="section-sub" data-i18n="calc-sub">Justera belopp och avgifter — se hur gapet växer.</p>
+          <h2 class="section-title" data-i18n="calc-title">Räkna ut din FIRE-ålder</h2>
+          <p class="section-sub" data-i18n="calc-sub">Justera dina antaganden — se när kapitalet räcker.</p>
 
           <div class="fee-inputs">
             <div class="fee-input-section">
-              <span class="fee-input-section-label" data-i18n="lbl-section-savings">Ditt sparande</span>
+              <span class="fee-input-section-label" data-i18n="lbl-section-you">Du och ditt sparande</span>
 
               <div class="fee-input-group">
                 <div class="fee-input-label-row">
-                  <label class="fee-input-lbl" for="fcStart" data-i18n="lbl-start">Startbelopp</label>
-                  <span class="fee-input-tag" id="fcStartTag">500 000 kr</span>
+                  <label class="fee-input-lbl" for="fireAge" data-i18n="lbl-age">Nuvarande ålder</label>
+                  <span class="fee-input-tag" id="fireAgeTag">30 år</span>
                 </div>
                 <div class="slider-num-row">
-                  <input type="range" id="fcStartSlider" min="0" max="1000" step="1" value="500">
-                  <input type="number" id="fcStart" min="0" max="5000000" step="10000" value="500000">
+                  <input type="range" id="fireAgeSlider" min="18" max="65" step="1" value="30">
+                  <input type="number" id="fireAge" min="18" max="65" step="1" value="30">
                 </div>
               </div>
 
               <div class="fee-input-group">
                 <div class="fee-input-label-row">
-                  <label class="fee-input-lbl" for="fcMonthly" data-i18n="lbl-monthly">Månadssparande</label>
-                  <span class="fee-input-tag" id="fcMonthlyTag">5 000 kr/mån</span>
+                  <label class="fee-input-lbl" for="fireSavings" data-i18n="lbl-savings">Nuvarande kapital</label>
+                  <span class="fee-input-tag" id="fireSavingsTag">300 000 kr</span>
                 </div>
                 <div class="slider-num-row">
-                  <input type="range" id="fcMonthlySlider" min="0" max="1000" step="1" value="500">
-                  <input type="number" id="fcMonthly" min="0" max="50000" step="500" value="5000">
+                  <input type="range" id="fireSavingsSlider" min="0" max="1000" step="1" value="490">
+                  <input type="number" id="fireSavings" min="0" max="5000000" step="10000" value="300000">
                 </div>
               </div>
 
               <div class="fee-input-group">
                 <div class="fee-input-label-row">
-                  <label class="fee-input-lbl" for="fcYears" data-i18n="lbl-years">Sparhorisont</label>
-                  <span class="fee-input-tag" id="fcYearsTag">20 år</span>
+                  <label class="fee-input-lbl" for="fireMonthly" data-i18n="lbl-monthly">Månadssparande</label>
+                  <span class="fee-input-tag" id="fireMonthlyTag">3 000 kr/mån</span>
                 </div>
                 <div class="slider-num-row">
-                  <input type="range" id="fcYearsSlider" min="1" max="50" step="1" value="20">
-                  <input type="number" id="fcYears" min="1" max="50" step="1" value="20">
+                  <input type="range" id="fireMonthlySlider" min="0" max="1000" step="1" value="486">
+                  <input type="number" id="fireMonthly" min="0" max="20000" step="100" value="3000">
                 </div>
               </div>
 
               <div class="fee-input-group">
                 <div class="fee-input-label-row">
-                  <label class="fee-input-lbl" for="fcReturn" data-i18n="lbl-return">Avkastning per år</label>
-                  <span class="fee-input-tag" id="fcReturnTag">7,00 %</span>
+                  <label class="fee-input-lbl" for="fireExpenses" data-i18n="lbl-expenses">Årliga utgifter</label>
+                  <span class="fee-input-tag" id="fireExpensesTag">300 000 kr</span>
                 </div>
                 <div class="slider-num-row">
-                  <input type="range" id="fcReturnSlider" min="0" max="15" step="0.5" value="7">
-                  <input type="number" id="fcReturn" min="0" max="15" step="0.5" value="7">
+                  <input type="range" id="fireExpensesSlider" min="50000" max="2000000" step="10000" value="300000">
+                  <input type="number" id="fireExpenses" min="50000" max="2000000" step="10000" value="300000">
+                </div>
+                <div class="fire-preset-block">
+                  <span class="fire-preset-prompt">
+                    <span class="fire-info" id="firePresetInfo">
+                      <button type="button" class="fire-info-btn" id="firePresetInfoBtn" aria-label="Info" aria-expanded="false">i</button>
+                      <span class="fire-tooltip" role="tooltip" id="firePresetTooltip" data-i18n="preset-note">Ungefärliga årliga utgifter inklusive boende, baserat på bl.a. Konsumentverkets referensvärden. Boendekostnader varierar mycket — justera efter din situation.</span>
+                    </span>
+                    <span data-i18n="preset-prompt">Vet du inte? Välj en typisk svensk profil:</span>
+                  </span>
+                  <div class="fire-preset-row" id="firePresetRow">
+                    <button type="button" class="fire-preset-chip" data-preset="frugal" data-i18n="preset-frugal">Sparsam singel</button>
+                    <button type="button" class="fire-preset-chip" data-preset="single" data-i18n="preset-single">Typisk singel</button>
+                    <button type="button" class="fire-preset-chip" data-preset="couple" data-i18n="preset-couple">Par</button>
+                    <button type="button" class="fire-preset-chip" data-preset="family" data-i18n="preset-family">Familj</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -831,87 +941,107 @@
             <div class="fee-inputs-divider"></div>
 
             <div class="fee-input-section">
-              <span class="fee-input-section-label" data-i18n="lbl-section-fees">Avgifter att jämföra</span>
+              <span class="fee-input-section-label" data-i18n="lbl-section-assumptions">Antaganden</span>
 
-              <div class="fee-input-group fee-a-accent">
+              <div class="fee-input-group">
                 <div class="fee-input-label-row">
-                  <label class="fee-input-lbl" for="fcFeeA" data-i18n="lbl-fee-a">Avgift A – Aktivt förvaltad</label>
-                  <span class="fee-input-tag" id="fcFeeATag">1,30 %</span>
+                  <label class="fee-input-lbl" for="fireReturn" data-i18n="lbl-return">Avkastning per år (före inflation)</label>
+                  <span class="fee-input-tag" id="fireReturnTag">10 %</span>
                 </div>
                 <div class="slider-num-row">
-                  <input type="range" id="fcFeeASlider" min="0" max="3" step="0.01" value="1.30">
-                  <input type="number" id="fcFeeA" min="0" max="3" step="0.01" value="1.30">
+                  <input type="range" id="fireReturnSlider" min="0" max="20" step="0.1" value="10">
+                  <input type="number" id="fireReturn" min="0" max="100" step="0.1" value="10">
                 </div>
               </div>
 
-              <div class="fee-input-group fee-b-accent">
+              <div class="fee-input-group">
                 <div class="fee-input-label-row">
-                  <label class="fee-input-lbl" for="fcFeeB" data-i18n="lbl-fee-b">Avgift B – Indexfond</label>
-                  <span class="fee-input-tag" id="fcFeeBTag">0,20 %</span>
+                  <label class="fee-input-lbl" for="fireInflation" data-i18n="lbl-inflation">Inflation per år</label>
+                  <span class="fee-input-tag" id="fireInflationTag">2 %</span>
                 </div>
                 <div class="slider-num-row">
-                  <input type="range" id="fcFeeBSlider" min="0" max="3" step="0.01" value="0.20">
-                  <input type="number" id="fcFeeB" min="0" max="3" step="0.01" value="0.20">
+                  <input type="range" id="fireInflationSlider" min="0" max="10" step="0.1" value="2">
+                  <input type="number" id="fireInflation" min="0" max="10" step="0.1" value="2">
+                </div>
+              </div>
+
+              <div class="fee-input-group">
+                <div class="fee-input-label-row">
+                  <label class="fee-input-lbl" for="fireWr" data-i18n="lbl-wr">Uttagsprocent</label>
+                  <span class="fee-input-tag" id="fireWrTag">4 %</span>
+                </div>
+                <div class="slider-num-row">
+                  <input type="range" id="fireWrSlider" min="2" max="8" step="0.1" value="4">
+                  <input type="number" id="fireWr" min="2" max="8" step="0.1" value="4">
                 </div>
               </div>
             </div>
           </div>
         </div><!-- /fee-inputs-card -->
 
-        <!-- RIGHT: chart area — transparent, floats on page background -->
+        <!-- RIGHT: chart + results -->
         <div class="fee-chart-area">
 
-          <div class="fee-chart-wrap">
-            <canvas id="feeChartCanvas"></canvas>
+          <div class="fire-headline-card">
+            <p class="fire-headline-lbl" data-i18n="res-age-label">Ekonomiskt oberoende vid ålder</p>
+            <p class="fire-headline-num" id="fireAgeOut">–</p>
+            <p class="fire-headline-sub" id="fireYearsSub"></p>
           </div>
 
-          <div class="fee-diff-card">
-            <p class="fee-diff-lbl" data-i18n="res-diff-label">Avgifternas kostnad (skillnad i slutvärde)</p>
-            <p class="fee-diff-num" id="fcDiff">–</p>
-            <p class="fee-diff-sub" id="fcDiffSub"></p>
+          <div class="fee-chart-wrap">
+            <canvas id="fireChartCanvas"></canvas>
           </div>
 
           <div class="fee-result-row">
-            <div class="fee-res-card accent-a">
-              <p class="fee-res-lbl" data-i18n="res-with-a">Med avgift A</p>
-              <p class="fee-res-val" id="fcResA">–</p>
+            <div class="fee-res-card accent-target">
+              <p class="fee-res-lbl" data-i18n="res-target-label">Ditt FIRE-mål</p>
+              <p class="fee-res-val" id="fireTarget">–</p>
             </div>
-            <div class="fee-res-card accent-b">
-              <p class="fee-res-lbl" data-i18n="res-with-b">Med avgift B</p>
-              <p class="fee-res-val" id="fcResB">–</p>
+            <div class="fee-res-card">
+              <p class="fee-res-lbl" data-i18n="res-realreturn-label">Realavkastning / år</p>
+              <p class="fee-res-val" id="fireRealReturn">–</p>
             </div>
           </div>
 
           <div class="fee-meta-row">
-            <span class="fee-meta-item" id="fcMetaInvested"></span>
+            <span class="fee-meta-item" data-i18n="chart-note">Värden i dagens penningvärde (realt, inflationsjusterat).</span>
           </div>
 
-          <p class="fee-sentence" id="fcSentence"></p>
+          <p class="fee-sentence" id="fireSentence"></p>
+
+          <div class="share-row">
+            <button type="button" class="share-btn" id="fireShareBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              <span data-i18n="share-btn">Dela</span>
+            </button>
+            <span class="share-confirm" id="fireShareConfirm" data-i18n="share-copied" hidden>Länken kopierad!</span>
+          </div>
+          <input type="text" class="share-field" id="fireShareField" readonly hidden aria-label="Delningslänk">
 
         </div><!-- /fee-chart-area -->
       </div><!-- /fee-calc-layout -->
     </section>
 
-    <!-- ── Facts ── -->
-    <section class="facts-section" aria-label="Fakta">
+    <!-- ── Explainer ── -->
+    <section class="facts-section" aria-label="Om FIRE">
       <div class="facts-card">
-        <h2 class="section-title" data-i18n="facts-title">Vad säger siffrorna?</h2>
-        <p class="section-sub" data-i18n="facts-sub">Två saker värda att veta om fondavgifter.</p>
+        <h2 class="section-title" data-i18n="facts-title">Bra att veta om FIRE</h2>
+        <p class="section-sub" data-i18n="facts-sub">Två saker att ha i bakhuvudet.</p>
 
         <div class="facts-focus">
           <div class="focus-card">
-            <span class="ex-label" data-i18n="ex3-label">Medvetenhet</span>
-            <p class="focus-title" data-i18n="ex3-title">Varannan vet inte vad de betalar</p>
-            <p class="focus-text" data-i18n="ex3-body">Varannan svensk fondsparare vet inte vad de betalar i avgift — trots att avgiften finns öppet redovisad i fondernas faktablad. Avgiften syns inte på kontoutdraget, bara stilla i bakgrunden varje år. (Källa: Finansinspektionen)</p>
+            <span class="ex-label" data-i18n="ex1-label">Tumregel</span>
+            <p class="focus-title" data-i18n="ex1-title">4 %-regeln</p>
+            <p class="focus-text" data-i18n="ex1-body">En vanlig tumregel: om du varje år tar ut 4 % av ditt kapital antas det räcka livet ut. Det motsvarar att målet är ungefär 25 gånger dina årliga utgifter. Regeln bygger på historisk amerikansk data och är en förenkling — inte en garanti.</p>
           </div>
           <div class="focus-card">
-            <span class="ex-label" data-i18n="balance-label">Perspektiv</span>
-            <p class="focus-title" data-i18n="balance-title">Avgifter är inte alltid fel — men sällan värda det</p>
-            <p class="focus-text" data-i18n="balance-body">En högre avgift kan vara värd det om fonden faktiskt slår sitt index efter avgift. Men historiskt lyckas mycket få aktivt förvaltade fonder med det konsekvent över tid. Problemet är avgifter som inte motsvaras av bättre avkastning. Titta alltid på avkastning efter avgift — inte bara marknadsstrategi eller fondens namn.</p>
+            <span class="ex-label" data-i18n="ex2-label">Osäkerhet</span>
+            <p class="focus-title" data-i18n="ex2-title">Antagandena är osäkra</p>
+            <p class="focus-text" data-i18n="ex2-body">Framtida avkastning och inflation går inte att veta i förväg. Beräkningen använder real (inflationsjusterad) avkastning, så att målbeloppet är i dagens penningvärde. Verkligheten varierar år för år — se det här som en fingervisning, inte ett facit.</p>
           </div>
         </div>
 
-        <p class="p-disclaimer" data-i18n="disclaimer">Ungefärliga siffror för illustration, baserade på bl.a. Finansinspektionens jämförelsetal och offentlig fondrapportering. Kalkylatorn simulerar schablonmässig ränte-på-ränte-tillväxt. Inte investeringsrådgivning.</p>
+        <p class="p-disclaimer" data-i18n="disclaimer">Förenklad, ungefärlig beräkning för illustration. Bygger på antaganden om avkastning, inflation och uttag som inte är garanterade. 4%-regeln är en tumregel, inte en garanti. Inte investeringsrådgivning.</p>
       </div>
     </section>
 
@@ -941,42 +1071,56 @@
   // ── Strings ────────────────────────────────────────────────────────
   const STRINGS = {
     sv: {
-      'page-title':          'Decenniet – Avgiftskostnad',
+      'page-title':          'Decenniet – FIRE',
       'nav-home':            'Investering',
       'nav-housing':         'Bostad',
       'nav-fees':            'Avgifter',
       'nav-fire':            'FIRE',
-      'hero-label':          'Avgiftskostnad',
-      'hero-title':          'Vad kostar avgifterna egentligen?',
-      'hero-sub':            'En liten avgiftsskillnad ser oskyldig ut — men ränte-på-ränta-effekten gör att den slukar enorma belopp ur ditt långsiktiga sparande.',
-      'calc-title':          'Räkna på din avgiftskostnad',
-      'calc-sub':            'Justera belopp och avgifter — se hur gapet växer.',
-      'lbl-section-savings': 'Ditt sparande',
-      'lbl-section-fees':    'Avgifter att jämföra',
-      'lbl-start':           'Startbelopp',
+      'hero-label':          'FIRE',
+      'hero-title':          'FIRE – när kan du sluta jobba?',
+      'hero-sub':            'FIRE betyder Financial Independence, Retire Early — att spara och investera tills avkastningen kan täcka dina utgifter, så att du blir ekonomiskt oberoende. Räkna ut när du kan nå dit.',
+      'calc-title':          'Räkna ut din FIRE-ålder',
+      'calc-sub':            'Justera dina antaganden — se när kapitalet räcker.',
+      'lbl-section-you':     'Du och ditt sparande',
+      'lbl-section-assumptions': 'Antaganden',
+      'lbl-age':             'Nuvarande ålder',
+      'lbl-savings':         'Nuvarande kapital',
       'lbl-monthly':         'Månadssparande',
-      'lbl-years':           'Sparhorisont',
-      'lbl-return':          'Avkastning per år',
-      'lbl-fee-a':           'Avgift A – Aktivt förvaltad',
-      'lbl-fee-b':           'Avgift B – Indexfond',
-      'res-diff-label':      'Avgifternas kostnad (skillnad i slutvärde)',
-      'res-with-a':          'Med avgift A',
-      'res-with-b':          'Med avgift B',
-      'chart-label-a':       'Aktivt förvaltad fond',
-      'chart-label-b':       'Indexfond',
-      'chart-yr':            'År',
-      'meta-invested':       (amt) => `Totalt inbetalat: ${amt}`,
-      'diff-sub':            (years, feeA, feeB) => `Kostnaden för avgiftsskillnaden (${fmtPct(feeA)} vs ${fmtPct(feeB)}) under ${years} år`,
-      'result-sentence':     (years, diff) => `Med ${years} års sparande kostar den högre avgiften dig ungefär ${diff} — pengar som hamnar hos fondbolaget i stället för hos dig.`,
-      'facts-title':         'Vad säger siffrorna?',
-      'facts-sub':           'Två saker värda att veta om fondavgifter.',
-      'ex3-label':           'Medvetenhet',
-      'ex3-title':           'Varannan vet inte vad de betalar',
-      'ex3-body':            'Varannan svensk fondsparare vet inte vad de betalar i avgift — trots att avgiften finns öppet redovisad i fondernas faktablad. Avgiften syns inte på kontoutdraget, bara stilla i bakgrunden varje år. (Källa: Finansinspektionen)',
-      'balance-label':       'Perspektiv',
-      'balance-title':       'Avgifter är inte alltid fel — men sällan värda det',
-      'balance-body':        'En högre avgift kan vara värd det om fonden faktiskt slår sitt index efter avgift. Men historiskt lyckas mycket få aktivt förvaltade fonder med det konsekvent över tid. Problemet är avgifter som inte motsvaras av bättre avkastning. Titta alltid på avkastning efter avgift — inte bara marknadsstrategi eller fondens namn.',
-      'disclaimer':          'Ungefärliga siffror för illustration, baserade på bl.a. Finansinspektionens jämförelsetal och offentlig fondrapportering. Kalkylatorn simulerar schablonmässig ränte-på-ränte-tillväxt. Inte investeringsrådgivning.',
+      'lbl-expenses':        'Årliga utgifter',
+      'preset-prompt':       'Vet du inte? Välj en typisk svensk profil:',
+      'preset-frugal':       'Sparsam singel',
+      'preset-single':       'Typisk singel',
+      'preset-couple':       'Par',
+      'preset-family':       'Familj',
+      'preset-note':         'Ungefärliga årliga utgifter inklusive boende, baserat på bl.a. Konsumentverkets referensvärden. Boendekostnader varierar mycket — justera efter din situation.',
+      'lbl-return':          'Avkastning per år (före inflation)',
+      'lbl-inflation':       'Inflation per år',
+      'lbl-wr':              'Uttagsprocent',
+      'res-age-label':       'Ekonomiskt oberoende vid ålder',
+      'res-target-label':    'Ditt FIRE-mål',
+      'res-realreturn-label':'Realavkastning / år',
+      'chart-note':          'Värden i dagens penningvärde (realt, inflationsjusterat).',
+      'share-btn':           'Dela',
+      'share-copied':        'Länken kopierad!',
+      'chart-portfolio':     'Ditt kapital',
+      'chart-target':        'FIRE-mål',
+      'chart-age':           'Ålder',
+      'res-years-sub':       (years) => `om cirka ${years} år`,
+      'res-sub-already':     'redan idag',
+      'res-sub-never':       'ej inom räckhåll',
+      'result-sentence':     (monthly, years, age, target, wr, expenses) =>
+        `Med ${monthly} i månaden når du ekonomiskt oberoende om cirka ${years} år — vid ${age} års ålder. Då har du ${target}, vilket vid ${wr} uttag ger ${expenses} per år att leva på.`,
+      'sentence-already':    'Du är redan ekonomiskt oberoende med dessa siffror — ditt kapital täcker redan dina årliga utgifter vid vald uttagsprocent.',
+      'sentence-never':      'Med dessa siffror nås inte målet i tid — prova att öka månadssparandet eller sänka utgifterna.',
+      'facts-title':         'Bra att veta om FIRE',
+      'facts-sub':           'Två saker att ha i bakhuvudet.',
+      'ex1-label':           'Tumregel',
+      'ex1-title':           '4 %-regeln',
+      'ex1-body':            'En vanlig tumregel: om du varje år tar ut 4 % av ditt kapital antas det räcka livet ut. Det motsvarar att målet är ungefär 25 gånger dina årliga utgifter. Regeln bygger på historisk amerikansk data och är en förenkling — inte en garanti.',
+      'ex2-label':           'Osäkerhet',
+      'ex2-title':           'Antagandena är osäkra',
+      'ex2-body':            'Framtida avkastning och inflation går inte att veta i förväg. Beräkningen använder real (inflationsjusterad) avkastning, så att målbeloppet är i dagens penningvärde. Verkligheten varierar år för år — se det här som en fingervisning, inte ett facit.',
+      'disclaimer':          'Förenklad, ungefärlig beräkning för illustration. Bygger på antaganden om avkastning, inflation och uttag som inte är garanterade. 4%-regeln är en tumregel, inte en garanti. Inte investeringsrådgivning.',
       'footer-about-h':      'Om Decenniet',
       'footer-about':        'Decenniet är en oberoende sida som vill göra privatekonomi begriplig — hur sparande växer, vad avgifter kostar och hur räntor och skulder påverkar vanliga hushåll. Alla siffror är ungefärliga och för illustration, inte investeringsrådgivning.',
       'footer-privacy-h':    'Din integritet',
@@ -984,42 +1128,56 @@
       'footer-disclaimer':   'Decenniet ger allmän information, inte personlig rådgivning. Kontakta en licensierad rådgivare för beslut om din ekonomi.',
     },
     en: {
-      'page-title':          'Decenniet – Fee cost',
+      'page-title':          'Decenniet – FIRE',
       'nav-home':            'Investing',
       'nav-housing':         'Housing',
       'nav-fees':            'Fees',
       'nav-fire':            'FIRE',
-      'hero-label':          'Fund fees',
-      'hero-title':          'What do fees actually cost you?',
-      'hero-sub':            'A small fee difference looks harmless — but compounding turns it into an enormous drag on your long-term wealth.',
-      'calc-title':          'Calculate your fee cost',
-      'calc-sub':            'Adjust amounts and fees — watch the gap grow.',
-      'lbl-section-savings': 'Your savings',
-      'lbl-section-fees':    'Fees to compare',
-      'lbl-start':           'Initial amount',
-      'lbl-monthly':         'Monthly savings',
-      'lbl-years':           'Time horizon',
-      'lbl-return':          'Annual return',
-      'lbl-fee-a':           'Fee A – Actively managed',
-      'lbl-fee-b':           'Fee B – Index fund',
-      'res-diff-label':      'Cost of fees (difference in final value)',
-      'res-with-a':          'With fee A',
-      'res-with-b':          'With fee B',
-      'chart-label-a':       'Actively managed fund',
-      'chart-label-b':       'Index fund',
-      'chart-yr':            'Yr',
-      'meta-invested':       (amt) => `Total invested: ${amt}`,
-      'diff-sub':            (years, feeA, feeB) => `Cost of fee gap (${fmtPct(feeA)} vs ${fmtPct(feeB)}) over ${years} years`,
-      'result-sentence':     (years, diff) => `Over ${years} years, the higher fee costs you roughly ${diff} — money that goes to the fund company instead of you.`,
-      'facts-title':         'What do the numbers say?',
-      'facts-sub':           'Two things worth knowing about fund fees.',
-      'ex3-label':           'Awareness',
-      'ex3-title':           "Half don't know what they pay",
-      'ex3-body':            "Half of Swedish fund investors don't know what they're paying in fees — even though the fee is clearly disclosed in the fund's fact sheet. It doesn't show on your statement; it just quietly compounds in the background. (Source: Finansinspektionen)",
-      'balance-label':       'Perspective',
-      'balance-title':       "Fees aren't always wrong — but rarely worth it",
-      'balance-body':        "A higher fee can be worth it if the fund actually beats its benchmark after fees. But historically, very few actively managed funds manage this consistently over time. The problem is fees that aren't matched by better returns. Always look at return after fees — not just the investment strategy or the fund's name.",
-      'disclaimer':          "Figures are approximate, based on Finansinspektionen's comparison data and public fund reporting. The calculator uses simplified compound growth. Not investment advice.",
+      'hero-label':          'FIRE',
+      'hero-title':          'FIRE – when can you stop working?',
+      'hero-sub':            'FIRE means Financial Independence, Retire Early — saving and investing until your returns can cover your expenses, so you become financially independent. Work out when you could get there.',
+      'calc-title':          'Work out your FIRE age',
+      'calc-sub':            'Adjust your assumptions — see when your capital is enough.',
+      'lbl-section-you':     'You and your saving',
+      'lbl-section-assumptions': 'Assumptions',
+      'lbl-age':             'Current age',
+      'lbl-savings':         'Current savings',
+      'lbl-monthly':         'Monthly saving',
+      'lbl-expenses':        'Annual expenses',
+      'preset-prompt':       'Not sure? Pick a typical Swedish profile:',
+      'preset-frugal':       'Frugal single',
+      'preset-single':       'Typical single',
+      'preset-couple':       'Couple',
+      'preset-family':       'Family',
+      'preset-note':         'Approximate annual expenses including housing, based partly on the Swedish Consumer Agency reference values. Housing costs vary a lot — adjust to your own situation.',
+      'lbl-return':          'Annual return (before inflation)',
+      'lbl-inflation':       'Annual inflation',
+      'lbl-wr':              'Withdrawal rate',
+      'res-age-label':       'Financially independent at age',
+      'res-target-label':    'Your FIRE target',
+      'res-realreturn-label':'Real return / year',
+      'chart-note':          "Values in today's money (real, inflation-adjusted).",
+      'share-btn':           'Share',
+      'share-copied':        'Link copied!',
+      'chart-portfolio':     'Your capital',
+      'chart-target':        'FIRE target',
+      'chart-age':           'Age',
+      'res-years-sub':       (years) => `in about ${years} years`,
+      'res-sub-already':     'already today',
+      'res-sub-never':       'not within reach',
+      'result-sentence':     (monthly, years, age, target, wr, expenses) =>
+        `Saving ${monthly} a month, you reach financial independence in about ${years} years — at age ${age}. By then you'll have ${target}, which at a ${wr} withdrawal rate gives you ${expenses} a year to live on.`,
+      'sentence-already':    'You are already financially independent with these numbers — your capital already covers your annual expenses at the chosen withdrawal rate.',
+      'sentence-never':      "With these numbers the goal isn't reached in time — try increasing your monthly saving or lowering your expenses.",
+      'facts-title':         'Good to know about FIRE',
+      'facts-sub':           'Two things to keep in mind.',
+      'ex1-label':           'Rule of thumb',
+      'ex1-title':           'The 4% rule',
+      'ex1-body':            'A common rule of thumb: withdrawing 4% of your capital each year is assumed to last a lifetime. That means a target of roughly 25× your annual expenses. The rule is based on historical US data and is a simplification — not a guarantee.',
+      'ex2-label':           'Uncertainty',
+      'ex2-title':           'The assumptions are uncertain',
+      'ex2-body':            "Future returns and inflation can't be known in advance. The calculation uses real (inflation-adjusted) returns so the target is in today's money. Reality varies year to year — treat this as a rough guide, not a verdict.",
+      'disclaimer':          'Simplified, approximate calculation for illustration. It relies on assumptions about returns, inflation and withdrawals that are not guaranteed. The 4% rule is a rule of thumb, not a guarantee. Not investment advice.',
       'footer-about-h':      'About Decenniet',
       'footer-about':        'Decenniet is an independent site that aims to make personal finance easy to understand — how savings grow, what fees cost, and how interest rates and debt affect ordinary households. All figures are approximate and for illustration, not investment advice.',
       'footer-privacy-h':    'Your privacy',
@@ -1039,7 +1197,16 @@
   };
   let currentCurrency = 'SEK';
   try { currentCurrency = localStorage.getItem('decennium-curr') || 'SEK'; } catch(e) {}
-  let feeChartInst = null;
+  let fireChartInst = null;
+
+  // ── Annual-expenses quick-pick presets (approximate — edit freely) ─
+  // Typical Swedish annual expenses incl. housing, per profile.
+  const FIRE_PRESETS = {
+    frugal: 180000,   // Sparsam singel / Frugal single
+    single: 240000,   // Typisk singel / Typical single
+    couple: 360000,   // Par / Couple
+    family: 480000,   // Familj / Family
+  };
 
   // ── i18n ──────────────────────────────────────────────────────────
   function T(key, ...args) {
@@ -1054,7 +1221,8 @@
       const v = STRINGS[currentLang][k];
       if (typeof v === 'string') el.textContent = v;
     });
-    updateFeeCalc();
+    refreshTags();
+    updateFire();
   }
 
   // ── Format ────────────────────────────────────────────────────────
@@ -1078,23 +1246,42 @@
     return cur.pos === 'before' ? cur.symbol + s : s + ' ' + cur.monthUnit;
   }
   function fmtPct(v) {
-    return (+v).toLocaleString('sv-SE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' %';
+    return (+v).toLocaleString('sv-SE', {minimumFractionDigits: 0, maximumFractionDigits: 1}) + ' %';
   }
 
-  // ── Simulation ────────────────────────────────────────────────────
-  function calcFeeScenario(start, monthly, years, annualReturn, annualFee) {
-    const net = (annualReturn - annualFee) / 100;
-    const mr = Math.pow(1 + net, 1 / 12) - 1;
-    let v = start;
-    const snaps = [v];
-    for (let y = 1; y <= years; y++) {
-      for (let m = 0; m < 12; m++) v = v * (1 + mr) + monthly;
-      snaps.push(v);
+  // ── FIRE simulation (real / inflation-adjusted) ───────────────────
+  function simulateFIRE(savings, monthly, annualExpenses, retPct, inflPct, wrPct, age) {
+    const target     = annualExpenses / (wrPct / 100);
+    const realAnnual = (1 + retPct / 100) / (1 + inflPct / 100) - 1;
+    const mr         = Math.pow(1 + realAnnual, 1 / 12) - 1;
+    const horizon    = Math.max(1, 100 - age);   // simulate at most until age 100
+    let v = savings;
+    const yearly = [v];                          // value at each year, in today's money
+    let monthsToTarget = (v >= target) ? 0 : null;
+    let totalMonths = 0;
+    for (let y = 1; y <= horizon; y++) {
+      for (let m = 0; m < 12; m++) {
+        v = v * (1 + mr) + monthly;
+        totalMonths++;
+        if (monthsToTarget === null && v >= target) monthsToTarget = totalMonths;
+      }
+      if (!isFinite(v)) break;                    // guard runaway growth → Infinity
+      yearly.push(v);
+      if (monthsToTarget !== null) break;        // stop the year after target is hit
     }
-    return snaps;
+    return {
+      target,
+      realAnnual,
+      reached: monthsToTarget !== null,
+      monthsToTarget,
+      yearsToFire: monthsToTarget !== null ? monthsToTarget / 12 : null,
+      yearly,
+      horizon,
+    };
   }
 
-  // ── Sliders — home page approach: --pct on runnable-track ─────────
+  // ── Sliders ───────────────────────────────────────────────────────
+  const tagRefreshers = [];
   function updateTrack(slider) {
     const pct = ((+slider.value - +slider.min) / (+slider.max - +slider.min)) * 100;
     slider.style.setProperty('--pct', pct + '%');
@@ -1103,45 +1290,41 @@
     const slider = document.getElementById(sliderId);
     const num    = document.getElementById(numId);
     const tag    = tagId ? document.getElementById(tagId) : null;
-    const refresh = () => {
-      if (tag) tag.textContent = tagFn(+slider.value);
-      updateTrack(slider);
-      onChange();
-    };
+    const setTag = () => { if (tag) tag.textContent = tagFn(+slider.value); };
+    const refresh = () => { setTag(); updateTrack(slider); onChange(); };
     slider.addEventListener('input', () => { num.value = slider.value; refresh(); });
     num.addEventListener('input', () => {
       let v = parseFloat(num.value);
       if (isNaN(v)) return;
       v = Math.min(Math.max(v, +slider.min), +slider.max);
-      num.value = v; slider.value = v; refresh();
+      slider.value = v; refresh();
     });
     num.addEventListener('change', () => {
       let v = parseFloat(num.value);
-      if (isNaN(v)) return;
+      if (isNaN(v)) { v = +slider.min; }
       v = Math.min(Math.max(v, +slider.min), +slider.max);
       num.value = v; slider.value = v; refresh();
     });
     updateTrack(slider);
-    if (tag) tag.textContent = tagFn(+slider.value);
+    setTag();
+    tagRefreshers.push(setTag);
   }
 
   // ── Logarithmic slider (amount fields) — slider is a 0–1000 position
-  // track mapped log-scale onto minLog..maxVal, so the default value
-  // lands mid-track and everyday lower values get plenty of room.
-  // The number field holds the real value; calc reads that.
+  // track mapped log-scale onto minLog..maxVal, so mid-range everyday
+  // values get most of the track. The number field holds the real value.
   function bindLogPair(sliderId, numId, tagId, maxVal, minLog, tagFn, onChange) {
-    const slider = document.getElementById(sliderId);
-    const num    = document.getElementById(numId);
-    const tag    = tagId ? document.getElementById(tagId) : null;
-    const logMin  = Math.log10(minLog);
-    const logMax  = Math.log10(maxVal);
-    const L_STEPS = 1000;
+    const slider  = document.getElementById(sliderId);
+    const num      = document.getElementById(numId);
+    const tag       = tagId ? document.getElementById(tagId) : null;
+    const logMin    = Math.log10(minLog);
+    const logMax    = Math.log10(maxVal);
+    const L_STEPS   = 1000;
     function snapNice(v) {
       if (v >= 1000000) return Math.round(v / 50000) * 50000;
       if (v >= 100000)  return Math.round(v / 10000) * 10000;
       if (v >= 10000)   return Math.round(v / 1000)  * 1000;
-      if (v >= 1000)    return Math.round(v / 100)   * 100;
-      return Math.round(v / 50) * 50;
+      return Math.round(v / 100) * 100;
     }
     function sliderToValue(pos) {
       if (pos <= 0) return 0;
@@ -1175,74 +1358,83 @@
     });
     updateTrack(slider);
     setTag();
+    tagRefreshers.push(setTag);
   }
+  function refreshTags() { tagRefreshers.forEach(f => f()); }
 
-  // ── Update calc ───────────────────────────────────────────────────
-  function updateFeeCalc() {
-    const start   = Math.max(0, +document.getElementById('fcStart').value   || 0);
-    const monthly = Math.max(0, +document.getElementById('fcMonthly').value || 0);
-    const years   = Math.max(1, +document.getElementById('fcYears').value   || 1);
-    const ret     = Math.max(0, +document.getElementById('fcReturn').value  || 0);
-    const feeA    = Math.max(0, +document.getElementById('fcFeeA').value    || 0);
-    const feeB    = Math.max(0, +document.getElementById('fcFeeB').value    || 0);
+  // ── Update ────────────────────────────────────────────────────────
+  function val(id) { return parseFloat(document.getElementById(id).value) || 0; }
 
-    const vA     = calcFeeScenario(start, monthly, years, ret, feeA);
-    const vB     = calcFeeScenario(start, monthly, years, ret, feeB);
-    const finalA = vA[years];
-    const finalB = vB[years];
-    const diff   = finalB - finalA;
-    const totalIn = start + monthly * 12 * years;
+  function updateFire() {
+    const age      = Math.min(Math.max(Math.round(val('fireAge')), 18), 65);
+    const savings  = Math.max(0, val('fireSavings'));
+    const monthly  = Math.max(0, val('fireMonthly'));
+    const expenses = Math.max(1, val('fireExpenses'));
+    const ret      = Math.max(0, val('fireReturn'));
+    const infl     = Math.max(0, val('fireInflation'));
+    const wr       = Math.max(0.1, val('fireWr'));
 
-    document.getElementById('fcResA').textContent = fmtAmt(finalA);
-    document.getElementById('fcResB').textContent = fmtAmt(finalB);
-    document.getElementById('fcDiff').textContent = fmtAmt(Math.max(0, diff));
-    document.getElementById('fcDiffSub').textContent = T('diff-sub', years, feeA, feeB);
-    document.getElementById('fcMetaInvested').textContent = T('meta-invested', fmtAmt(totalIn));
-    document.getElementById('fcSentence').textContent = T('result-sentence', years, fmtAmt(Math.max(0, diff)));
+    const sim = simulateFIRE(savings, monthly, expenses, ret, infl, wr, age);
 
-    renderFeeChart(vA, vB, years, feeA, feeB);
+    document.getElementById('fireTarget').textContent     = fmtAmt(sim.target);
+    document.getElementById('fireRealReturn').textContent = fmtPct(sim.realAnnual * 100);
+
+    const ageOut   = document.getElementById('fireAgeOut');
+    const yearsSub = document.getElementById('fireYearsSub');
+    const sentence = document.getElementById('fireSentence');
+    sentence.classList.remove('fee-sentence--warn');
+
+    if (!sim.reached) {
+      ageOut.textContent   = '100+';
+      yearsSub.textContent = T('res-sub-never');
+      sentence.textContent = T('sentence-never');
+      sentence.classList.add('fee-sentence--warn');
+    } else if (sim.monthsToTarget === 0) {
+      ageOut.textContent   = age;
+      yearsSub.textContent = T('res-sub-already');
+      sentence.textContent = T('sentence-already');
+    } else {
+      const years    = Math.max(1, Math.round(sim.yearsToFire));
+      const ageAtFire = age + years;
+      ageOut.textContent   = ageAtFire;
+      yearsSub.textContent = T('res-years-sub', years);
+      sentence.textContent = T('result-sentence',
+        fmtAmt(monthly), years, ageAtFire, fmtAmt(sim.target), fmtPct(wr), fmtAmt(expenses));
+    }
+
+    renderFireChart(sim, age);
+    syncPresetHighlight();
   }
 
   // ── Chart — transparent canvas on page background ─────────────────
-  function renderFeeChart(vA, vB, years, feeA, feeB) {
+  function renderFireChart(sim, age) {
+    const canvas = document.getElementById('fireChartCanvas');
+    if (!canvas) return;
     const isDark   = document.documentElement.getAttribute('data-theme') === 'dark';
     const gridClr  = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(13,59,56,0.07)';
     const tickClr  = isDark ? '#9ea3ac' : '#8a9b9b';
-    const colorA   = isDark ? '#e05c4a' : '#c0392b';
-    const colorB   = isDark ? '#5cc8c0' : '#0d3b38';
-    const fillA    = isDark ? 'rgba(224,92,74,0.10)' : 'rgba(192,57,43,0.07)';
-    const fillAbove= isDark ? 'rgba(224,92,74,0.12)' : 'rgba(192,57,43,0.08)';
+    const lineClr  = isDark ? '#5cc8c0' : '#0d3b38';
+    const fillClr  = isDark ? 'rgba(92,200,192,0.12)' : 'rgba(13,59,56,0.08)';
+    const targetClr= isDark ? '#7bc0e8' : '#2e7fb0';
 
-    const step   = Math.ceil(years / Math.min(years, 10));
-    const labels = [];
-    for (let y = 1; y <= years; y++) {
-      labels.push(y % step === 0 || y === years ? T('chart-yr') + ' ' + y : '');
-    }
+    const labels    = sim.yearly.map((_, i) => age + i);
+    // Sanitize: never feed NaN/Infinity to Chart.js (breaks scale + curve)
+    const portfolio = sim.yearly.map(v => (isFinite(v) ? v : null));
+    const safeTarget = isFinite(sim.target) ? sim.target : null;
+    const targetArr = sim.yearly.map(() => safeTarget);
+    const labelP    = T('chart-portfolio');
+    const labelT    = T('chart-target');
+    const axisAge   = T('chart-age');
 
-    const dataA  = vA.slice(1);
-    const dataB  = vB.slice(1);
-    const labelA = T('chart-label-a') + ' (' + fmtPct(feeA) + ')';
-    const labelB = T('chart-label-b') + ' (' + fmtPct(feeB) + ')';
-
-    const canvas = document.getElementById('feeChartCanvas');
-    if (!canvas) return;
-
-    // Patch the SAME chart instance in place — never destroy/recreate, so the
-    // line animates smoothly between values instead of re-growing from the x-axis.
-    if (feeChartInst) {
-      const oldLen = feeChartInst.data.labels.length;
-      feeChartInst.data.labels = labels;
-      const dsA = feeChartInst.data.datasets[0];
-      const dsB = feeChartInst.data.datasets[1];
-      dsA.data = dataA;
-      dsA.label = labelA;
-      dsA.borderColor = colorA;
-      dsA.backgroundColor = fillA;
-      dsA.fill = { target: 1, above: fillAbove, below: 'transparent' };
-      dsB.data = dataB;
-      dsB.label = labelB;
-      dsB.borderColor = colorB;
-      const opt = feeChartInst.options;
+    if (fireChartInst) {
+      fireChartInst.data.labels = labels;
+      const dsP = fireChartInst.data.datasets[0];
+      const dsT = fireChartInst.data.datasets[1];
+      dsP.data = portfolio; dsP.label = labelP;
+      dsP.borderColor = lineClr; dsP.backgroundColor = fillClr;
+      dsT.data = targetArr; dsT.label = labelT;
+      dsT.borderColor = targetClr;
+      const opt = fireChartInst.options;
       opt.plugins.legend.labels.color = tickClr;
       opt.plugins.tooltip.backgroundColor = isDark ? '#363a3f' : '#fff';
       opt.plugins.tooltip.borderColor     = isDark ? '#474c53' : '#dde8e7';
@@ -1250,44 +1442,45 @@
       opt.plugins.tooltip.bodyColor       = isDark ? '#9ea3ac' : '#7a8b8b';
       opt.scales.x.grid.color  = gridClr;
       opt.scales.x.ticks.color = tickClr;
+      opt.scales.x.title.text  = axisAge;
+      opt.scales.x.title.color = tickClr;
       opt.scales.y.grid.color  = gridClr;
       opt.scales.y.ticks.color = tickClr;
-      // Skip animation when the point count changes (Time horizon) to avoid a
-      // glitch; otherwise animate smoothly (interpolates, never dips to zero).
-      feeChartInst.update(oldLen !== labels.length ? 'none' : undefined);
+      fireChartInst.update('none');   // instant, flicker-free on every input change
       return;
     }
 
-    feeChartInst = new Chart(canvas.getContext('2d'), {
+    fireChartInst = new Chart(canvas.getContext('2d'), {
       type: 'line',
       data: {
         labels,
         datasets: [
           {
-            label: labelA,
-            data: dataA,
-            borderColor: colorA,
-            backgroundColor: fillA,
-            fill: {
-              target: 1,
-              above: fillAbove,
-              below: 'transparent'
-            },
-            borderWidth: 2,
-            tension: 0.35,
+            label: labelP,
+            data: portfolio,
+            borderColor: lineClr,
+            backgroundColor: fillClr,
+            fill: true,
+            borderWidth: 2.5,
+            cubicInterpolationMode: 'monotone',  // smooth but never overshoots/dips
+            tension: 0.32,
+            spanGaps: true,
             pointRadius: 0,
             pointHoverRadius: 5,
+            order: 2,
           },
           {
-            label: labelB,
-            data: dataB,
-            borderColor: colorB,
+            label: labelT,
+            data: targetArr,
+            borderColor: targetClr,
             backgroundColor: 'transparent',
             fill: false,
-            borderWidth: 2.5,
-            tension: 0.35,
+            borderWidth: 1.5,
+            borderDash: [6, 5],
+            tension: 0,
             pointRadius: 0,
-            pointHoverRadius: 5,
+            pointHoverRadius: 0,
+            order: 1,
           }
         ]
       },
@@ -1295,6 +1488,7 @@
         responsive: true,
         maintainAspectRatio: false,
         animation: { duration: 180 },
+        interaction: { mode: 'index', intersect: false },
         plugins: {
           legend: {
             display: true,
@@ -1314,7 +1508,8 @@
             titleColor: isDark ? '#e8e9eb' : '#1a2e2e',
             bodyColor: isDark ? '#9ea3ac' : '#7a8b8b',
             callbacks: {
-              label: (ctx) => '  ' + ctx.dataset.label.split(' (')[0] + ': ' + fmtAmt(ctx.parsed.y)
+              title: (items) => (currentLang === 'sv' ? 'Ålder ' : 'Age ') + items[0].label,
+              label: (ctx) => '  ' + ctx.dataset.label + ': ' + fmtAmt(ctx.parsed.y)
             }
           }
         },
@@ -1322,9 +1517,11 @@
           x: {
             grid: { color: gridClr },
             border: { display: false },
-            ticks: { color: tickClr, maxRotation: 0, font: { size: 11, family: '"DM Sans",sans-serif' } }
+            title: { display: true, text: axisAge, color: tickClr, font: { size: 11, family: '"DM Sans",sans-serif' } },
+            ticks: { color: tickClr, maxRotation: 0, autoSkip: true, maxTicksLimit: 10, font: { size: 11, family: '"DM Sans",sans-serif' } }
           },
           y: {
+            beginAtZero: true,
             grid: { color: gridClr },
             border: { display: false },
             ticks: {
@@ -1356,18 +1553,7 @@
       localStorage.setItem('decennium-theme', 'dark');
       themeToggle.setAttribute('aria-checked', 'true');
     }
-    // Redraw chart with new colors
-    const start   = Math.max(0, +document.getElementById('fcStart').value   || 0);
-    const monthly = Math.max(0, +document.getElementById('fcMonthly').value || 0);
-    const years   = Math.max(1, +document.getElementById('fcYears').value   || 1);
-    const ret     = Math.max(0, +document.getElementById('fcReturn').value  || 0);
-    const feeA    = Math.max(0, +document.getElementById('fcFeeA').value    || 0);
-    const feeB    = Math.max(0, +document.getElementById('fcFeeB').value    || 0);
-    renderFeeChart(
-      calcFeeScenario(start, monthly, years, ret, feeA),
-      calcFeeScenario(start, monthly, years, ret, feeB),
-      years, feeA, feeB
-    );
+    updateFire();   // redraw chart with new theme colors
   });
 
   // ── Language dropdown ─────────────────────────────────────────────
@@ -1427,12 +1613,8 @@
         updateCurrDropdown(currentCurrency);
         btn.setAttribute('aria-expanded', 'false');
         menu.hidden = true;
-        updateFeeCalc();
-        // Re-trigger slider tag displays
-        ['fcStartSlider','fcMonthlySlider'].forEach(id => {
-          const sl = document.getElementById(id);
-          if (sl) sl.dispatchEvent(new Event('input'));
-        });
+        refreshTags();
+        updateFire();
       });
     });
     document.addEventListener('click', e => {
@@ -1443,38 +1625,6 @@
     });
   })();
 
-  // ── Animated gradient blobs (same approach as home page) ──────────
-  (function initBlobs() {
-    const layer = document.getElementById('blobLayer');
-    if (!layer) return;
-    const configs = [
-      { color: '#164563', size: 520, top: '5%',  left: '10%', dur: 22 },
-      { color: '#f8c8d8', size: 480, top: '40%', left: '55%', dur: 27 },
-      { color: '#F3EADB', size: 560, top: '60%', left: '5%',  dur: 19 },
-      { color: '#a03253', size: 340, top: '10%', left: '65%', dur: 31 },
-      { color: '#e6ded2', size: 450, top: '70%', left: '45%', dur: 24 },
-    ];
-    configs.forEach(cfg => {
-      const el = document.createElement('div');
-      el.className = 'blob';
-      el.style.cssText =
-        'width:' + cfg.size + 'px;height:' + cfg.size + 'px;' +
-        'top:' + cfg.top + ';left:' + cfg.left + ';' +
-        'background:' + cfg.color + ';' +
-        'animation-duration:' + cfg.dur + 's;' +
-        'animation-delay:-' + (Math.floor(Math.random() * cfg.dur * 10) / 10) + 's;';
-      el.style.setProperty('--tx1', (Math.random() * 2 - 1).toFixed(3));
-      el.style.setProperty('--ty1', (Math.random() * 2 - 1).toFixed(3));
-      el.style.setProperty('--tx2', (Math.random() * 2 - 1).toFixed(3));
-      el.style.setProperty('--ty2', (Math.random() * 2 - 1).toFixed(3));
-      el.style.setProperty('--tx3', (Math.random() * 2 - 1).toFixed(3));
-      el.style.setProperty('--ty3', (Math.random() * 2 - 1).toFixed(3));
-      el.style.setProperty('--tx4', (Math.random() * 2 - 1).toFixed(3));
-      el.style.setProperty('--ty4', (Math.random() * 2 - 1).toFixed(3));
-      layer.appendChild(el);
-    });
-  })();
-
   // ── Navigate with fade ────────────────────────────────────────────
   function navigateTo(url) {
     document.body.style.transition = 'opacity 0.3s ease';
@@ -1482,20 +1632,169 @@
     setTimeout(() => { window.location.href = url; }, 300);
   }
 
-  // ── Bind all sliders ──────────────────────────────────────────────
-  bindLogPair('fcStartSlider',   'fcStart',   'fcStartTag',   5000000, 50000, tagAmt,   updateFeeCalc);
-  bindLogPair('fcMonthlySlider', 'fcMonthly', 'fcMonthlyTag', 50000,   500,   tagAmtMo, updateFeeCalc);
-  bindPair('fcYearsSlider',   'fcYears',   'fcYearsTag',
-    v => v + (currentLang === 'sv' ? ' år' : ' yr'), updateFeeCalc);
-  bindPair('fcReturnSlider',  'fcReturn',  'fcReturnTag',
-    v => fmtPct(+v), updateFeeCalc);
-  bindPair('fcFeeASlider',    'fcFeeA',    'fcFeeATag',
-    v => fmtPct(+v), updateFeeCalc);
-  bindPair('fcFeeBSlider',    'fcFeeB',    'fcFeeBTag',
-    v => fmtPct(+v), updateFeeCalc);
+  // ── Return slider: linear 0–20 % (10 % sits at the midpoint) ───────
+  // The number field accepts up to 100 %; values above 20 % pin the
+  // slider at its max while the field shows the real typed value.
+  function bindReturnPair() {
+    const slider  = document.getElementById('fireReturnSlider');
+    const num      = document.getElementById('fireReturn');
+    const tag      = document.getElementById('fireReturnTag');
+    const SLIDERMAX = 20, NUMMAX = 100;
+    function setTag() { if (tag) tag.textContent = fmtPct(parseFloat(num.value) || 0); }
+    slider.addEventListener('input', () => {
+      num.value = slider.value;
+      setTag(); updateTrack(slider); updateFire();
+    });
+    function fromNum() {
+      let v = parseFloat(num.value);
+      if (isNaN(v)) return;
+      v = Math.min(NUMMAX, Math.max(0, v));
+      num.value = v;
+      slider.value = Math.min(SLIDERMAX, v);
+      setTag(); updateTrack(slider); updateFire();
+    }
+    num.addEventListener('input',  fromNum);
+    num.addEventListener('change', fromNum);
+    tagRefreshers.push(setTag);
+    updateTrack(slider);
+    setTag();
+  }
+
+  // ── Bind sliders ──────────────────────────────────────────────────
+  bindPair('fireAgeSlider',       'fireAge',       'fireAgeTag',
+    v => v + (currentLang === 'sv' ? ' år' : ' yr'), updateFire);
+  bindLogPair('fireSavingsSlider', 'fireSavings', 'fireSavingsTag', 5000000, 20000, tagAmt, updateFire);
+  bindLogPair('fireMonthlySlider', 'fireMonthly', 'fireMonthlyTag', 20000, 500, tagAmtMo, updateFire);
+  bindPair('fireExpensesSlider',  'fireExpenses',  'fireExpensesTag',  tagAmt,   updateFire);
+  bindReturnPair();
+  bindPair('fireInflationSlider', 'fireInflation', 'fireInflationTag', v => fmtPct(+v), updateFire);
+  bindPair('fireWrSlider',        'fireWr',        'fireWrTag',        v => fmtPct(+v), updateFire);
+
+  // ── Annual-expenses preset chips ──────────────────────────────────
+  function syncPresetHighlight() {
+    const row = document.getElementById('firePresetRow');
+    if (!row) return;
+    const cur = parseFloat(document.getElementById('fireExpenses').value);
+    row.querySelectorAll('.fire-preset-chip').forEach(chip => {
+      const on = FIRE_PRESETS[chip.dataset.preset] === cur;
+      chip.classList.toggle('is-active', on);
+      chip.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+  }
+  (function bindPresets() {
+    const row     = document.getElementById('firePresetRow');
+    const expNum    = document.getElementById('fireExpenses');
+    const expSlider = document.getElementById('fireExpensesSlider');
+    const expTag    = document.getElementById('fireExpensesTag');
+    if (!row) return;
+    row.querySelectorAll('.fire-preset-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const v = FIRE_PRESETS[chip.dataset.preset];
+        if (v == null) return;
+        expNum.value    = v;                                              // exact preset in the field
+        expSlider.value = Math.min(+expSlider.max, Math.max(+expSlider.min, v)); // clamp to slider range
+        expTag.textContent = tagAmt(v);
+        updateTrack(expSlider);
+        updateFire();
+      });
+    });
+  })();
+
+  // ── Info tooltip — hover/focus via CSS; tap-to-toggle for touch ────
+  (function bindInfoTooltip() {
+    const info = document.getElementById('firePresetInfo');
+    const btn  = document.getElementById('firePresetInfoBtn');
+    if (!info || !btn) return;
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = info.classList.toggle('is-open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    document.addEventListener('click', (e) => {
+      if (!info.contains(e.target)) {
+        info.classList.remove('is-open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        info.classList.remove('is-open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  })();
+
+  // ── Shareable link ────────────────────────────────────────────────
+  function fireBuildShareUrl() {
+    const p = new URLSearchParams();
+    p.set('age',      document.getElementById('fireAge').value);
+    p.set('savings',  document.getElementById('fireSavings').value);
+    p.set('monthly',  document.getElementById('fireMonthly').value);
+    p.set('expenses', document.getElementById('fireExpenses').value);
+    p.set('return',   document.getElementById('fireReturn').value);
+    p.set('infl',     document.getElementById('fireInflation').value);
+    p.set('wd',       document.getElementById('fireWr').value);
+    p.set('cur',      currentCurrency);
+    return location.origin + location.pathname + '?' + p.toString();
+  }
+  function fireApplyShareParams() {
+    const p = new URLSearchParams(location.search);
+    if (![...p.keys()].length) return;
+    // Currency first so tags format in the shared currency
+    if (p.has('cur') && CURRENCIES[p.get('cur')]) {
+      currentCurrency = p.get('cur');
+      try { localStorage.setItem('decennium-curr', currentCurrency); } catch (e) {}
+      updateCurrDropdown(currentCurrency);
+    }
+    // Each input: set the number field + dispatch 'input' so the binding
+    // repositions the slider, refreshes the tag and recalculates.
+    [['age','fireAge'], ['savings','fireSavings'], ['monthly','fireMonthly'],
+     ['expenses','fireExpenses'], ['return','fireReturn'], ['infl','fireInflation'],
+     ['wd','fireWr']].forEach(([param, id]) => {
+      if (!p.has(param)) return;
+      const v = parseFloat(p.get(param));
+      if (!isFinite(v)) return;          // missing/invalid → keep default
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.value = v;
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  }
+  (function bindFireShare() {
+    const btn     = document.getElementById('fireShareBtn');
+    const confirm = document.getElementById('fireShareConfirm');
+    const field   = document.getElementById('fireShareField');
+    if (!btn) return;
+    let tmr = null;
+    function flash() {
+      confirm.hidden = false;
+      confirm.classList.add('show');
+      clearTimeout(tmr);
+      tmr = setTimeout(() => {
+        confirm.classList.remove('show');
+        setTimeout(() => { confirm.hidden = true; }, 220);
+      }, 2200);
+    }
+    function reveal(url) {
+      field.hidden = false;
+      field.value = url;
+      field.focus();
+      field.select();
+    }
+    btn.addEventListener('click', async () => {
+      const url = fireBuildShareUrl();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try { await navigator.clipboard.writeText(url); flash(); return; }
+        catch (e) { /* fall through to manual */ }
+      }
+      reveal(url);
+      try { if (document.execCommand('copy')) flash(); } catch (e) {}
+    });
+  })();
 
   // ── Init ──────────────────────────────────────────────────────────
   window.addEventListener('load', () => document.body.classList.add('page-loaded'));
+  fireApplyShareParams();
   applyLang();
   </script>
 <script>
