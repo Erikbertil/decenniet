@@ -471,15 +471,16 @@
         grid-template-columns: 1fr;
         grid-template-rows: auto auto auto;
       }
-      .controls-col {
-        grid-column: 1; grid-row: 1;
-        border-right: none;
-        border-bottom: 1px solid var(--rt-beige-contrast);
-        padding: 1.25rem;
-      }
+      /* Mobile: chart FIRST, then controls (incl. result line), then results bar */
       .chart-col {
-        grid-column: 1; grid-row: 2;
+        grid-column: 1; grid-row: 1;
         padding: 1.25rem 1.25rem 1rem;
+        border-bottom: 1px solid var(--rt-beige-contrast);
+      }
+      .controls-col {
+        grid-column: 1; grid-row: 2;
+        border-right: none;
+        padding: 1.25rem;
       }
       .results-bar {
         grid-column: 1; grid-row: 3;
@@ -490,6 +491,8 @@
         border-left: none;
         border-top: 1px solid rgba(255,255,255,0.12);
       }
+      /* Bigger, more usable chart on phones */
+      .chart-wrap { min-height: clamp(340px, 56vh, 480px); }
     }
 
     /* ─── History section ────────────────────────── */
